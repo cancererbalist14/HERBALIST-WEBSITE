@@ -13,10 +13,10 @@ const EMERGENCY_COLOR = '#f97316';
 
 // Regular 1-hour time slots
 const REGULAR_SLOTS = [
+  '10:00 AM - 11:00 AM',
   '11:00 AM - 12:00 PM',
   '12:00 PM - 01:00 PM',
   '02:00 PM - 03:00 PM',
-  '03:00 PM - 04:00 PM',
 ];
 
 // Emergency 15-min slots
@@ -29,6 +29,8 @@ const EMERGENCY_SLOTS = [
   '02:15 PM - 02:30 PM',
   '03:00 PM - 03:15 PM',
   '03:15 PM - 03:30 PM',
+  '03:30 PM - 03:45 PM',
+  '03:45 PM - 04:00 PM',
 ];
 
 // For backward compat (used in isSlotInPast check)
@@ -448,8 +450,8 @@ export default function Contact() {
                     Choose <span style={{ color: ACCENT }}>Date & Time</span>
                   </h2>
                 </div>
-                <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '20px' }}>
-                  Available Mon–Sat, 11 AM – 4 PM (Sundays closed)
+                 <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '20px' }}>
+                  Available Mon–Sat, 10 AM – 4 PM (Sundays closed)
                 </p>
 
                 {/* Day Picker */}
@@ -647,7 +649,7 @@ export default function Contact() {
                 { icon: <FaLeaf />, text: '100% Natural & Evidence-Based Herbal Protocols' },
                 { icon: <FaUserMd />, text: 'Experienced Integrative Oncology Practitioners' },
                 { icon: <FaCheckCircle />, text: 'Free First Consultation — No Obligation' },
-                { icon: <FaClock />, text: 'Flexible Slots Mon–Sat, 11 AM to 4 PM' },
+                { icon: <FaClock />, text: 'Flexible Slots Mon–Sat, 10 AM to 4 PM' },
                 { icon: <FaEnvelope />, text: 'Instant Email Confirmation After Booking' },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>

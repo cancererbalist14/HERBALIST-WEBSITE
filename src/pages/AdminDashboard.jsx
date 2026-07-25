@@ -15,10 +15,10 @@ const THEMES = {
 };
 
 const TIME_SLOTS = [
+  '10:00 AM - 11:00 AM',
   '11:00 AM - 12:00 PM',
   '12:00 PM - 01:00 PM',
   '02:00 PM - 03:00 PM',
-  '03:00 PM - 04:00 PM',
 ];
 
 const EMERGENCY_SLOTS = [
@@ -30,6 +30,8 @@ const EMERGENCY_SLOTS = [
   '02:15 PM - 02:30 PM',
   '03:00 PM - 03:15 PM',
   '03:15 PM - 03:30 PM',
+  '03:30 PM - 03:45 PM',
+  '03:45 PM - 04:00 PM',
 ];
 
 const ALL_SLOTS = [...TIME_SLOTS, ...EMERGENCY_SLOTS];
@@ -365,9 +367,9 @@ export default function AdminDashboard() {
           setEditRegularSlots(new Set(data.enabledSlots.regularSlots || []));
           setEditEmergencySlots(new Set(data.enabledSlots.emergencySlots || []));
         } else {
-          // Default: all open
-          setEditRegularSlots(new Set(TIME_SLOTS));
-          setEditEmergencySlots(new Set(EMERGENCY_SLOTS));
+          // Default: only default open slots checked
+          setEditRegularSlots(new Set(['10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM']));
+          setEditEmergencySlots(new Set(['03:00 PM - 03:15 PM', '03:15 PM - 03:30 PM', '03:30 PM - 03:45 PM', '03:45 PM - 04:00 PM']));
         }
       }
     } catch (err) {
@@ -2022,12 +2024,12 @@ export default function AdminDashboard() {
                   { label: '🟢 All Open', action: () => { setEditRegularSlots(new Set(TIME_SLOTS)); setEditEmergencySlots(new Set(EMERGENCY_SLOTS)); } },
                   { label: '🔴 Close All', action: () => { setEditRegularSlots(new Set()); setEditEmergencySlots(new Set()); } },
                   { label: '☀️ Morning Only', action: () => {
-                    setEditRegularSlots(new Set(['11:00 AM - 12:00 PM', '12:00 PM - 01:00 PM']));
-                    setEditEmergencySlots(new Set(['11:00 AM - 11:15 AM', '11:15 AM - 11:30 AM', '12:00 PM - 12:15 PM', '12:15 PM - 12:30 PM']));
+                    setEditRegularSlots(new Set(['10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM']));
+                    setEditEmergencySlots(new Set());
                   }},
                   { label: '🌄 Afternoon Only', action: () => {
-                    setEditRegularSlots(new Set(['02:00 PM - 03:00 PM', '03:00 PM - 04:00 PM']));
-                    setEditEmergencySlots(new Set(['02:00 PM - 02:15 PM', '02:15 PM - 02:30 PM', '03:00 PM - 03:15 PM', '03:15 PM - 03:30 PM']));
+                    setEditRegularSlots(new Set());
+                    setEditEmergencySlots(new Set(['03:00 PM - 03:15 PM', '03:15 PM - 03:30 PM', '03:30 PM - 03:45 PM', '03:45 PM - 04:00 PM']));
                   }},
                 ].map(preset => (
                   <button

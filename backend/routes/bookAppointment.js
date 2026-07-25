@@ -16,10 +16,10 @@ const router = express.Router();
 
 /* ── Slot constants ─────────────────────────────────────────────── */
 const REGULAR_SLOTS = [
+  '10:00 AM - 11:00 AM',
   '11:00 AM - 12:00 PM',
   '12:00 PM - 01:00 PM',
   '02:00 PM - 03:00 PM',
-  '03:00 PM - 04:00 PM',
 ];
 
 const EMERGENCY_SLOTS = [
@@ -31,6 +31,20 @@ const EMERGENCY_SLOTS = [
   '02:15 PM - 02:30 PM',
   '03:00 PM - 03:15 PM',
   '03:15 PM - 03:30 PM',
+  '03:30 PM - 03:45 PM',
+  '03:45 PM - 04:00 PM',
+];
+
+const DEFAULT_OPEN_REGULAR_SLOTS = [
+  '10:00 AM - 11:00 AM',
+  '11:00 AM - 12:00 PM',
+];
+
+const DEFAULT_OPEN_EMERGENCY_SLOTS = [
+  '03:00 PM - 03:15 PM',
+  '03:15 PM - 03:30 PM',
+  '03:30 PM - 03:45 PM',
+  '03:45 PM - 04:00 PM',
 ];
 
 const ALL_SLOTS = [...REGULAR_SLOTS, ...EMERGENCY_SLOTS];
@@ -125,14 +139,15 @@ async function deleteSlotConfigFromSheets(date) {
   }
 }
 
-// Returns { regularSlots: string[], emergencySlots: string[] } for a date.
-// If date has no config, returns all slots as enabled.
 function getEnabledSlotsForDate(date) {
   const normalizedKey = normalizeDateKey(date);
   const config = slotConfigStore[normalizedKey];
   if (!config) {
-    // No config = all slots open by default
-    return { regularSlots: [...REGULAR_SLOTS], emergencySlots: [...EMERGENCY_SLOTS] };
+    // Default open slots
+    return {
+      regularSlots: [...DEFAULT_OPEN_REGULAR_SLOTS],
+      emergencySlots: [...DEFAULT_OPEN_EMERGENCY_SLOTS],
+    };
   }
   return {
     regularSlots: [...config.regularSlots],
