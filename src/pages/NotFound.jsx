@@ -63,7 +63,7 @@ export default function NotFound() {
             {[
               { label: '🛒 Herbal Store', to: '/store' },
               { label: '📅 Book Consultation', to: '/contact' },
-              { label: '👨‍⚕️ Our Doctors', to: '/doctors' },
+              { label: '👨‍⚕️ Our Consultants', to: '/doctors' },
               { label: '📖 Blog', to: '/blog' },
             ].map(link => (
               <Link key={link.to} to={link.to} style={{ padding: '8px 16px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '50px', fontSize: '13px', fontWeight: 500, textDecoration: 'none', transition: 'all 0.2s' }}

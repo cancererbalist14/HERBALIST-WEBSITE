@@ -33,7 +33,7 @@ export default function PatientOnboarding() {
       details: 'We review your baseline symptoms, energy patterns, metabolic status, and establish personalized treatment goals tailored to your oncology timeline.',
       checklist: [
         'Discuss baseline fatigue, digestive status, and pain levels',
-        'Review oncological treatment schedule with senior doctors',
+        'Review oncological treatment schedule with senior consultants',
         'Establish clear quality-of-life benchmarks and recovery targets'
       ]
     },

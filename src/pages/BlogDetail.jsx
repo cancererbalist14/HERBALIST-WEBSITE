@@ -60,7 +60,7 @@ body: `This patient's journey demonstrates that prostate cancer can sometimes pr
     content: [
      {
 heading: 'Introduction',
-body: `Cancer treatment is undergoing a revolutionary transformation. Rather than treating all patients with the same approach, modern oncology is increasingly focused on precision medicine—an approach that tailors treatment based on the unique genetic and molecular characteristics of a patient's cancer. Advances in genomic testing, artificial intelligence, and targeted therapies are enabling doctors to select treatments that are more effective and potentially less toxic than traditional approaches.`
+body: `Cancer treatment is undergoing a revolutionary transformation. Rather than treating all patients with the same approach, modern oncology is increasingly focused on precision medicine—an approach that tailors treatment based on the unique genetic and molecular characteristics of a patient's cancer. Advances in genomic testing, artificial intelligence, and targeted therapies are enabling consultants to select treatments that are more effective and potentially less toxic than traditional approaches.`
 },
 {
 heading: 'What is Precision Oncology?',

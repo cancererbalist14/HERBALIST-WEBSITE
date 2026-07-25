@@ -336,7 +336,7 @@ export const defaultWebsiteContent = {
   doctorsHero: {
     badge: 'OUR NUTRACEUTICAL TEAM',
     title: 'Meet Our Expert Team',
-    subtitle: 'Our multidisciplinary team of medical doctors, naturopaths, and botanical researchers is dedicated to providing comprehensive, personalized care for cancer patients.'
+    subtitle: 'Our multidisciplinary team of medical consultants, naturopaths, and botanical researchers is dedicated to providing comprehensive, personalized care for cancer patients.'
   },
   doctorsList: [
     {

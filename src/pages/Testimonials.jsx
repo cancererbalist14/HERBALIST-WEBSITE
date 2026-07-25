@@ -91,7 +91,7 @@ Clinical Outcomes:
 ];
 
 const reviewsList = [
-  { name: 'Subash Ricardo S', location: 'Chennai', rating: 5, text: `My uncle was diagnosed with advanced colon cancer, and we started treatment at Cancer Herbalist after several cycles of chemotherapy. Although it was very late, the doctors and staff were supportive and always available for guidance.
+  { name: 'Subash Ricardo S', location: 'Chennai', rating: 5, text: `My uncle was diagnosed with advanced colon cancer, and we started treatment at Cancer Herbalist after several cycles of chemotherapy. Although it was very late, the consultants and staff were supportive and always available for guidance.
 
 After taking the herbal kit, my uncle felt better for several months. Sadly, he later passed away. We are grateful to the entire Cancer Herbalist team for their care, support, and compassion during a difficult time.`, date: 'Recent' },
   { name: 'Anand Keerthana', location: 'Vandawasi, near Chennai', rating: 5, text: 'My son Sarvesh is 2 years old and diagnosed with Adrenal cancer. We gave treatment of radiotherapy and chemotherapy after surgery. Last scan showed spread to bones. With the fear of losing him, we went to Cancer Herbalist, Bangalore and started herbal therapy. It was the right place. Now after 6 months, the child is very active, normal and no pain or swelling. The leg bone spread appears to be not active. Sarvesh also gained 3 kg weight. Don\'t fear for herbal therapy. It is safe for children.', date: 'a year ago' },

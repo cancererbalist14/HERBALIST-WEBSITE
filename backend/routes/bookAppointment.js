@@ -242,7 +242,7 @@ function buildPatientEmailHtml(data) {
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr><td style="padding:8px 0;vertical-align:top;">
                 <span style="background:#1a6e5218;color:#1a6e52;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;margin-right:12px;">1</span>
-                <span style="color:#475569;font-size:13.5px;">Our doctor will call you at your registered phone number at the booked time.</span>
+                <span style="color:#475569;font-size:13.5px;">Our Consultant will call you at your registered phone number at the booked time.</span>
               </td></tr>
               <tr><td style="padding:8px 0;vertical-align:top;">
                 <span style="background:#1a6e5218;color:#1a6e52;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;margin-right:12px;">2</span>
@@ -727,7 +727,7 @@ router.post('/book-appointment', async (req, res) => {
         from: fromAddr,
         to: email,
         subject: `✅ Appointment Confirmed — ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
-        text: `Dear ${name},\n\nYour consultation appointment has been confirmed.\n\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\n\nOur doctor will call you at your registered number at the booked time.\nQuestions? WhatsApp: +91 88845 88835\n\n— Cancer Herbalist Team`,
+        text: `Dear ${name},\n\nYour consultation appointment has been confirmed.\n\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\n\nOur Consultant will call you at your registered number at the booked time.\nQuestions? WhatsApp: +91 88845 88835\n\n— Cancer Herbalist Team`,
         html: buildPatientEmailHtml(data),
       }),
 

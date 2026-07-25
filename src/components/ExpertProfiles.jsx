@@ -42,7 +42,7 @@ export default function ExpertProfiles() {
             Meet Our <span>Specialists</span>
           </h2>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
-            Meet our multidisciplinary team of medical doctors, naturopaths, and botanical researchers dedicated to your recovery.
+            Meet our multidisciplinary team of medical consultants, naturopaths, and botanical researchers dedicated to your recovery.
           </p>
         </div>
 

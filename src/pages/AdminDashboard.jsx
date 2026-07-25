@@ -1643,7 +1643,7 @@ export default function AdminDashboard() {
                       </p>
                       {isEmergency && (
                         <span style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: EMERGENCY_COLOR, marginTop: '2px', letterSpacing: '0.3px' }}>
-                          ⚡ EMERGENCY
+                          ⚡ MINI CON.
                         </span>
                       )}
                     </div>
@@ -1773,7 +1773,7 @@ export default function AdminDashboard() {
               <div style={{ display: 'flex', gap: '12px', marginTop: '12px', fontSize: '11px', color: textSecondary, flexWrap: 'wrap', alignItems: 'center' }}>
                 <span>🟢 Free</span>
                 <span>🔴 Booked</span>
-                <span>⚡ Emergency</span>
+                <span>⚡ Mini Consultation</span>
                 {slotViewDate && slotViewDate !== today && (
                   <button
                     onClick={() => setSlotViewDate(null)}
@@ -1925,7 +1925,7 @@ export default function AdminDashboard() {
                                   <option key={slot} value={slot}>{slot}</option>
                                 ))}
                               </optgroup>
-                              <optgroup label="⚡ Emergency (15-min slots)">
+                              <optgroup label="⚡ Mini Consultation (15-min slots)">
                                 {EMERGENCY_SLOTS.map(slot => (
                                   <option key={slot} value={slot}>⚡ {slot}</option>
                                 ))}
@@ -2110,7 +2110,7 @@ export default function AdminDashboard() {
               <div style={{ fontSize: '12px', color: textSecondary }}>
                 <span style={{ fontWeight: 700, color: textPrimary }}>{editRegularSlots.size}</span> regular
                 {' + '}
-                <span style={{ fontWeight: 700, color: EMERGENCY_COLOR }}>{editEmergencySlots.size}</span> emergency slots open for this day
+                <span style={{ fontWeight: 700, color: EMERGENCY_COLOR }}>{editEmergencySlots.size}</span> Mini Consultation slots open for this day
               </div>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button

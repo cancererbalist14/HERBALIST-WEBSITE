@@ -74,7 +74,7 @@ const seoData = {
   '/doctors': {
     title: 'Our Team | Cancer Herbalist',
     description: 'Meet our team of experienced practitioners and researchers led by Prof. Ramesh Babu, dedicated to safe, integrative cancer support.',
-    keywords: 'cancer herbalist doctors, medical team, herbal specialists, prof ramesh babu team',
+    keywords: 'cancer herbalist consultants, medical team, herbal specialists, prof ramesh babu team',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'MedicalWebPage',

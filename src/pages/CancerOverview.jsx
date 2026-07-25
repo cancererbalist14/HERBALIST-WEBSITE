@@ -39,7 +39,7 @@ export default function CancerOverview() {
     },
     {
       q: 'Why are early warning signs so crucial in cancer diagnosis?',
-      a: 'Detecting cancer at an early stage (Stage I or II) before it metastasizes significantly increases treatment efficacy and long-term survival rates. Recognizing subtle persistent symptoms allows doctors to perform diagnostic imaging and biopsies promptly.'
+      a: 'Detecting cancer at an early stage (Stage I or II) before it metastasizes significantly increases treatment efficacy and long-term survival rates. Recognizing subtle persistent symptoms allows consultants to perform diagnostic imaging and biopsies promptly.'
     },
     {
       q: 'How do lifestyle factors influence cancer development?',

@@ -154,7 +154,7 @@ const initialProducts = [
       'Pharmaceutical-grade purity for maximum safety and absorption'
     ],
     ingredients: 'Purified Sodium Bicarbonate, Potassium Citrate, and alkaline mineral buffers.',
-    dosage: '½ teaspoon dissolved in a glass of water daily on an empty stomach, or as directed by your doctor.',
+    dosage: '½ teaspoon dissolved in a glass of water daily on an empty stomach, or as directed by your consultant.',
     size: '250g tub / 50-day supply',
     inStock: true
   },
@@ -602,7 +602,7 @@ const initialTestimonials = [
     name: 'Subash Ricardo S',
     location: 'Chennai',
     rating: 5,
-    text: 'My uncle was diagnosed with advanced colon cancer, and we started treatment at Cancer Herbalist after several cycles of chemotherapy. Although it was very late, the doctors and staff were supportive and always available for guidance.\n\nAfter taking the herbal kit, my uncle felt better for several months. Sadly, he later passed away. We are grateful to the entire Cancer Herbalist team for their care, support, and compassion during a difficult time.',
+    text: 'My uncle was diagnosed with advanced colon cancer, and we started treatment at Cancer Herbalist after several cycles of chemotherapy. Although it was very late, the consultants and staff were supportive and always available for guidance.\n\nAfter taking the herbal kit, my uncle felt better for several months. Sadly, he later passed away. We are grateful to the entire Cancer Herbalist team for their care, support, and compassion during a difficult time.',
     date: 'Recent'
   },
   {

@@ -392,13 +392,13 @@ export default function Contact() {
                       }}
                     >
                       <span style={{ fontSize: '22px' }}>⚡</span>
-                      <span>Emergency 15-Min Call</span>
-                      <span style={{ fontSize: '11px', fontWeight: 400, opacity: 0.75 }}>Quick urgent query</span>
+                      <span>Mini Consultation</span>
+                      <span style={{ fontSize: '11px', fontWeight: 400, opacity: 0.75 }}>Quick query or follow-up</span>
                     </button>
                   </div>
                   {apptType === 'emergency' && (
                     <div style={{ marginTop: '10px', background: '#fff7ed', border: '1.5px solid #fed7aa', borderRadius: '10px', padding: '10px 14px', fontSize: '12.5px', color: '#9a3412', lineHeight: '1.6' }}>
-                      ⚡ <strong>Emergency slots are 15 minutes</strong> — for urgent queries, quick follow-ups, or critical questions. Our doctor will call you promptly at the booked time.
+                      ⚡ <strong>Mini Consultation slots are 15 minutes</strong> — for quick queries, follow-ups, or general questions. Our Consultant will call you promptly at the booked time.
                     </div>
                   )}
                 </div>
@@ -476,14 +476,14 @@ export default function Contact() {
                 {formData.selectedDay && (
                   <>
                     <label style={labelStyle}>
-                      {apptType === 'emergency' ? '⚡ Select 15-Min Emergency Slot' : 'Select Time Slot'} for {formData.selectedDay.label} *
+                      {apptType === 'emergency' ? '⚡ Select 15-Min Mini Consultation Slot' : 'Select Time Slot'} for {formData.selectedDay.label} *
                       {slotsLoading && <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: 400, marginLeft: '8px' }}>Loading availability…</span>}
                     </label>
 
                     {/* Emergency type info banner */}
                     {apptType === 'emergency' && (
                       <div style={{ background: '#fff7ed', border: '1.5px solid #fed7aa', borderRadius: '10px', padding: '8px 14px', marginBottom: '12px', fontSize: '12px', color: '#9a3412' }}>
-                        ⚡ Showing 15-minute emergency slots only
+                        ⚡ Showing 15-minute Mini Consultation slots only
                       </div>
                     )}
 
@@ -512,7 +512,7 @@ export default function Contact() {
                             lineHeight: '1.6',
                             marginBottom: '24px'
                           }}>
-                            ⚡ All slots for today have already passed. Please select another date above or connect with us on WhatsApp for emergency requests.
+                            ⚡ All slots for today have already passed. Please select another date above or connect with us on WhatsApp.
                           </div>
                         );
                       }
@@ -566,7 +566,7 @@ export default function Contact() {
                   <div style={{ background: apptType === 'emergency' ? '#fff7ed' : `${ACCENT}12`, border: `1.5px solid ${apptType === 'emergency' ? '#fed7aa' : `${ACCENT}44`}`, borderRadius: '14px', padding: '16px 20px', marginBottom: '20px' }}>
                     {apptType === 'emergency' && (
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: EMERGENCY_COLOR, color: '#fff', borderRadius: '20px', padding: '3px 12px', fontSize: '11px', fontWeight: 700, marginBottom: '10px' }}>
-                        ⚡ EMERGENCY 15-MIN CALL
+                        ⚡ MINI CONSULTATION
                       </div>
                     )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -577,7 +577,7 @@ export default function Contact() {
                     <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>🩺 {formData.treatment}</p>
                     <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>📅 {formData.selectedDay.full}</p>
                     <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>🕐 {formData.selectedSlot}</p>
-                    <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>⏱ {apptType === 'emergency' ? '15-minute emergency call' : '1-hour consultation'}</p>
+                    <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>⏱ {apptType === 'emergency' ? '15-minute Mini Consultation' : '1-hour consultation'}</p>
                   </div>
                 )}
 
@@ -585,7 +585,7 @@ export default function Contact() {
 
                 <button onClick={handleSubmit} disabled={sending || !formData.selectedDay || !formData.selectedSlot}
                   style={{ width: '100%', background: sending ? '#94a3b8' : (apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT), color: '#fff', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: 700, cursor: sending ? 'not-allowed' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s' }}>
-                  {sending ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Sending...</> : <><FaCheckCircle /> {apptType === 'emergency' ? 'Book Emergency Call' : 'Confirm Appointment'}</>}
+                  {sending ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Sending...</> : <><FaCheckCircle /> {apptType === 'emergency' ? 'Book Mini Consultation' : 'Confirm Appointment'}</>}
                 </button>
               </div>
             )}
@@ -598,11 +598,11 @@ export default function Contact() {
                 </div>
                 {apptType === 'emergency' && (
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: EMERGENCY_COLOR, color: '#fff', borderRadius: '20px', padding: '4px 14px', fontSize: '12px', fontWeight: 700, marginBottom: '14px' }}>
-                    ⚡ Emergency 15-Min Call Booked
+                    ⚡ Mini Consultation Booked
                   </div>
                 )}
                 <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', fontSize: '1.6rem', marginBottom: '12px' }}>
-                  {apptType === 'emergency' ? 'Emergency Call Confirmed! ⚡' : 'Appointment Confirmed! 🌿'}
+                  {apptType === 'emergency' ? 'Mini Consultation Confirmed! ⚡' : 'Appointment Confirmed! 🌿'}
                 </h2>
                 <p style={{ color: '#64748b', lineHeight: '1.8', marginBottom: '8px' }}>
                   A confirmation email has been sent to <strong style={{ color: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT }}>{formData.email}</strong>
@@ -611,7 +611,7 @@ export default function Contact() {
                   Our team will call you at <strong>{formData.phone}</strong> at the booked time.
                 </p>
                 <div style={{ background: apptType === 'emergency' ? '#fff7ed' : `${ACCENT}10`, border: `1px solid ${apptType === 'emergency' ? '#fed7aa' : `${ACCENT}33`}`, borderRadius: '14px', padding: '16px 20px', marginBottom: '28px', textAlign: 'left' }}>
-                  {apptType === 'emergency' && <p style={{ margin: '0 0 6px', color: EMERGENCY_COLOR, fontSize: '12px', fontWeight: 700 }}>⚡ EMERGENCY 15-MIN CALL</p>}
+                  {apptType === 'emergency' && <p style={{ margin: '0 0 6px', color: EMERGENCY_COLOR, fontSize: '12px', fontWeight: 700 }}>⚡ MINI CONSULTATION</p>}
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>📅 <strong>{formData.selectedDay?.full}</strong></p>
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>🕐 <strong>{formData.selectedSlot}</strong></p>
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>🩺 <strong>{formData.treatment}</strong></p>

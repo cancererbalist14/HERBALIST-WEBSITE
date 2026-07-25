@@ -105,7 +105,7 @@ export const products = [
       'Pharmaceutical-grade purity for maximum safety and absorption',
     ],
     ingredients: 'Purified Sodium Bicarbonate, Potassium Citrate, and alkaline mineral buffers.',
-    dosage: '½ teaspoon dissolved in a glass of water daily on an empty stomach, or as directed by your doctor.',
+    dosage: '½ teaspoon dissolved in a glass of water daily on an empty stomach, or as directed by your consultant.',
     size: '250g tub / 50-day supply',
     inStock: true,
   },
