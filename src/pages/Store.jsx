@@ -36,6 +36,7 @@ export default function Store() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [allProducts, setAllProducts] = useState(products);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   React.useEffect(() => {
     const fetchDynamic = async () => {
@@ -61,6 +62,26 @@ export default function Store() {
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      <style>{`
+        .store-btn-wishlist:hover .btn-icon-wishlist {
+          transform: scale(1.2) rotate(-5deg);
+        }
+        .store-btn-cart:hover .btn-icon-cart {
+          transform: scale(1.18) translate(1px, -1px);
+        }
+        .btn-icon-wishlist,
+        .btn-icon-cart {
+          transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes cartPulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.15); }
+          100% { transform: scale(1); }
+        }
+        .cart-count-badge {
+          animation: cartPulse 2s infinite ease-in-out;
+        }
+      `}</style>
 
       {/* Hero */}
       <section style={{
@@ -110,23 +131,36 @@ export default function Store() {
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '12px',
-          marginBottom: '16px',
+          marginBottom: '20px',
           flexWrap: 'wrap'
         }}>
           {/* Search bar */}
           <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-            <FaSearch style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '13px' }} />
+            <FaSearch style={{ 
+              position: 'absolute', 
+              left: '18px', 
+              top: '50%', 
+              transform: 'translateY(-50%)', 
+              color: searchFocused ? PRIMARY : '#64748b', 
+              fontSize: '15px',
+              transition: 'color 0.3s ease'
+            }} />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search herbal products…"
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
               style={{
                 width: '100%', boxSizing: 'border-box',
-                padding: '11px 14px 11px 38px',
-                border: '1px solid #e2e8f0', borderRadius: '12px',
-                fontSize: '14px', outline: 'none',
-                background: '#fff', color: '#374151',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                padding: '12px 20px 12px 46px',
+                border: searchFocused ? `1.5px solid ${PRIMARY}` : '1.5px solid #cbd5e1', 
+                borderRadius: '50px',
+                fontSize: '14.5px', outline: 'none',
+                background: searchFocused ? '#fff' : '#f8fafc', 
+                color: '#374151',
+                boxShadow: searchFocused ? `0 0 0 3px ${PRIMARY}22, 0 4px 12px rgba(0,0,0,0.05)` : '0 2px 4px rgba(0,0,0,0.02) inset',
+                transition: 'all 0.3s ease',
               }}
             />
           </div>
@@ -136,65 +170,84 @@ export default function Store() {
             {/* Wishlist Link */}
             <button
               onClick={() => navigate('/wishlist')}
+              className="store-btn-wishlist"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 background: '#fff',
-                border: '1.5px solid #ef4444',
-                color: '#ef4444',
-                padding: '10px 18px',
-                borderRadius: '10px',
+                border: '1.5px solid #f43f5e',
+                color: '#f43f5e',
+                padding: '11px 22px',
+                borderRadius: '50px',
                 fontSize: '13.5px',
                 fontWeight: 600,
                 cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 2px 6px rgba(244,63,94,0.08)'
               }}
-              onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
-              onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#fff1f2';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(244,63,94,0.15)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#fff';
+                e.currentTarget.style.transform = 'none';
+                e.currentTarget.style.boxShadow = '0 2px 6px rgba(244,63,94,0.08)';
+              }}
             >
-              <FaHeart /> My Wishlist
+              <FaHeart className="btn-icon-wishlist" /> My Wishlist
             </button>
 
             {/* Cart Drawer Trigger */}
             <button
               onClick={() => setIsCartOpen(true)}
+              className="store-btn-cart"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                background: PRIMARY,
+                background: `linear-gradient(135deg, ${PRIMARY}, #115e42)`,
                 border: 'none',
                 color: '#fff',
-                padding: '11px 20px',
-                borderRadius: '10px',
+                padding: '12.5px 24px',
+                borderRadius: '50px',
                 fontSize: '13.5px',
                 fontWeight: 600,
                 cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: '0 2px 8px rgba(26,110,82,0.15)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 4px 12px rgba(26,110,82,0.2)',
                 position: 'relative'
               }}
-              onMouseEnter={e => e.currentTarget.style.background = '#14533d'}
-              onMouseLeave={e => e.currentTarget.style.background = PRIMARY}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(26,110,82,0.3)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'none';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(26,110,82,0.2)';
+              }}
             >
-              <FaShoppingBag /> My Cart 
+              <FaShoppingBag className="btn-icon-cart" /> My Cart 
               {cartCount > 0 && (
-                <span style={{
-                  background: '#ef4444',
-                  color: '#fff',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  borderRadius: '50%',
-                  width: '18px',
-                  height: '18px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1.5px solid #fff',
-                  marginLeft: '4px'
-                }}>
+                <span 
+                  className="cart-count-badge"
+                  style={{
+                    background: '#ef4444',
+                    color: '#fff',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    borderRadius: '50%',
+                    width: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1.5px solid #fff',
+                    marginLeft: '4px'
+                  }}
+                >
                   {cartCount}
                 </span>
               )}

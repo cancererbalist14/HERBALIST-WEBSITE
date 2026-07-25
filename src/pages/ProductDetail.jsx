@@ -1566,20 +1566,21 @@ export default function ProductDetail() {
             {/* CTAs */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
 
-              {/* Row 1: Add to Cart + Buy Now */}
+              {/* Row 1: Add to Cart + Buy Now (50% / 50%) */}
               <div className="pd-btn-row">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => addToCart(product, 1)}
                   style={{
-                    flex: 1, padding: '16px 12px',
+                    flex: 1, height: '54px',
                     background: '#f8fafc',
                     color: PRIMARY, border: `2px solid ${PRIMARY}`, borderRadius: '12px',
                     fontWeight: 700, fontSize: '15px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     gap: '8px', fontFamily: 'inherit',
                     transition: 'all 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
+                    boxSizing: 'border-box',
                   }}
                 >
                   <FaShoppingCart style={{ fontSize: '16px', flexShrink: 0 }} /> Add to Cart
@@ -1590,7 +1591,7 @@ export default function ProductDetail() {
                   whileTap={{ scale: 0.98 }}
                   onClick={() => navigate('/checkout', { state: { product, qty: 1 } })}
                   style={{
-                    flex: 1, padding: '16px 12px',
+                    flex: 1, height: '54px',
                     background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
                     color: '#fff', border: 'none', borderRadius: '12px',
                     fontWeight: 700, fontSize: '15px', cursor: 'pointer',
@@ -1598,65 +1599,55 @@ export default function ProductDetail() {
                     gap: '8px', fontFamily: 'inherit',
                     boxShadow: `0 8px 20px ${ACCENT}40`,
                     transition: 'all 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
+                    boxSizing: 'border-box',
                   }}
                 >
                   <FaShoppingBag style={{ fontSize: '16px', flexShrink: 0 }} /> Buy Now
                 </motion.button>
               </div>
 
-              {/* Row 2: Enquire + WhatsApp + Wishlist */}
+              {/* Row 2: Enquire + Wishlist (50% / 50%) */}
               <div className="pd-btn-row">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setEnquiryOpen(true)}
                   style={{
-                    flex: 1, padding: '14px 10px',
+                    flex: 1, height: '54px',
                     background: '#f8fafc',
-                    color: PRIMARY, border: `1.5px solid ${PRIMARY}`, borderRadius: '12px',
-                    fontWeight: 600, fontSize: '14px', cursor: 'pointer',
+                    color: PRIMARY, border: `2px solid ${PRIMARY}`, borderRadius: '12px',
+                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontFamily: 'inherit',
                     transition: 'background 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
+                    boxSizing: 'border-box',
                   }}
                 >
                   Enquire
                 </motion.button>
 
-                <motion.a
+                <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  href={`https://wa.me/918884588835?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(product.name)}%20(₹${product.price})`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    flex: 1, padding: '14px 10px',
-                    background: '#25d366',
-                    color: '#fff', border: 'none', borderRadius: '12px',
-                    fontWeight: 600, fontSize: '14px', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: '7px', textDecoration: 'none', boxSizing: 'border-box',
-                    boxShadow: '0 2px 8px rgba(37,211,102,0.3)',
-                    whiteSpace: 'nowrap', overflow: 'hidden',
-                  }}
-                >
-                  <FaWhatsapp style={{ fontSize: '16px', flexShrink: 0 }} /> WhatsApp
-                </motion.a>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                   onClick={() => toggleWishlist(product.id)}
                   style={{
-                    width: '52px', flexShrink: 0,
-                    background: '#fff', border: '2px solid #e2e8f0',
+                    flex: 1, height: '54px',
+                    background: '#fff', 
+                    border: isInWishlist(product.id) ? '2px solid #f43f5e' : '2px solid #cbd5e1',
                     borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer', color: isInWishlist(product.id) ? '#ef4444' : '#64748b',
-                    fontSize: '20px', transition: 'all 0.2s', padding: '14px 0',
+                    gap: '8px', cursor: 'pointer', 
+                    color: isInWishlist(product.id) ? '#f43f5e' : '#64748b',
+                    fontSize: '15px', fontWeight: 700, fontFamily: 'inherit',
+                    boxSizing: 'border-box',
+                    transition: 'all 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
                   }}
                   title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                 >
-                  {isInWishlist(product.id) ? <FaHeart /> : <FaRegHeart />}
+                  {isInWishlist(product.id) ? (
+                    <><FaHeart style={{ fontSize: '16px', flexShrink: 0 }} /> Wishlisted</>
+                  ) : (
+                    <><FaRegHeart style={{ fontSize: '16px', flexShrink: 0 }} /> Wishlist</>
+                  )}
                 </motion.button>
               </div>
             </div>
