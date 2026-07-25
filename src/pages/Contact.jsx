@@ -211,8 +211,10 @@ export default function Contact() {
         setSending(false);
         if (data.existingAppt) {
           setError(
-            `You already have an appointment booked on ${data.existingAppt.appointmentDay} at ${data.existingAppt.appointmentSlot} for "${data.existingAppt.treatment}". ` +
-            `Only one appointment per person is allowed. Please WhatsApp us at +91 88845 88835 to reschedule.`
+            <span>
+              You already have an appointment booked on {data.existingAppt.appointmentDay} at {data.existingAppt.appointmentSlot} for "{data.existingAppt.treatment}". 
+              Only one appointment per person is allowed. You can <Link to={`/manage-appointment?id=${data.existingAppt.apptId}`} style={{ color: ACCENT, fontWeight: 700, textDecoration: 'underline' }}>reschedule or cancel it online here</Link>, or WhatsApp us at +91 88845 88835.
+            </span>
           );
         } else {
           setError(data.error || 'This slot is already booked. Please choose a different time.');

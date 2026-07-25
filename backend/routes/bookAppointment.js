@@ -169,8 +169,8 @@ function createTransporter() {
 }
 
 /* ── Patient confirmation email HTML ─────────────────────────────── */
-function buildPatientEmailHtml(data) {
-  const { name, treatment, stage, appointmentDay, appointmentSlot, message } = data;
+function buildPatientEmailHtml(data, origin = 'http://localhost:5173') {
+  const { apptId, name, treatment, stage, appointmentDay, appointmentSlot, message } = data;
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -256,12 +256,23 @@ function buildPatientEmailHtml(data) {
           </td>
         </tr>
 
-        <!-- Reschedule Notice -->
+        <!-- Reschedule / Cancel Notice -->
         <tr>
           <td style="padding:0 40px 24px;">
-            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px 18px;">
-              <p style="margin:0;color:#92400e;font-size:13px;line-height:1.6;">
-                ⚠️ <strong>Need to reschedule?</strong> Please inform us at least 24 hours in advance via WhatsApp or call. Slots are limited.
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:16px 18px;text-align:center;">
+              <p style="margin:0 0 12px;color:#92400e;font-size:13px;line-height:1.6;font-weight:600;">
+                Need to change or cancel your appointment?
+              </p>
+              <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+                <a href="${origin}/manage-appointment?id=${apptId}&action=reschedule" style="display:inline-block;background:#1a6e52;color:#ffffff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12.5px;">
+                  Reschedule Online
+                </a>
+                <a href="${origin}/manage-appointment?id=${apptId}&action=cancel" style="display:inline-block;background:#ef4444;color:#ffffff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12.5px;">
+                  Cancel Online
+                </a>
+              </div>
+              <p style="margin:0;color:#92400e;font-size:11px;">
+                Or chat with us on WhatsApp or call if you need support.
               </p>
             </div>
           </td>
@@ -364,7 +375,11 @@ function buildAdminEmailHtml(data) {
 }
 
 /* ── Cancellation email to patient ──────────────────────────────── */
-function buildCancellationEmailHtml({ name, treatment, appointmentDay, appointmentSlot }) {
+function buildCancellationEmailHtml({ name, treatment, appointmentDay, appointmentSlot }, byPatient = false) {
+  const description = byPatient
+    ? `This email is to confirm that your appointment has been successfully <strong style="color:#dc2626;">cancelled</strong> as requested.`
+    : `We regret to inform you that your appointment has been <strong style="color:#dc2626;">cancelled</strong> by our team. We sincerely apologise for any inconvenience caused.`;
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -388,7 +403,7 @@ function buildCancellationEmailHtml({ name, treatment, appointmentDay, appointme
           <td style="padding:36px 40px 0;">
             <h2 style="margin:0 0 12px;color:#0f172a;font-size:20px;">Dear ${name},</h2>
             <p style="margin:0 0 24px;color:#64748b;font-size:14px;line-height:1.8;">
-              We regret to inform you that your appointment has been <strong style="color:#dc2626;">cancelled</strong> by our team. We sincerely apologise for any inconvenience caused.
+              ${description}
             </p>
           </td>
         </tr>
@@ -445,7 +460,11 @@ function buildCancellationEmailHtml({ name, treatment, appointmentDay, appointme
 }
 
 /* ── Reschedule email to patient ─────────────────────────────────── */
-function buildRescheduleEmailHtml({ name, treatment, oldDay, oldSlot, newDay, newSlot }) {
+function buildRescheduleEmailHtml({ apptId, name, treatment, oldDay, oldSlot, newDay, newSlot }, byPatient = false, origin = 'http://localhost:5173') {
+  const description = byPatient
+    ? `Your appointment has been successfully <strong style="color:#1a6e52;">rescheduled</strong> as requested. Please note your updated consultation details below.`
+    : `Your appointment has been <strong style="color:#1a6e52;">rescheduled</strong> by our team. Please note your updated consultation details below.`;
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -469,7 +488,7 @@ function buildRescheduleEmailHtml({ name, treatment, oldDay, oldSlot, newDay, ne
           <td style="padding:36px 40px 0;">
             <h2 style="margin:0 0 12px;color:#0f172a;font-size:20px;">Dear ${name},</h2>
             <p style="margin:0 0 24px;color:#64748b;font-size:14px;line-height:1.8;">
-              Your appointment has been <strong style="color:#1a6e52;">rescheduled</strong> by our team. Please note your updated consultation details below.
+              ${description}
             </p>
           </td>
         </tr>
@@ -511,12 +530,25 @@ function buildRescheduleEmailHtml({ name, treatment, oldDay, oldSlot, newDay, ne
           </td>
         </tr>
 
-        <!-- WhatsApp CTA -->
+        <!-- Reschedule / Cancel Notice -->
         <tr>
-          <td style="padding:0 40px 36px;text-align:center;">
-            <p style="color:#64748b;font-size:14px;margin-bottom:20px;line-height:1.7;">If this new time does not suit you, please contact us immediately:</p>
-            <a href="https://wa.me/918884588835" style="display:inline-block;background:#25d366;color:#ffffff;padding:14px 36px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:12px;">💬 Chat on WhatsApp</a>
-            <p style="margin:12px 0 0;color:#94a3b8;font-size:12px;">Or call <a href="tel:+918884588835" style="color:#1a6e52;font-weight:600;">+91 88845 88835</a></p>
+          <td style="padding:0 40px 24px;">
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:16px 18px;text-align:center;">
+              <p style="margin:0 0 12px;color:#92400e;font-size:13px;line-height:1.6;font-weight:600;">
+                Need to change or cancel this appointment?
+              </p>
+              <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+                <a href="${origin}/manage-appointment?id=${apptId}&action=reschedule" style="display:inline-block;background:#1a6e52;color:#ffffff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12.5px;">
+                  Reschedule Online
+                </a>
+                <a href="${origin}/manage-appointment?id=${apptId}&action=cancel" style="display:inline-block;background:#ef4444;color:#ffffff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12.5px;">
+                  Cancel Online
+                </a>
+              </div>
+              <p style="margin:0;color:#92400e;font-size:11px;">
+                Or chat with us on WhatsApp or call if you need support.
+              </p>
+            </div>
           </td>
         </tr>
 
@@ -627,6 +659,20 @@ const bookAppointmentSchema = {
   appointmentSlot: { type: 'string', required: true, min: 2, max: 100 },
 };
 
+// ── Helper to parse appointment date/time strings to check if in past ──
+function parseAppointmentDateTime(dayStr, slotStr) {
+  try {
+    const cleanDay = String(dayStr).replace(/^[a-zA-Z]+,\s*/, '').replace(/,/g, '').trim();
+    const startTime = String(slotStr).split(' - ')[0].trim();
+    const combined = `${cleanDay} ${startTime} +05:30`;
+    const parsed = new Date(combined);
+    if (!isNaN(parsed.getTime())) return parsed;
+    return new Date(`${cleanDay} ${startTime}`);
+  } catch (e) {
+    return null;
+  }
+}
+
 /* ── POST /api/book-appointment ──────────────────────────────── */
 router.post('/book-appointment', async (req, res) => {
   const validationError = validateSchema(req.body, bookAppointmentSchema);
@@ -642,20 +688,6 @@ router.post('/book-appointment', async (req, res) => {
 
   // ── Sync latest appointments from Sheets before checking ────
   await syncAppointmentsFromSheets();
-
-  // ── Helper to parse appointment date/time strings to check if in past ──
-  function parseAppointmentDateTime(dayStr, slotStr) {
-    try {
-      const cleanDay = String(dayStr).replace(/^[a-zA-Z]+,\s*/, '').replace(/,/g, '').trim();
-      const startTime = String(slotStr).split(' - ')[0].trim();
-      const combined = `${cleanDay} ${startTime} +05:30`;
-      const parsed = new Date(combined);
-      if (!isNaN(parsed.getTime())) return parsed;
-      return new Date(`${cleanDay} ${startTime}`);
-    } catch (e) {
-      return null;
-    }
-  }
 
   // ── Duplicate patient check (same phone OR email already booked for FUTURE slots) ──
   const normalisePhone = (p) => String(p || '').replace(/\D/g, '').slice(-10);
@@ -680,6 +712,7 @@ router.post('/book-appointment', async (req, res) => {
       success: false,
       error: `An appointment is already registered for this contact (${existing.appointmentDay} at ${existing.appointmentSlot}). Please contact us on WhatsApp to reschedule or enquire about your existing booking.`,
       existingAppt: {
+        apptId: existing.apptId,
         appointmentDay: existing.appointmentDay,
         appointmentSlot: existing.appointmentSlot,
         treatment: existing.treatment,
@@ -718,7 +751,7 @@ router.post('/book-appointment', async (req, res) => {
   const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
   const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
 
-  const data = { name, phone, email, treatment, stage, message, appointmentDay, appointmentSlot };
+  const data = { apptId, name, phone, email, treatment, stage, message, appointmentDay, appointmentSlot };
 
   try {
     await Promise.all([
@@ -728,7 +761,7 @@ router.post('/book-appointment', async (req, res) => {
         to: email,
         subject: `✅ Appointment Confirmed — ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
         text: `Dear ${name},\n\nYour consultation appointment has been confirmed.\n\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\n\nOur Consultant will call you at your registered number at the booked time.\nQuestions? WhatsApp: +91 88845 88835\n\n— Cancer Herbalist Team`,
-        html: buildPatientEmailHtml(data),
+        html: buildPatientEmailHtml(data, req.headers.origin || 'http://localhost:5173'),
       }),
 
       // 2. Admin notification
@@ -865,6 +898,187 @@ async function deleteRowFromSheets(apptId) {
     console.warn('[bookAppointment] Sheets delete error:', e.message);
   }
 }
+
+/* ── GET /api/public/appointments/:apptId (Public check) ─────── */
+router.get('/public/appointments/:apptId', async (req, res) => {
+  const { apptId } = req.params;
+  try {
+    await syncAppointmentsFromSheets();
+    const appt = appointmentStore.find(a => a.apptId === apptId);
+    if (!appt) {
+      return res.status(404).json({ success: false, error: 'Appointment not found.' });
+    }
+    res.json({
+      success: true,
+      appointment: {
+        apptId: appt.apptId,
+        name: appt.name,
+        treatment: appt.treatment,
+        appointmentDay: appt.appointmentDay,
+        appointmentSlot: appt.appointmentSlot,
+        stage: appt.stage,
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to retrieve appointment details.' });
+  }
+});
+
+/* ── DELETE /api/public/appointments/:apptId (Public cancel) ─── */
+router.delete('/public/appointments/:apptId', async (req, res) => {
+  const { apptId } = req.params;
+  try {
+    await syncAppointmentsFromSheets();
+    const idx = appointmentStore.findIndex(a => a.apptId === apptId);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Appointment not found.' });
+    }
+
+    const appt = appointmentStore[idx];
+
+    // Remove from local cache
+    appointmentStore.splice(idx, 1);
+    lastApptSyncTime = 0;
+
+    // Delete from Sheets
+    await deleteRowFromSheets(apptId);
+
+    // Send emails
+    const transporter = createTransporter();
+    if (transporter) {
+      const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+      const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+
+      // 1. To Patient
+      transporter.sendMail({
+        from: fromAddr,
+        to: appt.email,
+        subject: `❌ Appointment Cancelled — ${appt.appointmentDay} at ${appt.appointmentSlot} | Cancer Herbalist`,
+        text: `Dear ${appt.name},\n\nYour consultation appointment has been successfully cancelled as requested.\n\nDate: ${appt.appointmentDay}\nTime: ${appt.appointmentSlot}\nConsultation: ${appt.treatment}\n\n— Cancer Herbalist Team`,
+        html: buildCancellationEmailHtml(appt, true),
+      }).catch(e => console.error('[publicCancel] Patient email failed:', e.message));
+
+      // 2. To Admin
+      transporter.sendMail({
+        from: fromAddr,
+        to: adminEmail,
+        subject: `❌ Appointment Cancelled by Patient: ${appt.name}`,
+        text: `Appointment Cancelled by Patient\n\nPatient Name: ${appt.name}\nPhone: ${appt.phone}\nEmail: ${appt.email}\nSlot Cancelled: ${appt.appointmentDay} at ${appt.appointmentSlot}\nConsultation: ${appt.treatment}\n`,
+      }).catch(e => console.error('[publicCancel] Admin email failed:', e.message));
+    }
+
+    res.json({ success: true, message: 'Appointment cancelled successfully.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to cancel appointment.' });
+  }
+});
+
+/* ── PUT /api/public/appointments/:apptId (Public reschedule) ── */
+router.put('/public/appointments/:apptId', async (req, res) => {
+  const { apptId } = req.params;
+  const { appointmentDay, appointmentSlot } = req.body;
+
+  if (!appointmentDay || !appointmentSlot) {
+    return res.status(400).json({ success: false, error: 'appointmentDay and appointmentSlot are required.' });
+  }
+
+  try {
+    await syncAppointmentsFromSheets();
+    const idx = appointmentStore.findIndex(a => a.apptId === apptId);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Appointment not found.' });
+    }
+
+    const currentAppt = appointmentStore[idx];
+    const isActuallyChanged =
+      appointmentDay !== currentAppt.appointmentDay ||
+      appointmentSlot !== currentAppt.appointmentSlot;
+
+    if (!isActuallyChanged) {
+      return res.json({ success: true, message: 'Appointment details are unchanged.' });
+    }
+
+    // 1. Conflict check
+    const conflict = appointmentStore.find(a =>
+      a.apptId !== apptId &&
+      a.appointmentDay === appointmentDay &&
+      a.appointmentSlot === appointmentSlot
+    );
+    if (conflict) {
+      return res.status(409).json({
+        success: false,
+        error: 'The selected slot is already booked. Please choose a different time.',
+      });
+    }
+
+    // 2. Slot enabled check
+    await syncSlotConfigFromSheets();
+    const enabled = getEnabledSlotsForDate(appointmentDay);
+    const allEnabled = [...enabled.regularSlots, ...enabled.emergencySlots];
+    if (!allEnabled.includes(appointmentSlot)) {
+      return res.status(400).json({ success: false, error: 'The selected slot is not available or closed.' });
+    }
+
+    // 3. Past check
+    const apptTime = parseAppointmentDateTime(appointmentDay, appointmentSlot);
+    if (apptTime && apptTime.getTime() < Date.now()) {
+      return res.status(400).json({ success: false, error: 'Cannot book/reschedule to a past slot.' });
+    }
+
+    const oldDay = currentAppt.appointmentDay;
+    const oldSlot = currentAppt.appointmentSlot;
+
+    // Update local cache
+    const updatedAppt = {
+      ...currentAppt,
+      appointmentDay,
+      appointmentSlot,
+    };
+    appointmentStore[idx] = updatedAppt;
+    lastApptSyncTime = 0;
+
+    // Sync to Sheets
+    await updateRowInSheets(updatedAppt);
+
+    // Send emails
+    const transporter = createTransporter();
+    if (transporter) {
+      const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+      const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+      const origin = req.headers.origin || 'http://localhost:5173';
+
+      // 1. To Patient
+      transporter.sendMail({
+        from: fromAddr,
+        to: currentAppt.email,
+        subject: `📅 Appointment Rescheduled — New Slot: ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
+        text: `Dear ${currentAppt.name},\n\nYour appointment has been successfully rescheduled.\n\nOld Slot: ${oldDay} at ${oldSlot}\nNew Slot: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n\n— Cancer Herbalist Team`,
+        html: buildRescheduleEmailHtml({
+          apptId: currentAppt.apptId,
+          name: currentAppt.name,
+          treatment: currentAppt.treatment,
+          oldDay,
+          oldSlot,
+          newDay: appointmentDay,
+          newSlot: appointmentSlot,
+        }, true, origin),
+      }).catch(e => console.error('[publicReschedule] Patient email failed:', e.message));
+
+      // 2. To Admin
+      transporter.sendMail({
+        from: fromAddr,
+        to: adminEmail,
+        subject: `📅 Appointment Rescheduled by Patient: ${currentAppt.name}`,
+        text: `Appointment Rescheduled by Patient\n\nPatient Name: ${currentAppt.name}\nPhone: ${currentAppt.phone}\nEmail: ${currentAppt.email}\nOld Slot: ${oldDay} at ${oldSlot}\nNew Slot: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n`,
+      }).catch(e => console.error('[publicReschedule] Admin email failed:', e.message));
+    }
+
+    res.json({ success: true, message: 'Appointment rescheduled successfully.' });
+  } catch (err) {
+    console.error('[publicReschedule] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to reschedule appointment.' });
+  }
+});
 
 /* ── GET /api/appointments (Admin dashboard) ─────────────────── */
 router.get('/appointments', checkAdmin, async (req, res) => {

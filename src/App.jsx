@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Contact from './pages/Contact';
+import ManageAppointment from './pages/ManageAppointment';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -133,6 +134,7 @@ function App() {
                   <Route path="/order-success" element={<OrderSuccess />} />
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/manage-appointment" element={<ManageAppointment />} />
                   <Route path="/order-details/:orderId" element={<OrderDetails />} />
                   <Route path="/faqs" element={<OrderFAQ />} />
                   <Route path="/consent" element={<ZohoConsent />} />
