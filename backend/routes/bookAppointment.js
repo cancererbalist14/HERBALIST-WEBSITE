@@ -643,14 +643,36 @@ router.post('/book-appointment', async (req, res) => {
   // ── Sync latest appointments from Sheets before checking ────
   await syncAppointmentsFromSheets();
 
-  // ── Duplicate patient check (same phone OR email already booked) ──
+  // ── Helper to parse appointment date/time strings to check if in past ──
+  function parseAppointmentDateTime(dayStr, slotStr) {
+    try {
+      const cleanDay = String(dayStr).replace(/^[a-zA-Z]+,\s*/, '').replace(/,/g, '').trim();
+      const startTime = String(slotStr).split(' - ')[0].trim();
+      const combined = `${cleanDay} ${startTime} +05:30`;
+      const parsed = new Date(combined);
+      if (!isNaN(parsed.getTime())) return parsed;
+      return new Date(`${cleanDay} ${startTime}`);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ── Duplicate patient check (same phone OR email already booked for FUTURE slots) ──
   const normalisePhone = (p) => String(p || '').replace(/\D/g, '').slice(-10);
   const normalisedPhone = normalisePhone(phone);
+  const now = Date.now();
 
   const existing = appointmentStore.find(a => {
     const samePhone = normalisedPhone && normalisePhone(a.phone) === normalisedPhone;
     const sameEmail = email && a.email && a.email.toLowerCase() === email.toLowerCase();
-    return samePhone || sameEmail;
+    if (!samePhone && !sameEmail) return false;
+
+    // Check if this existing appointment is in the future
+    const apptTime = parseAppointmentDateTime(a.appointmentDay, a.appointmentSlot);
+    if (apptTime && apptTime.getTime() > now) {
+      return true;
+    }
+    return false;
   });
 
   if (existing) {

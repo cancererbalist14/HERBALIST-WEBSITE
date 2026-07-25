@@ -414,6 +414,9 @@ export default function Contact() {
                 <label style={labelStyle}>Email Address * (confirmation will be sent here)</label>
                 <input type="email" name="email" placeholder="your@email.com" value={formData.email} onChange={handleChange} required style={inputStyle}
                   onFocus={(e) => (e.target.style.borderColor = ACCENT)} onBlur={(e) => (e.target.style.borderColor = '#e2e8f0')} />
+                <div style={{ color: '#64748b', fontSize: '11.5px', marginTop: '-6px', marginBottom: '14px', lineHeight: '1.4' }}>
+                  ℹ️ <strong>Limit 1 active booking per patient.</strong> If you wish to book for a family member or another person, please use their name, email, and phone number.
+                </div>
 
                 <label style={labelStyle}>Type of Consultation *</label>
                 <select name="treatment" value={formData.treatment} onChange={handleChange} required style={{ ...inputStyle, cursor: 'pointer' }}>
@@ -616,6 +619,9 @@ export default function Contact() {
                 <button onClick={reset} style={{ background: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT, color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
                   Book Another Appointment
                 </button>
+                <p style={{ color: '#64748b', fontSize: '12px', marginTop: '10px', marginBottom: '0', lineHeight: '1.5' }}>
+                  To book an appointment for a family member or another person, please ensure you use their separate email address and phone number.
+                </p>
 
                 <div style={{ marginTop: '20px', background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: '14px', padding: '16px 20px' }}>
                   <p style={{ color: '#166534', fontSize: '13px', margin: 0 }}>✅ Your consent was recorded at the start of this booking.</p>
