@@ -15,18 +15,10 @@ const EMERGENCY_COLOR = '#f97316';
 const REGULAR_SLOTS = [
   '10:00 AM - 11:00 AM',
   '11:00 AM - 12:00 PM',
-  '12:00 PM - 01:00 PM',
-  '02:00 PM - 03:00 PM',
 ];
 
 // Emergency 15-min slots
 const EMERGENCY_SLOTS = [
-  '11:00 AM - 11:15 AM',
-  '11:15 AM - 11:30 AM',
-  '12:00 PM - 12:15 PM',
-  '12:15 PM - 12:30 PM',
-  '02:00 PM - 02:15 PM',
-  '02:15 PM - 02:30 PM',
   '03:00 PM - 03:15 PM',
   '03:15 PM - 03:30 PM',
   '03:30 PM - 03:45 PM',
@@ -521,6 +513,27 @@ export default function Contact() {
 
                       return (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
+                          {apptType === 'emergency' && (
+                            <>
+                              <div style={{
+                                padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
+                                background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
+                                textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
+                              }}>
+                                <span>10:00 AM - 12:00 PM</span>
+                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
+                              </div>
+                              <div style={{
+                                padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
+                                background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
+                                textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
+                              }}>
+                                <span>12:00 PM - 03:00 PM</span>
+                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
+                              </div>
+                            </>
+                          )}
+
                           {visibleSlots.map((slot) => {
                             const selected = formData.selectedSlot === slot;
                             const isBooked = bookedSlots.includes(slot);
@@ -557,6 +570,27 @@ export default function Contact() {
                               </button>
                             );
                           })}
+
+                          {apptType === 'regular' && (
+                            <>
+                              <div style={{
+                                padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
+                                background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
+                                textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
+                              }}>
+                                <span>12:00 PM - 03:00 PM</span>
+                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
+                              </div>
+                              <div style={{
+                                padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
+                                background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
+                                textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
+                              }}>
+                                <span>03:00 PM - 04:00 PM</span>
+                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
+                              </div>
+                            </>
+                          )}
                         </div>
                       );
                     })()}

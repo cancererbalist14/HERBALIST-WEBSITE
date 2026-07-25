@@ -18,17 +18,9 @@ const router = express.Router();
 const REGULAR_SLOTS = [
   '10:00 AM - 11:00 AM',
   '11:00 AM - 12:00 PM',
-  '12:00 PM - 01:00 PM',
-  '02:00 PM - 03:00 PM',
 ];
 
 const EMERGENCY_SLOTS = [
-  '11:00 AM - 11:15 AM',
-  '11:15 AM - 11:30 AM',
-  '12:00 PM - 12:15 PM',
-  '12:15 PM - 12:30 PM',
-  '02:00 PM - 02:15 PM',
-  '02:15 PM - 02:30 PM',
   '03:00 PM - 03:15 PM',
   '03:15 PM - 03:30 PM',
   '03:30 PM - 03:45 PM',
@@ -717,6 +709,26 @@ router.post('/book-appointment', async (req, res) => {
         appointmentSlot: existing.appointmentSlot,
         treatment: existing.treatment,
       },
+    });
+  }
+
+  // ── Allowed slot validation ──────────────────────────────
+  const allAllowedSlots = [...REGULAR_SLOTS, ...EMERGENCY_SLOTS];
+  if (!allAllowedSlots.includes(appointmentSlot)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid time slot selected. The selected slot is outside of allowed booking hours.',
+    });
+  }
+
+  // ── Slot enabled check ───────────────────────────────────
+  await syncSlotConfigFromSheets();
+  const enabled = getEnabledSlotsForDate(appointmentDay);
+  const allEnabled = [...enabled.regularSlots, ...enabled.emergencySlots];
+  if (!allEnabled.includes(appointmentSlot)) {
+    return res.status(400).json({
+      success: false,
+      error: 'The selected slot is closed for bookings on this day.',
     });
   }
 
