@@ -35,10 +35,28 @@ const allowedOrigins = [
   'http://localhost:5173',
 ].filter(Boolean);
 
+const isLocalOrigin = (origin) => {
+  try {
+    const url = new URL(origin);
+    const hostname = url.hostname;
+    return (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('10.') ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)
+    );
+  } catch (e) {
+    return false;
+  }
+};
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow server-to-server requests (no origin) and whitelisted origins
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow server-to-server requests (no origin), whitelisted origins, and local network origins
+    if (!origin || allowedOrigins.includes(origin) || isLocalOrigin(origin)) {
+      return callback(null, true);
+    }
     callback(new Error(`CORS: origin "${origin}" not allowed`));
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
