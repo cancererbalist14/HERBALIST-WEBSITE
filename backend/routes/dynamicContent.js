@@ -79,8 +79,8 @@ const initialProducts = [
     id: 1,
     name: 'Cap CH95 (30Cap)',
     category: 'Immunity',
-    price: 599,
-    originalPrice: 799,
+    price: 799,
+    originalPrice: 1099,
     rating: 4.8,
     reviews: 124,
     images: [
@@ -829,8 +829,20 @@ const seedDatabase = async () => {
       products = [];
     }
     let updatedProducts = false;
+
+    // Force update product 1's price if it's set to test values like 10
+    if (products.length > 0) {
+      const p1 = products.find(p => p.id === 1);
+      if (p1 && (p1.price !== 799 || p1.originalPrice !== 1099)) {
+        p1.price = 799;
+        p1.originalPrice = 1099;
+        updatedProducts = true;
+      }
+    }
+
     initialProducts.forEach(ip => {
-      if (!products.some(p => p.id === ip.id)) {
+      const existing = products.find(p => p.id === ip.id);
+      if (!existing) {
         products.push(ip);
         updatedProducts = true;
       }

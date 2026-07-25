@@ -22,8 +22,8 @@ export const products = [
     id: 1,
     name: 'Cap CH95 (30Cap)',
     category: 'Immunity',
-    price: 599,
-    originalPrice: 799,
+    price: 799,
+    originalPrice: 1099,
     rating: 4.8,
     reviews: 124,
     images: [

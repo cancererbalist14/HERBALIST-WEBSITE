@@ -9,7 +9,7 @@
  */
 
 const PRODUCT_PRICES = {
-  1:  599,   // Cap CH95 (30Cap)
+  1:  799,   // Cap CH95 (30Cap)
   2:  2599,  // C3M Powder
   3:  2299,  // CUP Powder
   4:  799,   // Cap Withangen (30Cap)
