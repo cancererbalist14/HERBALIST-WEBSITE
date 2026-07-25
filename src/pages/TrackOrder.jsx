@@ -20,6 +20,7 @@ export default function TrackOrder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [orderData, setOrderData] = useState(null);
+  const [multipleOrders, setMultipleOrders] = useState([]);
 
   // If orderId is in query params and they have local storage, try to auto-prefill contact
   useEffect(() => {
@@ -33,22 +34,15 @@ export default function TrackOrder() {
     }
   }, [orderId]);
 
-  const handleTrackSubmit = async (e) => {
-    e.preventDefault();
-    if (!orderId.trim() || !contact.trim()) {
-      setError('Please enter both Order ID and Phone Number / Email.');
-      return;
-    }
-
+  const trackOrderById = async (targetOrderId, contactVal) => {
     setLoading(true);
     setError('');
     setOrderData(null);
-
     try {
       const res = await fetch(`${BACKEND_URL}/api/orders/track`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ orderId: orderId.trim(), contact: contact.trim() }),
+        body:    JSON.stringify({ orderId: targetOrderId.trim(), contact: contactVal.trim() }),
       });
 
       const data = await res.json();
@@ -58,13 +52,58 @@ export default function TrackOrder() {
 
       setOrderData(data);
       // Save contact to make future lookups easier
-      localStorage.setItem('last_verified_contact', contact.trim());
+      localStorage.setItem('last_verified_contact', contactVal.trim());
       
       // Save order ID to localStorage "my_orders" so it displays on their dashboard
       const savedOrders = new Set(JSON.parse(localStorage.getItem('my_orders') || '[]'));
-      savedOrders.add(orderId.trim());
+      savedOrders.add(targetOrderId.trim());
       localStorage.setItem('my_orders', JSON.stringify(Array.from(savedOrders)));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleTrackSubmit = async (e) => {
+    e.preventDefault();
+    if (!contact.trim()) {
+      setError('Please enter your Phone Number or Email.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setOrderData(null);
+    setMultipleOrders([]);
+
+    try {
+      if (orderId.trim()) {
+        await trackOrderById(orderId, contact);
+      } else {
+        // Query order list by contact
+        const res = await fetch(`${BACKEND_URL}/api/orders/lookup`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ contact: contact.trim() }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to retrieve orders.');
+        }
+
+        if (data.orders.length === 0) {
+          throw new Error('No orders found for the provided contact details.');
+        } else if (data.orders.length === 1) {
+          const singleOrder = data.orders[0];
+          setOrderId(singleOrder.orderId);
+          await trackOrderById(singleOrder.orderId, contact);
+        } else {
+          setMultipleOrders(data.orders);
+          localStorage.setItem('last_verified_contact', contact.trim());
+        }
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -107,14 +146,13 @@ export default function TrackOrder() {
           <form onSubmit={handleTrackSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', alignItems: 'end' }}>
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>
-                Order ID *
+                Order ID (Optional)
               </label>
               <input
                 type="text"
                 placeholder="e.g. CH-1719890123-ABCD"
                 value={orderId}
                 onChange={(e) => setOrderId(e.target.value)}
-                required
                 style={{
                   width: '100%',
                   padding: '12px 16px',
@@ -198,6 +236,116 @@ export default function TrackOrder() {
             </div>
           )}
         </div>
+
+        {/* Back to list button if multiple orders exist */}
+        {orderData && multipleOrders.length > 1 && (
+          <button 
+            onClick={() => { setOrderData(null); setOrderId(''); }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: PRIMARY,
+              fontWeight: 600,
+              cursor: 'pointer',
+              marginBottom: '16px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '14.5px',
+              padding: 0
+            }}
+          >
+            ← Back to orders list
+          </button>
+        )}
+
+        {/* Multiple Orders Selector List */}
+        {multipleOrders.length > 0 && !orderData && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              background: '#fff',
+              borderRadius: '24px',
+              padding: '32px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+              border: '1px solid #e2e8f0',
+              marginBottom: '32px'
+            }}
+          >
+            <h3 style={{ fontSize: '18px', color: '#0f172a', fontWeight: 800, marginBottom: '8px' }}>
+              Select Order to Track
+            </h3>
+            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '24px' }}>
+              We found multiple orders matching <strong>{contact}</strong>. Click on any order to view its shipping and tracking status.
+            </p>
+
+            <div style={{ display: 'grid', gap: '16px' }}>
+              {multipleOrders.map((o) => (
+                <div 
+                  key={o.orderId}
+                  style={{
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    padding: '20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '16px',
+                    background: '#f8fafc',
+                    transition: 'border-color 0.2s',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '15px' }}>{o.orderId}</div>
+                    <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>
+                      Placed: {o.orderDate} | Amount: ₹{o.orderAmount}
+                    </div>
+                    <div style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>
+                      Product: {o.productName}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{
+                      background: '#ecfdf5',
+                      color: PRIMARY,
+                      padding: '4px 10px',
+                      borderRadius: '50px',
+                      fontSize: '12px',
+                      fontWeight: 700
+                    }}>
+                      {o.orderStatus.replace(/_/g, ' ')}
+                    </span>
+                    <button
+                      onClick={() => {
+                        setOrderId(o.orderId);
+                        trackOrderById(o.orderId, contact);
+                      }}
+                      style={{
+                        background: PRIMARY,
+                        color: '#fff',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        fontSize: '13.5px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: `0 2px 6px ${PRIMARY}22`
+                      }}
+                    >
+                      Track <FaTruck style={{ fontSize: '12px' }} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Tracking Results Card */}
         {orderData && (
