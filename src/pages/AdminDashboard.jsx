@@ -189,6 +189,28 @@ export default function AdminDashboard() {
   }, []);
 
 
+  const normalizeApptDates = useCallback((rawAppts) => {
+    const isoPattern = /^\d{4}-\d{2}-\d{2}/;
+    return (rawAppts || []).map(a => {
+      if (a.appointmentDay && (a.appointmentDay instanceof Date || (typeof a.appointmentDay === 'string' && isoPattern.test(a.appointmentDay)))) {
+        const parsed = new Date(a.appointmentDay);
+        if (!isNaN(parsed.getTime())) {
+          return {
+            ...a,
+            appointmentDay: parsed.toLocaleDateString('en-IN', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+              timeZone: 'Asia/Kolkata'
+            })
+          };
+        }
+      }
+      return a;
+    });
+  }, []);
+
   /* ── Fetch appointments ──────────────────────────────────────── */
   const fetchAppts = useCallback(async (key, dateFilter) => {
     setLoading(true);
@@ -201,13 +223,13 @@ export default function AdminDashboard() {
       const res  = await fetch(`${BACKEND_URL}/api/appointments?${params}`);
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to fetch.');
-      setAppts(data.appointments || []);
+      setAppts(normalizeApptDates(data.appointments || []));
     } catch (err) {
       setFetchError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [today]);
+  }, [today, normalizeApptDates]);
 
   /* ── Login ────────────────────────────────────────── */
   const handleLogin = async (e) => {
@@ -222,7 +244,7 @@ export default function AdminDashboard() {
       localStorage.setItem('ch_admin_authed', 'true');
       localStorage.setItem('ch_admin_secret', secret);
       setAuthed(true);
-      setAppts(data.appointments || []);
+      setAppts(normalizeApptDates(data.appointments || []));
     } catch {
       setAuthError('Cannot reach server. Check your connection.');
     } finally {

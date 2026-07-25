@@ -42,6 +42,12 @@ const slotConfigStore = {};
 let lastSlotConfigSyncTime = 0;
 const SLOT_CONFIG_SYNC_COOLDOWN_MS = 10000;
 
+// Replaces commas, trims whitespace, and converts to lowercase to make date lookups robust
+function normalizeDateKey(dateStr) {
+  if (!dateStr) return '';
+  return String(dateStr).trim().toLowerCase().replace(/,/g, '');
+}
+
 async function syncSlotConfigFromSheets(force = false) {
   const url = process.env.APPS_SCRIPT_URL;
   if (!url) return false;
@@ -56,13 +62,18 @@ async function syncSlotConfigFromSheets(force = false) {
       Object.keys(slotConfigStore).forEach(k => delete slotConfigStore[k]);
       (data.rows || []).forEach(row => {
         if (!row || !row.date) return;
-        if (!slotConfigStore[row.date]) {
-          slotConfigStore[row.date] = { regularSlots: new Set(), emergencySlots: new Set() };
+        const normalizedKey = normalizeDateKey(row.date);
+        if (!slotConfigStore[normalizedKey]) {
+          slotConfigStore[normalizedKey] = { regularSlots: new Set(), emergencySlots: new Set() };
+        }
+        if (row.slot === '[NONE]') {
+          // Placeholder row for completely closed slot configs
+          return;
         }
         if (row.slotType === 'emergency') {
-          slotConfigStore[row.date].emergencySlots.add(row.slot);
+          slotConfigStore[normalizedKey].emergencySlots.add(row.slot);
         } else {
-          slotConfigStore[row.date].regularSlots.add(row.slot);
+          slotConfigStore[normalizedKey].regularSlots.add(row.slot);
         }
       });
       lastSlotConfigSyncTime = Date.now();
@@ -85,8 +96,9 @@ async function saveSlotConfigToSheets(date, slots, slotType) {
     delUrl.searchParams.append('slotType', slotType);
     await fetch(delUrl.toString()).catch(() => {});
 
-    // Then insert new rows
-    for (const slot of slots) {
+    // Save [NONE] as placeholder if no slots are enabled to preserve closed state
+    const slotsToInsert = slots.length > 0 ? slots : ['[NONE]'];
+    for (const slot of slotsToInsert) {
       const rowUrl = new URL(url);
       rowUrl.searchParams.append('action', 'appendRow');
       rowUrl.searchParams.append('sheet', 'slotConfig');
@@ -116,7 +128,8 @@ async function deleteSlotConfigFromSheets(date) {
 // Returns { regularSlots: string[], emergencySlots: string[] } for a date.
 // If date has no config, returns all slots as enabled.
 function getEnabledSlotsForDate(date) {
-  const config = slotConfigStore[date];
+  const normalizedKey = normalizeDateKey(date);
+  const config = slotConfigStore[normalizedKey];
   if (!config) {
     // No config = all slots open by default
     return { regularSlots: [...REGULAR_SLOTS], emergencySlots: [...EMERGENCY_SLOTS] };
@@ -1036,7 +1049,8 @@ router.post('/admin/slot-config', checkAdmin, async (req, res) => {
     const validRegular = (regularSlots || []).filter(s => REGULAR_SLOTS.includes(s));
     const validEmergency = (emergencySlots || []).filter(s => EMERGENCY_SLOTS.includes(s));
 
-    slotConfigStore[date] = {
+    const normalizedKey = normalizeDateKey(date);
+    slotConfigStore[normalizedKey] = {
       regularSlots: new Set(validRegular),
       emergencySlots: new Set(validEmergency),
     };
@@ -1061,7 +1075,8 @@ router.post('/admin/slot-config', checkAdmin, async (req, res) => {
 router.delete('/admin/slot-config/:date', checkAdmin, async (req, res) => {
   const { date } = req.params;
   try {
-    delete slotConfigStore[date];
+    const normalizedKey = normalizeDateKey(date);
+    delete slotConfigStore[normalizedKey];
     lastSlotConfigSyncTime = 0;
     deleteSlotConfigFromSheets(date).catch(() => {});
     res.json({ success: true, message: `Slot config for ${date} reset to default (all open).` });
