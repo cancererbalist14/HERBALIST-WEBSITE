@@ -302,6 +302,11 @@ export default function Contact() {
             {/* ── STEP 0: Consent ── */}
             {step === 0 && (
               <div>
+                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '12px', padding: '12px 16px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '12.5px', color: '#475569', fontWeight: 500 }}>Already have an appointment?</span>
+                  <Link to="/manage-appointment" style={{ fontSize: '12.5px', color: ACCENT, fontWeight: 700, textDecoration: 'underline' }}>Manage online ➔</Link>
+                </div>
+
                 <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', marginBottom: '8px', fontSize: '1.4rem' }}>
                   Read & <span style={{ color: ACCENT }}>Agree to Consent</span>
                 </h2>

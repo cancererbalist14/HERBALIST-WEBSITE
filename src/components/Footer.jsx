@@ -24,6 +24,7 @@ const quickLinks = [
   { label: 'Products Hub',      to: '/products' },
   { label: 'Education Resources', to: '/education-resources' },
   { label: 'Contact Us',        to: '/contact' },
+  { label: 'Manage Appointment', to: '/manage-appointment' },
 ];
 
 const socials = [
