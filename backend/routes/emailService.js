@@ -30,6 +30,82 @@ function createTransporter() {
   });
 }
 
+async function sendEmailViaAppsScript(to, subject, htmlBody) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) {
+    console.warn('[emailSender] APPS_SCRIPT_URL not set — cannot send via Apps Script.');
+    return false;
+  }
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'sendEmail',
+        to,
+        subject,
+        htmlBody,
+      }),
+    });
+    if (!res.ok) {
+      console.warn(`[emailSender] Apps Script returned status ${res.status}`);
+      return false;
+    }
+    const data = await res.json();
+    if (data.success) {
+      console.log(`[emailSender] Email successfully sent via Apps Script to ${to}`);
+      return true;
+    } else {
+      console.warn(`[emailSender] Apps Script error: ${data.error}`);
+      return false;
+    }
+  } catch (err) {
+    console.warn(`[emailSender] Failed to fetch Apps Script: ${err.message}`);
+    return false;
+  }
+}
+
+async function sendMailWrapper({ to, subject, text, html }) {
+  const transporter = createTransporter();
+  let smtpSuccess = false;
+  let smtpError = null;
+
+  if (transporter) {
+    try {
+      const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+      await transporter.sendMail({
+        from: fromAddr,
+        to,
+        subject,
+        text,
+        html,
+      });
+      console.log(`[emailSender] Email sent successfully via SMTP to ${to}`);
+      smtpSuccess = true;
+    } catch (err) {
+      smtpError = err.message;
+      console.warn(`[emailSender] SMTP sendMail failed to ${to}:`, err.message);
+    }
+  } else {
+    smtpError = 'Transporter not configured (GMAIL_USER or GMAIL_APP_PASSWORD missing).';
+    console.warn(`[emailSender] SMTP skipped: ${smtpError}`);
+  }
+
+  if (smtpSuccess) {
+    return { success: true, method: 'smtp' };
+  }
+
+  // Fallback to Apps Script HTTP API
+  console.log(`[emailSender] Attempting Google Apps Script HTTP fallback for ${to}...`);
+  const appsScriptSuccess = await sendEmailViaAppsScript(to, subject, html);
+  if (appsScriptSuccess) {
+    return { success: true, method: 'apps_script' };
+  }
+
+  return { success: false, error: smtpError || 'Unknown error' };
+}
+
+
 /* ── Customer confirmation email HTML ─────────────────────────── */
 function buildCustomerEmailHtml(order) {
   const {
@@ -242,45 +318,35 @@ function buildAdminEmailHtml(order) {
 async function sendOrderConfirmationEmails(order) {
   console.log(`[emailService] Starting email for order ${order.orderId}, customer email: ${order.email || 'NOT PROVIDED'}`);
 
-  const transporter = createTransporter();
-  if (!transporter) {
-    console.warn('[emailService] Transporter is null — GMAIL_USER or GMAIL_APP_PASSWORD missing in env.');
-    return;
-  }
-
-  console.log(`[emailService] Transporter ready. Sending to customer: ${order.email}, admin: ${process.env.ADMIN_EMAIL}`);
+  console.log(`[emailService] Sending to customer: ${order.email}, admin: ${process.env.ADMIN_EMAIL}`);
 
   const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
-  const fromAddr   = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
-
   const emailPromises = [];
 
   // 1. Customer confirmation (only if we have their email)
   if (order.email && /\S+@\S+\.\S+/.test(order.email)) {
     emailPromises.push(
-      transporter.sendMail({
-        from:    fromAddr,
+      sendMailWrapper({
         to:      order.email,
         subject: `✅ Order Confirmed — ${order.orderId} | Cancer Herbalist`,
         text:    `Thank you, ${order.customerName}!\nYour order ${order.orderId} for ${order.productName} (Amount: ₹${order.orderAmount}) has been successfully placed.\n\nPayment Method: ${order.paymentMethod}\nShipping Address: ${order.address}, ${order.city}, ${order.state} - ${order.pincode}\n\nOur team will contact you shortly.`,
         html:    buildCustomerEmailHtml(order),
-      }).catch(err => console.error('[emailService] Customer email failed:', err.message))
+      })
     );
   }
 
   // 2. Admin notification
   emailPromises.push(
-    transporter.sendMail({
-      from:    fromAddr,
+    sendMailWrapper({
       to:      adminEmail,
       subject: `🛒 New Order: ${order.orderId} — ${order.customerName} (₹${order.orderAmount})`,
       text:    `New Order Received: ${order.orderId}\nCustomer: ${order.customerName}\nPhone: ${order.phone}\nProduct: ${order.productName}\nAmount: ₹${order.orderAmount}\nPayment: ${order.paymentMethod}`,
       html:    buildAdminEmailHtml(order),
-    }).catch(err => console.error('[emailService] Admin email failed:', err.message))
+    })
   );
 
   await Promise.all(emailPromises);
-  console.log(`[emailService] Emails sent for order ${order.orderId}`);
+  console.log(`[emailService] Emails triggered for order ${order.orderId}`);
 }
 
 /* ── Status change notification email ──────────────────────────── */
@@ -404,17 +470,6 @@ async function sendStatusNotificationEmail(order, status, customerMessage) {
   _emailSentCache.set(dedupKey, Date.now());
 
   console.log(`[emailService] Sending status notification email for order ${order.orderId}`);
-  
-  if (!order.email || !/\S+@\S+\.\S+/.test(order.email)) {
-    console.warn('[emailService] Customer email missing or invalid. Skipping status notification email.');
-    return;
-  }
-
-  const transporter = createTransporter();
-  if (!transporter) {
-    console.warn('[emailService] Transporter is null — GMAIL_USER or GMAIL_APP_PASSWORD missing.');
-    return;
-  }
 
   const { ORDER_STATUS_LABELS } = require('./orderStatuses');
   const statusLabel = ORDER_STATUS_LABELS[status] || status;
@@ -429,19 +484,42 @@ async function sendStatusNotificationEmail(order, status, customerMessage) {
     subject = `⏳ Refund Initiated — ${order.orderId} | Cancer Herbalist`;
   }
 
-  const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+  const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+  const emailPromises = [];
+
+  // 1. Customer notification (only if valid email exists)
+  if (order.email && /\S+@\S+\.\S+/.test(order.email)) {
+    emailPromises.push(
+      sendMailWrapper({
+        to:      order.email,
+        subject: subject,
+        text:    `Hello ${order.customerName},\n\nUpdate for your order ${order.orderId}:\n\n${customerMessage}\n\nTrack your order here: ${process.env.FRONTEND_URL}/track-order?orderId=${order.orderId}`,
+        html:    buildStatusEmailHtml(order, status, customerMessage),
+      })
+    );
+  } else {
+    console.warn('[emailService] Customer email missing or invalid. Skipping customer status notification.');
+  }
+
+  // 2. Admin notification (always notify admin/doctor on cancellation or refund state changes)
+  if (['CANCELLED', 'CANCELLATION_REQUESTED', 'REFUND_PROCESSED', 'REFUND_INITIATED', 'REFUND_FAILED'].includes(status)) {
+    emailPromises.push(
+      sendMailWrapper({
+        to:      adminEmail,
+        subject: `[ADMIN ALERT] Order Update: ${statusLabel} — ${order.orderId}`,
+        text:    `Admin Alert:\nUpdate for order ${order.orderId} (Customer: ${order.customerName}):\n\n${customerMessage}`,
+        html:    buildStatusEmailHtml(order, status, `<strong>[ADMIN ALERT]</strong> ${customerMessage}`),
+      })
+    );
+  }
 
   try {
-    await transporter.sendMail({
-      from:    fromAddr,
-      to:      order.email,
-      subject: subject,
-      text:    `Hello ${order.customerName},\n\nUpdate for your order ${order.orderId}:\n\n${customerMessage}\n\nTrack your order here: ${process.env.FRONTEND_URL}/track-order?orderId=${order.orderId}`,
-      html:    buildStatusEmailHtml(order, status, customerMessage),
-    });
-    console.log(`[emailService] Status notification email sent successfully.`);
+    if (emailPromises.length > 0) {
+      await Promise.all(emailPromises);
+      console.log(`[emailService] Status notification emails triggered successfully.`);
+    }
   } catch (err) {
-    console.error('[emailService] Status notification email failed:', err.message);
+    console.error('[emailService] Status notification email execution error:', err.message);
   }
 }
 

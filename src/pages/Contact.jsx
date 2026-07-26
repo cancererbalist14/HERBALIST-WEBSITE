@@ -125,12 +125,26 @@ export default function Contact() {
   const [enabledEmergencySlots, setEnabledEmergencySlots] = useState(EMERGENCY_SLOTS);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [apptType, setApptType] = useState('regular'); // 'regular' | 'emergency'
+  const [warning, setWarning] = useState('');
+  const formCardRef = React.useRef(null);
+  const [checkingBooking, setCheckingBooking] = useState(false);
+  const [existingAppt, setExistingAppt] = useState(null);
+  const [bypassDuplicateCheck, setBypassDuplicateCheck] = useState(false);
+  const [duplicateApptError, setDuplicateApptError] = useState(null);
+
+
+  React.useEffect(() => {
+    if (step > 0 && formCardRef.current) {
+      formCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [step]);
 
   const [formData, setFormData] = useState({
     name: '', phone: '', email: '',
     treatment: '', stage: '', message: '',
     selectedDay: null, selectedSlot: '',
   });
+
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -160,14 +174,78 @@ export default function Contact() {
     setFormData({ ...formData, selectedSlot: slot });
 
   // Step 1 → Step 2
-  const handleNextStep = (e) => {
+  const handleNextStep = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone || !formData.email || !formData.treatment) {
+    setError('');
+
+    if (!formData.name.trim() || !formData.phone.trim() || !formData.email.trim() || !formData.treatment) {
       setError('Please fill in all required fields.');
       return;
     }
-    setError('');
-    setStep(2);
+
+    // 1. Name validation
+    const nameRegex = /^[a-zA-Z\s\-\.\'\u00C0-\u00FF]+$/;
+    if (!nameRegex.test(formData.name.trim())) {
+      setError('Full Name contains invalid characters. Only letters, spaces, and basic punctuation are allowed.');
+      return;
+    }
+
+    // 2. Phone validation and normalization
+    const cleanPhone = formData.phone.replace(/\D/g, ''); // strip all non-digits
+    let finalPhone = cleanPhone;
+    if (finalPhone.length === 12 && finalPhone.startsWith('91')) {
+      finalPhone = finalPhone.slice(2);
+    }
+    const phoneRegex = /^[5-9]\d{9}$/;
+    if (!phoneRegex.test(finalPhone)) {
+      setError('Phone number must be a valid 10-digit mobile number (e.g. 9876543210).');
+      return;
+    }
+
+    // 3. Email validation
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    // Store cleaned phone in state
+    setFormData(prev => ({ ...prev, phone: finalPhone }));
+
+    // If follow-up appointment, bypass duplicate check entirely
+    if (formData.treatment === 'Follow-up Appointment') {
+      setExistingAppt(null);
+      setStep(2);
+      return;
+    }
+
+    setCheckingBooking(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/check-booking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: finalPhone,
+          email: formData.email.trim(),
+          treatment: formData.treatment,
+          apptType: apptType,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.exists) {
+        setExistingAppt(data.existingAppt);
+      } else {
+        setExistingAppt(null);
+        setStep(2);
+      }
+    } catch (err) {
+      console.warn('[Contact] Check booking error:', err);
+      // Let patient proceed to date selection if checking API fails
+      setExistingAppt(null);
+      setStep(2);
+    } finally {
+      setCheckingBooking(false);
+    }
   };
 
   // Step 2 → Send emails via backend
@@ -193,6 +271,7 @@ export default function Contact() {
           message:         formData.message || '',
           appointmentDay:  formData.selectedDay.full,
           appointmentSlot: formData.selectedSlot,
+          bypassDuplicateCheck: bypassDuplicateCheck,
         }),
       });
 
@@ -202,12 +281,8 @@ export default function Contact() {
         // Duplicate booking (same phone/email OR same slot)
         setSending(false);
         if (data.existingAppt) {
-          setError(
-            <span>
-              You already have an appointment booked on {data.existingAppt.appointmentDay} at {data.existingAppt.appointmentSlot} for "{data.existingAppt.treatment}". 
-              Only one appointment per person is allowed. You can <Link to={`/manage-appointment?id=${data.existingAppt.apptId}`} style={{ color: ACCENT, fontWeight: 700, textDecoration: 'underline' }}>reschedule or cancel it online here</Link>, or WhatsApp us at +91 88845 88835.
-            </span>
-          );
+          setDuplicateApptError(data.existingAppt);
+          setError('');
         } else {
           setError(data.error || 'This slot is already booked. Please choose a different time.');
         }
@@ -216,6 +291,12 @@ export default function Contact() {
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Failed to send confirmation.');
+      }
+
+      if (data.warning) {
+        setWarning(data.warning);
+      } else {
+        setWarning('');
       }
 
       setSending(false);
@@ -233,6 +314,10 @@ export default function Contact() {
     setApptType('regular');
     setFormData({ name: '', phone: '', email: '', treatment: '', stage: '', message: '', selectedDay: null, selectedSlot: '' });
     setError('');
+    setWarning('');
+    setCheckingBooking(false);
+    setExistingAppt(null);
+    setBypassDuplicateCheck(false);
   };
 
   return (
@@ -278,7 +363,7 @@ export default function Contact() {
         <div className="contact-main-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(380px, 100%), 1fr))', gap: '36px', alignItems: 'start' }}>
 
           {/* ── Booking Form Card ── */}
-          <div style={{ background: '#fff', padding: 'clamp(24px, 4vw, 44px)', borderRadius: '28px', boxShadow: '0 12px 40px rgba(0,0,0,0.09)', border: `1px solid ${ACCENT}22` }}>
+          <div ref={formCardRef} style={{ background: '#fff', padding: 'clamp(24px, 4vw, 44px)', borderRadius: '28px', boxShadow: '0 12px 40px rgba(0,0,0,0.09)', border: `1px solid ${ACCENT}22` }}>
 
             {/* Step Indicator */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0', marginBottom: '32px' }}>
@@ -436,9 +521,86 @@ export default function Contact() {
 
                 {error && <p style={{ color: '#ef4444', fontSize: '13px', marginBottom: '12px' }}>⚠ {error}</p>}
 
-                <button type="submit" style={{ width: '100%', background: ACCENT, color: '#fff', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: 700, cursor: 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'opacity 0.2s' }}
+                {existingAppt && (
+                  <div style={{
+                    background: '#fff7ed',
+                    border: '1.5px solid #fed7aa',
+                    borderRadius: '16px',
+                    padding: '18px 20px',
+                    color: '#c2410c',
+                    fontSize: '13.5px',
+                    lineHeight: '1.7',
+                    marginBottom: '20px',
+                    textAlign: 'left'
+                  }}>
+                    <p style={{ margin: '0 0 8px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      ⚠️ You already have an active booking
+                    </p>
+                    <p style={{ margin: '0 0 14px', fontSize: '13px', color: '#7c2d12' }}>
+                      We found a future booking for <strong>"{existingAppt.treatment}"</strong> on <strong>{existingAppt.appointmentDay} at {existingAppt.appointmentSlot}</strong> under this email/phone.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '10px' }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBypassDuplicateCheck(true);
+                          setExistingAppt(null);
+                          setStep(2);
+                        }}
+                        style={{
+                          background: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT,
+                          color: '#fff',
+                          border: 'none',
+                          padding: '10px 12px',
+                          borderRadius: '10px',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          transition: 'opacity 0.2s'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
+                        onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                      >
+                        Confirm & Book Another
+                      </button>
+                      <Link
+                        to={`/manage-appointment?id=${existingAppt.apptId}`}
+                        style={{
+                          background: '#fff',
+                          border: '1px solid #cbd5e1',
+                          padding: '10px 12px',
+                          borderRadius: '10px',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          color: '#475569',
+                          textDecoration: 'none',
+                          textAlign: 'center',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
+                      >
+                        Manage Existing Booking
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                <button type="submit" disabled={checkingBooking} style={{ width: '100%', background: ACCENT, color: '#fff', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: 700, cursor: checkingBooking ? 'not-allowed' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'opacity 0.2s' }}
                   onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}>
-                  Next: Choose Appointment Slot <FaChevronRight />
+                  {checkingBooking ? (
+                    <>
+                      <FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Checking Details...
+                    </>
+                  ) : (
+                    <>
+                      Next: Choose Appointment Slot <FaChevronRight />
+                    </>
+                  )}
                 </button>
               </form>
             )}
@@ -447,11 +609,57 @@ export default function Contact() {
             {step === 2 && (
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-                  <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '22px', padding: 0 }}>←</button>
+                  <button onClick={() => { setStep(1); setDuplicateApptError(null); }} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '22px', padding: 0 }}>←</button>
                   <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', fontSize: '1.5rem', margin: 0 }}>
                     Choose <span style={{ color: ACCENT }}>Date & Time</span>
                   </h2>
                 </div>
+
+                {duplicateApptError && (
+                  <div style={{
+                    background: '#fff7ed',
+                    border: '1.5px solid #fed7aa',
+                    borderRadius: '16px',
+                    padding: '16px 20px',
+                    color: '#c2410c',
+                    fontSize: '13.5px',
+                    lineHeight: '1.6',
+                    marginBottom: '24px',
+                    textAlign: 'left'
+                  }}>
+                    <p style={{ margin: '0 0 6px', fontWeight: 700 }}>⚠️ You already have an active booking</p>
+                    <p style={{ margin: '0 0 12px', color: '#7c2d12' }}>
+                      An appointment is already registered on <strong>{duplicateApptError.appointmentDay} at {duplicateApptError.appointmentSlot}</strong> for "{duplicateApptError.treatment}". Only one appointment per person is allowed.
+                    </p>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <Link to={`/manage-appointment?id=${duplicateApptError.apptId}`} style={{
+                        background: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT,
+                        color: '#fff',
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        textAlign: 'center'
+                      }}>
+                        Reschedule / Cancel Online
+                      </Link>
+                      <a href="https://wa.me/918884588835" target="_blank" rel="noreferrer" style={{
+                        background: '#fff',
+                        border: '1px solid #cbd5e1',
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: '#475569',
+                        textDecoration: 'none',
+                        textAlign: 'center'
+                      }}>
+                        WhatsApp Support
+                      </a>
+                    </div>
+                  </div>
+                )}
                  <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '20px' }}>
                   Available Mon–Sat, 10 AM – 4 PM (Sundays closed)
                 </p>
@@ -476,129 +684,151 @@ export default function Contact() {
                   <>
                     <label style={labelStyle}>
                       {apptType === 'emergency' ? '⚡ Select 15-Min Mini Consultation Slot' : 'Select Time Slot'} for {formData.selectedDay.label} *
-                      {slotsLoading && <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: 400, marginLeft: '8px' }}>Loading availability…</span>}
                     </label>
 
-                    {/* Emergency type info banner */}
-                    {apptType === 'emergency' && (
-                      <div style={{ background: '#fff7ed', border: '1.5px solid #fed7aa', borderRadius: '10px', padding: '8px 14px', marginBottom: '12px', fontSize: '12px', color: '#9a3412' }}>
-                        ⚡ Showing 15-minute Mini Consultation slots only
-                      </div>
-                    )}
-
-                    {(() => {
-                      const activeColor = apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT;
-                      const slotsToShow = apptType === 'emergency' ? EMERGENCY_SLOTS : REGULAR_SLOTS;
-                      const enabledSlots = apptType === 'emergency' ? enabledEmergencySlots : enabledRegularSlots;
-
-                      const isToday = formData.selectedDay &&
-                        new Date(formData.selectedDay.date).toDateString() === new Date().toDateString();
-
-                      // Filter out slots that have already passed so they are not visible
-                      const visibleSlots = slotsToShow.filter(slot => !(isToday && isSlotInPast(slot)));
-
-                      if (visibleSlots.length === 0) {
-                        return (
-                          <div style={{
-                            padding: '24px 16px',
-                            background: '#fff7ed',
-                            border: '1.5px dashed #fed7aa',
-                            borderRadius: '12px',
-                            textAlign: 'center',
-                            color: '#c2410c',
-                            fontSize: '13.5px',
-                            fontWeight: 500,
-                            lineHeight: '1.6',
-                            marginBottom: '24px'
-                          }}>
-                            ⚡ All slots for today have already passed. Please select another date above or connect with us on WhatsApp.
-                          </div>
-                        );
-                      }
-
-                      return (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
-                          {apptType === 'emergency' && (
-                            <>
-                              <div style={{
-                                padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
-                                background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
-                                textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
-                              }}>
-                                <span>10:00 AM - 12:00 PM</span>
-                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
-                              </div>
-                              <div style={{
-                                padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
-                                background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
-                                textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
-                              }}>
-                                <span>12:00 PM - 03:00 PM</span>
-                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
-                              </div>
-                            </>
-                          )}
-
-                          {visibleSlots.map((slot) => {
-                            const selected = formData.selectedSlot === slot;
-                            const isBooked = bookedSlots.includes(slot);
-                            const isDisabled = !enabledSlots.includes(slot);
-                            const unavailable = isBooked || isDisabled;
-                            return (
-                              <button
-                                key={slot}
-                                type="button"
-                                disabled={unavailable}
-                                onClick={() => !unavailable && handleSlotSelect(slot)}
-                                title={
-                                  isBooked ? 'This slot is already booked'
-                                  : isDisabled ? 'Not available today'
-                                  : slot
-                                }
-                                style={{
-                                  padding: '10px 4px', borderRadius: '10px',
-                                  border: `2px solid ${unavailable ? '#e2e8f0' : selected ? activeColor : '#e2e8f0'}`,
-                                  background: unavailable ? '#f1f5f9' : selected ? activeColor : '#f8fafc',
-                                  color:  unavailable ? '#cbd5e1' : selected ? '#fff' : '#475569',
-                                  fontWeight: 600, fontSize: '11px',
-                                  cursor: unavailable ? 'not-allowed' : 'pointer',
-                                  transition: 'all 0.2s',
-                                  textDecoration: isBooked ? 'line-through' : 'none',
-                                }}
-                              >
-                                {slot}
-                                {isBooked ? (
-                                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#ef4444', textDecoration: 'none', marginTop: '2px' }}>BOOKED</div>
-                                ) : isDisabled ? (
-                                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#94a3b8', textDecoration: 'none', marginTop: '2px' }}>CLOSED</div>
-                                ) : null}
-                              </button>
-                            );
-                          })}
-
-                          {apptType === 'regular' && (
-                            <>
-                              <div style={{
-                                padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
-                                background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
-                                textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
-                              }}>
-                                <span>12:00 PM - 03:00 PM</span>
-                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
-                              </div>
-                              <div style={{
-                                padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
-                                background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
-                                textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
-                              }}>
-                                <span>03:00 PM - 04:00 PM</span>
-                                <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
-                              </div>
-                            </>
-                          )}
+                    <div style={{ minHeight: '150px' }}>
+                      {slotsLoading ? (
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '36px 20px',
+                          background: '#f8fafc',
+                          border: '1.5px dashed #cbd5e1',
+                          borderRadius: '16px',
+                          color: ACCENT,
+                          gap: '10px',
+                          minHeight: '150px',
+                          boxSizing: 'border-box'
+                        }}>
+                          <FaSpinner style={{ animation: 'spin 1s linear infinite', fontSize: '20px' }} />
+                          <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#475569' }}>Checking available slots...</span>
                         </div>
-                      );
-                    })()}
+                      ) : (
+                        <>
+                          {/* Emergency type info banner */}
+                          {apptType === 'emergency' && (
+                            <div style={{ background: '#fff7ed', border: '1.5px solid #fed7aa', borderRadius: '10px', padding: '8px 14px', marginBottom: '12px', fontSize: '12px', color: '#9a3412' }}>
+                              ⚡ Showing 15-minute Mini Consultation slots only
+                            </div>
+                          )}
+
+                          {(() => {
+                            const activeColor = apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT;
+                            const slotsToShow = apptType === 'emergency' ? EMERGENCY_SLOTS : REGULAR_SLOTS;
+                            const enabledSlots = apptType === 'emergency' ? enabledEmergencySlots : enabledRegularSlots;
+
+                            const isToday = formData.selectedDay &&
+                              new Date(formData.selectedDay.date).toDateString() === new Date().toDateString();
+
+                            // Filter out slots that have already passed so they are not visible
+                            const visibleSlots = slotsToShow.filter(slot => !(isToday && isSlotInPast(slot)));
+
+                            if (visibleSlots.length === 0) {
+                              return (
+                                <div style={{
+                                  padding: '24px 16px',
+                                  background: '#fff7ed',
+                                  border: '1.5px dashed #fed7aa',
+                                  borderRadius: '12px',
+                                  textAlign: 'center',
+                                  color: '#c2410c',
+                                  fontSize: '13.5px',
+                                  fontWeight: 500,
+                                  lineHeight: '1.6',
+                                  marginBottom: '24px'
+                                }}>
+                                  ⚡ All slots for today have already passed. Please select another date above or connect with us on WhatsApp.
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
+                                {apptType === 'emergency' && (
+                                  <>
+                                    <div style={{
+                                      padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
+                                      background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
+                                      textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
+                                    }}>
+                                      <span>10:00 AM - 12:00 PM</span>
+                                      <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
+                                    </div>
+                                    <div style={{
+                                      padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
+                                      background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
+                                      textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
+                                    }}>
+                                      <span>12:00 PM - 03:00 PM</span>
+                                      <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
+                                    </div>
+                                  </>
+                                )}
+
+                                {visibleSlots.map((slot) => {
+                                  const selected = formData.selectedSlot === slot;
+                                  const isBooked = bookedSlots.includes(slot);
+                                  const isDisabled = !enabledSlots.includes(slot);
+                                  const unavailable = isBooked || isDisabled;
+                                  return (
+                                    <button
+                                      key={slot}
+                                      type="button"
+                                      disabled={unavailable}
+                                      onClick={() => !unavailable && handleSlotSelect(slot)}
+                                      title={
+                                        isBooked ? 'This slot is already booked'
+                                        : isDisabled ? 'Not available today'
+                                        : slot
+                                      }
+                                      style={{
+                                        padding: '10px 4px', borderRadius: '10px',
+                                        border: `2px solid ${unavailable ? '#e2e8f0' : selected ? activeColor : '#e2e8f0'}`,
+                                        background: unavailable ? '#f1f5f9' : selected ? activeColor : '#f8fafc',
+                                        color:  unavailable ? '#cbd5e1' : selected ? '#fff' : '#475569',
+                                        fontWeight: 600, fontSize: '11px',
+                                        cursor: unavailable ? 'not-allowed' : 'pointer',
+                                        transition: 'all 0.2s',
+                                        textDecoration: isBooked ? 'line-through' : 'none',
+                                      }}
+                                    >
+                                      {slot}
+                                      {isBooked ? (
+                                        <div style={{ fontSize: '9px', fontWeight: 700, color: '#ef4444', textDecoration: 'none', marginTop: '2px' }}>BOOKED</div>
+                                      ) : isDisabled ? (
+                                        <div style={{ fontSize: '9px', fontWeight: 700, color: '#94a3b8', textDecoration: 'none', marginTop: '2px' }}>CLOSED</div>
+                                      ) : null}
+                                    </button>
+                                  );
+                                })}
+
+                                {apptType === 'regular' && (
+                                  <>
+                                    <div style={{
+                                      padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
+                                      background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
+                                      textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
+                                    }}>
+                                      <span>12:00 PM - 03:00 PM</span>
+                                      <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
+                                    </div>
+                                    <div style={{
+                                      padding: '10px 4px', borderRadius: '10px', border: '1.5px dashed #cbd5e1',
+                                      background: '#f1f5f9', color: '#94a3b8', fontSize: '11.5px', fontWeight: 600,
+                                      textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', opacity: 0.85
+                                    }}>
+                                      <span>03:00 PM - 04:00 PM</span>
+                                      <span style={{ fontSize: '8px', fontWeight: 700, color: '#64748b' }}>RESEARCH & ADMIN</span>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </>
+                      )}
+                    </div>
                   </>
                 )}
 
@@ -624,8 +854,8 @@ export default function Contact() {
 
                 {error && <p style={{ color: '#ef4444', fontSize: '13px', marginBottom: '12px' }}>⚠ {error}</p>}
 
-                <button onClick={handleSubmit} disabled={sending || !formData.selectedDay || !formData.selectedSlot}
-                  style={{ width: '100%', background: sending ? '#94a3b8' : (apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT), color: '#fff', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: 700, cursor: sending ? 'not-allowed' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s' }}>
+                <button onClick={handleSubmit} disabled={sending || !formData.selectedDay || !formData.selectedSlot || !!duplicateApptError}
+                  style={{ width: '100%', background: (sending || !!duplicateApptError) ? '#94a3b8' : (apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT), color: '#fff', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: 700, cursor: (sending || !!duplicateApptError) ? 'not-allowed' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s' }}>
                   {sending ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Sending...</> : <><FaCheckCircle /> {apptType === 'emergency' ? 'Book Mini Consultation' : 'Confirm Appointment'}</>}
                 </button>
               </div>
@@ -645,9 +875,25 @@ export default function Contact() {
                 <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', fontSize: '1.6rem', marginBottom: '12px' }}>
                   {apptType === 'emergency' ? 'Mini Consultation Confirmed! ⚡' : 'Appointment Confirmed! 🌿'}
                 </h2>
-                <p style={{ color: '#64748b', lineHeight: '1.8', marginBottom: '8px' }}>
-                  A confirmation email has been sent to <strong style={{ color: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT }}>{formData.email}</strong>
-                </p>
+                {warning ? (
+                  <div style={{
+                    background: '#fff7ed',
+                    border: '1.5px solid #fed7aa',
+                    borderRadius: '14px',
+                    padding: '16px 20px',
+                    color: '#c2410c',
+                    fontSize: '13.5px',
+                    lineHeight: '1.6',
+                    textAlign: 'left',
+                    marginBottom: '20px'
+                  }}>
+                    <strong>⚠️ Booking recorded:</strong> We successfully saved your appointment, but were unable to dispatch the confirmation email. Please take a screenshot of your slot details below or connect on WhatsApp.
+                  </div>
+                ) : (
+                  <p style={{ color: '#64748b', lineHeight: '1.8', marginBottom: '8px' }}>
+                    A confirmation email has been sent to <strong style={{ color: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT }}>{formData.email}</strong>
+                  </p>
+                )}
                 <p style={{ color: '#64748b', lineHeight: '1.8', marginBottom: '24px' }}>
                   Our team will call you at <strong>{formData.phone}</strong> at the booked time.
                 </p>

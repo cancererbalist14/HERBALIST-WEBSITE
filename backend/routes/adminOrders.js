@@ -164,6 +164,8 @@ router.put('/admin/orders/:orderId/cancellation', async (req, res) => {
     if (approved) {
       order.cancellationStatus = 'APPROVED';
       order.orderStatus = ORDER_STATUSES.CANCELLED;
+      order.shipmentStatus = 'CANCELED';
+      order.latestStatus = 'CANCELED';
       saveOrder(order);
 
       addOrderEvent(
@@ -304,6 +306,8 @@ router.post('/admin/orders/:orderId/cancel', async (req, res) => {
     // Set cancellation status
     order.cancellationStatus = 'CANCELLED_BY_ADMIN';
     order.orderStatus = ORDER_STATUSES.CANCELLED;
+    order.shipmentStatus = 'CANCELED';
+    order.latestStatus = 'CANCELED';
     saveOrder(order);
 
     addOrderEvent(

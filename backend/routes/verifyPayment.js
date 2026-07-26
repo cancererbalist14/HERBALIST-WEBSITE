@@ -82,7 +82,7 @@ router.post('/verify-payment', async (req, res) => {
       orderId = existingOrder.orderId;
       existingOrder.paymentStatus = 'PAID';
       existingOrder.razorpayPaymentId = razorpay_payment_id;
-      existingOrder.orderStatus = ORDER_STATUSES.ORDER_PLACED;
+      existingOrder.orderStatus = ORDER_STATUSES.ORDER_CONFIRMED;
       saveOrder(existingOrder);
       orderRow = existingOrder;
     } else {
@@ -98,7 +98,7 @@ router.post('/verify-payment', async (req, res) => {
         razorpayOrderId:    razorpay_order_id,
         razorpayPaymentId:  razorpay_payment_id,
         paymentStatus:      'PAID',
-        orderStatus:        ORDER_STATUSES.ORDER_PLACED,
+        orderStatus:        ORDER_STATUSES.ORDER_CONFIRMED,
         shipmentStatus:     null,
         cancellationStatus: null,
         returnStatus:       null,
@@ -118,8 +118,8 @@ router.post('/verify-payment', async (req, res) => {
     }
 
     // Save placement and verification events
-    addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_PLACED, 'Your payment has been successfully verified via Razorpay.');
-    addOrderEvent(orderId, 'PAYMENT', ORDER_STATUSES.ORDER_PLACED, `Payment of ₹${orderAmount} confirmed. Transaction ID: ${razorpay_payment_id}`, { razorpayPaymentId: razorpay_payment_id });
+    addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_CONFIRMED, 'Your payment has been successfully verified via Razorpay. Order confirmed.');
+    addOrderEvent(orderId, 'PAYMENT', ORDER_STATUSES.ORDER_CONFIRMED, `Payment of ₹${orderAmount} confirmed. Transaction ID: ${razorpay_payment_id}`, { razorpayPaymentId: razorpay_payment_id });
 
     /* ── 3. Execute integrations in parallel (necessary for Vercel serverless environment) ── */
     const promises = [];
@@ -205,10 +205,10 @@ router.post('/verify-payment', async (req, res) => {
     // Wait for all integrations to finish before sending response (prevent serverless termination)
     await Promise.all(promises);
 
-    // Update order status to CONFIRMED
+    // Log order verified event if shipment creation succeeded
     const updatedOrder = await getOrderByIdAsync(orderId);
     if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
-      updateOrderStatus(orderId, ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been confirmed. We are scheduling it for shipment.');
+      addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_CONFIRMED, 'Order verification completed. Ready for shipment.');
     }
 
     // Email confirmation (customer + admin) - sent ONLY after backend has successfully processed everything

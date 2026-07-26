@@ -160,6 +160,82 @@ function createTransporter() {
   });
 }
 
+async function sendEmailViaAppsScript(to, subject, htmlBody) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) {
+    console.warn('[emailSender] APPS_SCRIPT_URL not set — cannot send via Apps Script.');
+    return false;
+  }
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'sendEmail',
+        to,
+        subject,
+        htmlBody,
+      }),
+    });
+    if (!res.ok) {
+      console.warn(`[emailSender] Apps Script returned status ${res.status}`);
+      return false;
+    }
+    const data = await res.json();
+    if (data.success) {
+      console.log(`[emailSender] Email successfully sent via Apps Script to ${to}`);
+      return true;
+    } else {
+      console.warn(`[emailSender] Apps Script error: ${data.error}`);
+      return false;
+    }
+  } catch (err) {
+    console.warn(`[emailSender] Failed to fetch Apps Script: ${err.message}`);
+    return false;
+  }
+}
+
+async function sendMailWrapper({ to, subject, text, html }) {
+  const transporter = createTransporter();
+  let smtpSuccess = false;
+  let smtpError = null;
+
+  if (transporter) {
+    try {
+      const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+      await transporter.sendMail({
+        from: fromAddr,
+        to,
+        subject,
+        text,
+        html,
+      });
+      console.log(`[emailSender] Email sent successfully via SMTP to ${to}`);
+      smtpSuccess = true;
+    } catch (err) {
+      smtpError = err.message;
+      console.warn(`[emailSender] SMTP sendMail failed to ${to}:`, err.message);
+    }
+  } else {
+    smtpError = 'Transporter not configured (GMAIL_USER or GMAIL_APP_PASSWORD missing).';
+    console.warn(`[emailSender] SMTP skipped: ${smtpError}`);
+  }
+
+  if (smtpSuccess) {
+    return { success: true, method: 'smtp' };
+  }
+
+  // Fallback to Apps Script HTTP API
+  console.log(`[emailSender] Attempting Google Apps Script HTTP fallback for ${to}...`);
+  const appsScriptSuccess = await sendEmailViaAppsScript(to, subject, html);
+  if (appsScriptSuccess) {
+    return { success: true, method: 'apps_script' };
+  }
+
+  return { success: false, error: smtpError || 'Unknown error' };
+}
+
+
 /* ── Patient confirmation email HTML ─────────────────────────────── */
 function buildPatientEmailHtml(data, origin = 'http://localhost:5173') {
   const { apptId, name, treatment, stage, appointmentDay, appointmentSlot, message } = data;
@@ -649,6 +725,7 @@ const bookAppointmentSchema = {
   message: { type: 'string', required: false, min: 0, max: 1000 },
   appointmentDay: { type: 'string', required: true, min: 2, max: 100 },
   appointmentSlot: { type: 'string', required: true, min: 2, max: 100 },
+  bypassDuplicateCheck: { required: false },
 };
 
 // ── Helper to parse appointment date/time strings to check if in past ──
@@ -676,6 +753,7 @@ router.post('/book-appointment', async (req, res) => {
     name, phone, email,
     treatment, stage, message,
     appointmentDay, appointmentSlot,
+    bypassDuplicateCheck,
   } = req.body;
 
   // ── Sync latest appointments from Sheets before checking ────
@@ -686,18 +764,26 @@ router.post('/book-appointment', async (req, res) => {
   const normalisedPhone = normalisePhone(phone);
   const now = Date.now();
 
-  const existing = appointmentStore.find(a => {
-    const samePhone = normalisedPhone && normalisePhone(a.phone) === normalisedPhone;
-    const sameEmail = email && a.email && a.email.toLowerCase() === email.toLowerCase();
-    if (!samePhone && !sameEmail) return false;
+  let existing = null;
+  // Bypassed if booking a Follow-up Appointment OR bypassDuplicateCheck is true
+  if (treatment !== 'Follow-up Appointment' && !bypassDuplicateCheck) {
+    const newIsEmergency = EMERGENCY_SLOTS.includes(appointmentSlot);
+    existing = appointmentStore.find(a => {
+      const samePhone = normalisedPhone && normalisePhone(a.phone) === normalisedPhone;
+      const sameEmail = email && a.email && a.email.toLowerCase() === email.toLowerCase();
+      if (!samePhone && !sameEmail) return false;
 
-    // Check if this existing appointment is in the future
-    const apptTime = parseAppointmentDateTime(a.appointmentDay, a.appointmentSlot);
-    if (apptTime && apptTime.getTime() > now) {
-      return true;
-    }
-    return false;
-  });
+      const existingIsEmergency = EMERGENCY_SLOTS.includes(a.appointmentSlot);
+      if (newIsEmergency !== existingIsEmergency) return false;
+
+      // Check if this existing appointment is in the future
+      const apptTime = parseAppointmentDateTime(a.appointmentDay, a.appointmentSlot);
+      if (apptTime && apptTime.getTime() > now) {
+        return true;
+      }
+      return false;
+    });
+  }
 
   if (existing) {
     return res.status(409).json({
@@ -753,23 +839,13 @@ router.post('/book-appointment', async (req, res) => {
   // Save to in-memory store
   appointmentStore.push(appt);
 
-  const transporter = createTransporter();
-  if (!transporter) {
-    console.error('[bookAppointment] Email transporter not configured.');
-    await saveToSheets(appt);
-    return res.json({ success: true, apptId, warning: 'Email not configured on server.' });
-  }
-
   const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
-  const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
-
   const data = { apptId, name, phone, email, treatment, stage, message, appointmentDay, appointmentSlot };
 
   try {
-    await Promise.all([
+    const [emailResPatient, emailResAdmin] = await Promise.all([
       // 1. Patient confirmation
-      transporter.sendMail({
-        from: fromAddr,
+      sendMailWrapper({
         to: email,
         subject: `✅ Appointment Confirmed — ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
         text: `Dear ${name},\n\nYour consultation appointment has been confirmed.\n\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\n\nOur Consultant will call you at your registered number at the booked time.\nQuestions? WhatsApp: +91 88845 88835\n\n— Cancer Herbalist Team`,
@@ -777,8 +853,7 @@ router.post('/book-appointment', async (req, res) => {
       }),
 
       // 2. Admin notification
-      transporter.sendMail({
-        from: fromAddr,
+      sendMailWrapper({
         to: adminEmail,
         subject: `📅 New Appointment: ${name} — ${appointmentDay} ${appointmentSlot}`,
         text: `New Appointment Booked\nPatient: ${name}\nPhone: ${phone}\nEmail: ${email}\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\nStage: ${stage || 'N/A'}\nMessage: ${message || 'None'}`,
@@ -789,12 +864,79 @@ router.post('/book-appointment', async (req, res) => {
       saveToSheets(appt),
     ]);
 
-    console.log(`[bookAppointment] Confirmation emails sent for ${name} (${email})`);
-    res.json({ success: true, apptId });
+    const warnings = [];
+    if (!emailResPatient.success) {
+      warnings.push(`Patient email failed: ${emailResPatient.error}`);
+    }
+    if (!emailResAdmin.success) {
+      warnings.push(`Doctor email failed: ${emailResAdmin.error}`);
+    }
+
+    if (warnings.length > 0) {
+      console.warn(`[bookAppointment] Booking completed with warnings:`, warnings.join('; '));
+      res.json({ success: true, apptId, warning: warnings.join('; ') });
+    } else {
+      console.log(`[bookAppointment] Booking completed successfully for ${name}`);
+      res.json({ success: true, apptId });
+    }
 
   } catch (err) {
-    console.error('[bookAppointment] Failed:', err.message);
-    res.status(500).json({ success: false, error: 'Failed to send confirmation email. Please try again.' });
+    console.error('[bookAppointment] Failed to save/process booking:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to complete booking process.' });
+  }
+
+});
+
+/* ── POST /api/check-booking ─────────────────────────────────── */
+router.post('/check-booking', async (req, res) => {
+  const { phone, email, treatment, apptType } = req.body;
+  if (!phone && !email) {
+    return res.status(400).json({ success: false, error: 'Phone or email is required.' });
+  }
+
+  try {
+    await syncAppointmentsFromSheets();
+
+    const normalisePhone = (p) => String(p || '').replace(/\D/g, '').slice(-10);
+    const normalisedPhone = normalisePhone(phone);
+    const now = Date.now();
+    const newIsEmergency = apptType === 'emergency';
+
+    let existing = null;
+    if (treatment !== 'Follow-up Appointment') {
+      existing = appointmentStore.find(a => {
+        const samePhone = normalisedPhone && normalisePhone(a.phone) === normalisedPhone;
+        const sameEmail = email && a.email && a.email.toLowerCase() === email.toLowerCase();
+        if (!samePhone && !sameEmail) return false;
+
+        const existingIsEmergency = EMERGENCY_SLOTS.includes(a.appointmentSlot);
+        if (newIsEmergency !== existingIsEmergency) return false;
+
+        const apptTime = parseAppointmentDateTime(a.appointmentDay, a.appointmentSlot);
+        if (apptTime && apptTime.getTime() > now) {
+          return true;
+        }
+        return false;
+      });
+    }
+
+    if (existing) {
+      return res.json({
+        success: true,
+        exists: true,
+        existingAppt: {
+          apptId: existing.apptId,
+          appointmentDay: existing.appointmentDay,
+          appointmentSlot: existing.appointmentSlot,
+          treatment: existing.treatment,
+        }
+      });
+    }
+
+    return res.json({ success: true, exists: false });
+  } catch (err) {
+    console.error('[bookAppointment] /check-booking error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to verify booking history.' });
   }
 });
 
@@ -956,28 +1098,23 @@ router.delete('/public/appointments/:apptId', async (req, res) => {
     await deleteRowFromSheets(apptId);
 
     // Send emails
-    const transporter = createTransporter();
-    if (transporter) {
-      const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
-      const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
 
-      // 1. To Patient
-      transporter.sendMail({
-        from: fromAddr,
-        to: appt.email,
-        subject: `❌ Appointment Cancelled — ${appt.appointmentDay} at ${appt.appointmentSlot} | Cancer Herbalist`,
-        text: `Dear ${appt.name},\n\nYour consultation appointment has been successfully cancelled as requested.\n\nDate: ${appt.appointmentDay}\nTime: ${appt.appointmentSlot}\nConsultation: ${appt.treatment}\n\n— Cancer Herbalist Team`,
-        html: buildCancellationEmailHtml(appt, true),
-      }).catch(e => console.error('[publicCancel] Patient email failed:', e.message));
+    // 1. To Patient
+    sendMailWrapper({
+      to: appt.email,
+      subject: `❌ Appointment Cancelled — ${appt.appointmentDay} at ${appt.appointmentSlot} | Cancer Herbalist`,
+      text: `Dear ${appt.name},\n\nYour consultation appointment has been successfully cancelled as requested.\n\nDate: ${appt.appointmentDay}\nTime: ${appt.appointmentSlot}\nConsultation: ${appt.treatment}\n\n— Cancer Herbalist Team`,
+      html: buildCancellationEmailHtml(appt, true),
+    }).catch(e => console.error('[publicCancel] Patient email failed:', e.message));
 
-      // 2. To Admin
-      transporter.sendMail({
-        from: fromAddr,
-        to: adminEmail,
-        subject: `❌ Appointment Cancelled by Patient: ${appt.name}`,
-        text: `Appointment Cancelled by Patient\n\nPatient Name: ${appt.name}\nPhone: ${appt.phone}\nEmail: ${appt.email}\nSlot Cancelled: ${appt.appointmentDay} at ${appt.appointmentSlot}\nConsultation: ${appt.treatment}\n`,
-      }).catch(e => console.error('[publicCancel] Admin email failed:', e.message));
-    }
+    // 2. To Admin
+    sendMailWrapper({
+      to: adminEmail,
+      subject: `❌ Appointment Cancelled by Patient: ${appt.name}`,
+      text: `Appointment Cancelled by Patient\n\nPatient Name: ${appt.name}\nPhone: ${appt.phone}\nEmail: ${appt.email}\nSlot Cancelled: ${appt.appointmentDay} at ${appt.appointmentSlot}\nConsultation: ${appt.treatment}\n`,
+    }).catch(e => console.error('[publicCancel] Admin email failed:', e.message));
+
 
     res.json({ success: true, message: 'Appointment cancelled successfully.' });
   } catch (err) {
@@ -1053,37 +1190,32 @@ router.put('/public/appointments/:apptId', async (req, res) => {
     await updateRowInSheets(updatedAppt);
 
     // Send emails
-    const transporter = createTransporter();
-    if (transporter) {
-      const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
-      const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
-      const origin = req.headers.origin || 'http://localhost:5173';
+    const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+    const origin = req.headers.origin || 'http://localhost:5173';
 
-      // 1. To Patient
-      transporter.sendMail({
-        from: fromAddr,
-        to: currentAppt.email,
-        subject: `📅 Appointment Rescheduled — New Slot: ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
-        text: `Dear ${currentAppt.name},\n\nYour appointment has been successfully rescheduled.\n\nOld Slot: ${oldDay} at ${oldSlot}\nNew Slot: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n\n— Cancer Herbalist Team`,
-        html: buildRescheduleEmailHtml({
-          apptId: currentAppt.apptId,
-          name: currentAppt.name,
-          treatment: currentAppt.treatment,
-          oldDay,
-          oldSlot,
-          newDay: appointmentDay,
-          newSlot: appointmentSlot,
-        }, true, origin),
-      }).catch(e => console.error('[publicReschedule] Patient email failed:', e.message));
+    // 1. To Patient
+    sendMailWrapper({
+      to: currentAppt.email,
+      subject: `📅 Appointment Rescheduled — New Slot: ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
+      text: `Dear ${currentAppt.name},\n\nYour appointment has been successfully rescheduled.\n\nOld Slot: ${oldDay} at ${oldSlot}\nNew Slot: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n\n— Cancer Herbalist Team`,
+      html: buildRescheduleEmailHtml({
+        apptId: currentAppt.apptId,
+        name: currentAppt.name,
+        treatment: currentAppt.treatment,
+        oldDay,
+        oldSlot,
+        newDay: appointmentDay,
+        newSlot: appointmentSlot,
+      }, true, origin),
+    }).catch(e => console.error('[publicReschedule] Patient email failed:', e.message));
 
-      // 2. To Admin
-      transporter.sendMail({
-        from: fromAddr,
-        to: adminEmail,
-        subject: `📅 Appointment Rescheduled by Patient: ${currentAppt.name}`,
-        text: `Appointment Rescheduled by Patient\n\nPatient Name: ${currentAppt.name}\nPhone: ${currentAppt.phone}\nEmail: ${currentAppt.email}\nOld Slot: ${oldDay} at ${oldSlot}\nNew Slot: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n`,
-      }).catch(e => console.error('[publicReschedule] Admin email failed:', e.message));
-    }
+    // 2. To Admin
+    sendMailWrapper({
+      to: adminEmail,
+      subject: `📅 Appointment Rescheduled by Patient: ${currentAppt.name}`,
+      text: `Appointment Rescheduled by Patient\n\nPatient Name: ${currentAppt.name}\nPhone: ${currentAppt.phone}\nEmail: ${currentAppt.email}\nOld Slot: ${oldDay} at ${oldSlot}\nNew Slot: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n`,
+    }).catch(e => console.error('[publicReschedule] Admin email failed:', e.message));
+
 
     res.json({ success: true, message: 'Appointment rescheduled successfully.' });
   } catch (err) {
@@ -1130,18 +1262,13 @@ router.delete('/appointments/:apptId', checkAdmin, async (req, res) => {
 
     // ── Send cancellation email to patient ──────────────────────
     if (appt.email && appt.email !== '—') {
-      const transporter = createTransporter();
-      if (transporter) {
-        const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
-        transporter.sendMail({
-          from: fromAddr,
-          to: appt.email,
-          subject: `❌ Appointment Cancelled — ${appt.appointmentDay} at ${appt.appointmentSlot} | Cancer Herbalist`,
-          text: `Dear ${appt.name},\n\nYour appointment on ${appt.appointmentDay} at ${appt.appointmentSlot} has been cancelled by our team.\n\nTo rebook, please WhatsApp us at +91 88845 88835 or call us directly.\n\n— Cancer Herbalist Team`,
-          html: buildCancellationEmailHtml(appt),
-        }).catch(e => console.error('[bookAppointment] Cancellation email failed:', e.message));
-        console.log(`[bookAppointment] Cancellation email sent to ${appt.email}`);
-      }
+      sendMailWrapper({
+        to: appt.email,
+        subject: `❌ Appointment Cancelled — ${appt.appointmentDay} at ${appt.appointmentSlot} | Cancer Herbalist`,
+        text: `Dear ${appt.name},\n\nYour appointment on ${appt.appointmentDay} at ${appt.appointmentSlot} has been cancelled by our team.\n\nTo rebook, please WhatsApp us at +91 88845 88835 or call us directly.\n\n— Cancer Herbalist Team`,
+        html: buildCancellationEmailHtml(appt),
+      }).catch(e => console.error('[bookAppointment] Cancellation email failed:', e.message));
+      console.log(`[bookAppointment] Cancellation email triggered to ${appt.email}`);
     }
 
     // Remove from local cache
@@ -1204,25 +1331,20 @@ router.put('/appointments/:apptId', checkAdmin, async (req, res) => {
 
     // ── Send reschedule email to patient (only if slot actually changed) ──
     if (isActuallyRescheduled && currentAppt.email && currentAppt.email !== '—') {
-      const transporter = createTransporter();
-      if (transporter) {
-        const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
-        transporter.sendMail({
-          from: fromAddr,
-          to: currentAppt.email,
-          subject: `📅 Appointment Rescheduled — New Slot: ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
-          text: `Dear ${currentAppt.name},\n\nYour appointment has been rescheduled by our team.\n\nOld: ${currentAppt.appointmentDay} at ${currentAppt.appointmentSlot}\nNew: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n\nIf this time doesn't suit you, please WhatsApp us at +91 88845 88835.\n\n— Cancer Herbalist Team`,
-          html: buildRescheduleEmailHtml({
-            name: currentAppt.name,
-            treatment: currentAppt.treatment,
-            oldDay: currentAppt.appointmentDay,
-            oldSlot: currentAppt.appointmentSlot,
-            newDay: appointmentDay,
-            newSlot: appointmentSlot,
-          }),
-        }).catch(e => console.error('[bookAppointment] Reschedule email failed:', e.message));
-        console.log(`[bookAppointment] Reschedule email sent to ${currentAppt.email}`);
-      }
+      sendMailWrapper({
+        to: currentAppt.email,
+        subject: `📅 Appointment Rescheduled — New Slot: ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
+        text: `Dear ${currentAppt.name},\n\nYour appointment has been rescheduled by our team.\n\nOld: ${currentAppt.appointmentDay} at ${currentAppt.appointmentSlot}\nNew: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n\nIf this time doesn't suit you, please WhatsApp us at +91 88845 88835.\n\n— Cancer Herbalist Team`,
+        html: buildRescheduleEmailHtml({
+          name: currentAppt.name,
+          treatment: currentAppt.treatment,
+          oldDay: currentAppt.appointmentDay,
+          oldSlot: currentAppt.appointmentSlot,
+          newDay: appointmentDay,
+          newSlot: appointmentSlot,
+        }),
+      }).catch(e => console.error('[bookAppointment] Reschedule email failed:', e.message));
+      console.log(`[bookAppointment] Reschedule email triggered to ${currentAppt.email}`);
     }
 
     res.json({ success: true, appointment: updatedAppt });

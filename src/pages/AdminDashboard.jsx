@@ -4452,15 +4452,6 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
         >
           ✏️ Edit Order
         </button>
-        <button
-          onClick={() => onDeleteOrder(order.orderId)}
-          style={{
-            flex: 1, background: '#dc2626', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px',
-            fontWeight: 600, fontSize: '12.5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-          }}
-        >
-          🗑️ Delete Order
-        </button>
       </div>
 
       {/* Summary grid */}

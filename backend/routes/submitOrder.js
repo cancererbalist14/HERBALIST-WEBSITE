@@ -77,7 +77,7 @@ router.post('/submit-order', async (req, res) => {
       orderAmount: Number(orderAmount),
       paymentMethod: paymentMethod || 'COD / Bank Transfer',
       paymentStatus: 'COD_PENDING',
-      orderStatus: ORDER_STATUSES.ORDER_PLACED,
+      orderStatus: ORDER_STATUSES.ORDER_CONFIRMED,
       shipmentStatus: null,
       cancellationStatus: null,
       returnStatus: null,
@@ -94,9 +94,9 @@ router.post('/submit-order', async (req, res) => {
       orderDate,
     };
 
-    // Save order immediately as PLACED
+    // Save order immediately as CONFIRMED
     saveOrder(orderRow);
-    addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_PLACED, 'Your order has been successfully placed. We are preparing it for confirmation.');
+    addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been successfully placed and confirmed. We are scheduling it for shipment.');
 
     /* ── 3. Respond immediately — integrations run in background ──────── */
     // The order is already saved in memory. Respond to the customer instantly.
@@ -159,10 +159,10 @@ router.post('/submit-order', async (req, res) => {
         console.warn('[submit-order] SHIPROCKET_EMAIL/PASSWORD not set — skipping Shiprocket.');
       }
 
-      // Update order status to CONFIRMED
+      // Log order verified event if shipment creation succeeded
       const updatedOrder = await getOrderByIdAsync(orderId);
       if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
-        updateOrderStatus(orderId, ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been confirmed. We are scheduling it for shipment.');
+        addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_CONFIRMED, 'Order verification completed. Ready for shipment.');
       }
 
       // Zoho CRM

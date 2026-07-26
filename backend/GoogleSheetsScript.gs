@@ -1,21 +1,4 @@
-/**
- * Google Apps Script Web App for Cancer Herbalist
- * Handles reading, writing, and updating Orders, Refunds, Order Events, and Appointments.
- * 
- * Paste this entire code into your Google Apps Script Editor:
- * 1. Open Google Sheets.
- * 2. Go to Extensions -> Apps Script.
- * 3. Delete any existing code and paste this code.
- * 4. Click "Save" (disk icon).
- * 5. Click "Deploy" (blue button at top right) -> "New deployment".
- * 6. Under "Select type" select "Web app".
- * 7. Set:
- *    - Description: "Cancer Herbalist Web App Database"
- *    - Execute as: "Me (your-email@gmail.com)"
- *    - Who has access: "Anyone"
- * 8. Click "Deploy" and authorize the script.
- * 9. Copy the "Web app URL" and set it as APPS_SCRIPT_URL in your Vercel backend environment variables!
- */
+
 
 var KEY_MAP = {
   'orderId': 'Order ID',
@@ -87,6 +70,11 @@ function doGet(e) {
     })).setMimeType(ContentService.MimeType.JSON);
   }
 
+  // Handle email sending action from GET if needed (e.g. testing)
+  if (action === 'sendEmail') {
+    return sendEmail(e.parameter);
+  }
+
   var sheet = ss.getSheetByName(sheetName);
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
@@ -130,8 +118,132 @@ function doGet(e) {
 }
 
 function doPost(e) {
-  return doGet(e);
+  var params = {};
+  
+  // Try to parse JSON from POST body
+  try {
+    if (e.postData && e.postData.contents) {
+      params = JSON.parse(e.postData.contents);
+    }
+  } catch (err) {}
+  
+  // Merge query string parameters as fallback
+  for (var key in e.parameter) {
+    if (params[key] === undefined) {
+      params[key] = e.parameter[key];
+    }
+  }
+  
+  var action = params.action;
+  var sheetName = params.sheet || 'orders';
+  
+  var ss;
+  try {
+    ss = SpreadsheetApp.openById("1dfGA_WunqNH3cIpghIbBuIR42p4KXba_EVIac_9mH4c");
+  } catch (err) {
+    try {
+      ss = SpreadsheetApp.getActiveSpreadsheet();
+    } catch (e2) {}
+  }
+  
+  if (!ss) {
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: false, 
+      error: "Spreadsheet not found or access denied." 
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Handle email sending action
+  if (action === 'sendEmail') {
+    return sendEmail(params);
+  }
+  
+  var sheet = ss.getSheetByName(normalizeSheetName(sheetName));
+  if (!sheet) {
+    sheet = ss.insertSheet(normalizeSheetName(sheetName));
+  }
+  
+  if (action === 'getRows') {
+    return getRows(sheet, ss);
+  }
+  
+  if (action === 'updateRow') {
+    return updateRow(sheet, params);
+  }
+  
+  if (action === 'deleteRow') {
+    return deleteRow(sheet, params, ss);
+  }
+  
+  if (action === 'clearSheet') {
+    return clearSheet(sheet);
+  }
+  
+  // Default action: Append row
+  // Determine correct sheet if not explicitly specified
+  if (!params.sheet) {
+    if (params.type === 'APPOINTMENT' || params.apptId) {
+      sheetName = 'appointments';
+    } else if (params.type === 'REFUND' || params.refundId) {
+      sheetName = 'refunds';
+    } else if (params.type === 'EVENT' || params.eventId) {
+      sheetName = 'orderEvents';
+    } else {
+      sheetName = 'orders';
+    }
+    sheet = ss.getSheetByName(sheetName);
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+    }
+  }
+  
+  return appendRow(sheet, params);
 }
+
+function sendEmail(params) {
+  var to = params.to;
+  var subject = params.subject;
+  var htmlBody = params.htmlBody;
+  
+  if (!to || !subject || !htmlBody) {
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: false, 
+      error: 'Missing fields. to, subject, and htmlBody are required.' 
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  try {
+    // Attempt sending using GmailApp (native and high deliverability)
+    GmailApp.sendEmail(to, subject, '', {
+      htmlBody: htmlBody,
+      name: 'Cancer Herbalist'
+    });
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: true, 
+      message: 'Email sent successfully via GmailApp' 
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    try {
+      // Fallback to MailApp
+      MailApp.sendEmail({
+        to: to,
+        subject: subject,
+        htmlBody: htmlBody,
+        name: 'Cancer Herbalist'
+      });
+      return ContentService.createTextOutput(JSON.stringify({ 
+        success: true, 
+        message: 'Email sent successfully via MailApp' 
+      })).setMimeType(ContentService.MimeType.JSON);
+    } catch (err2) {
+      return ContentService.createTextOutput(JSON.stringify({ 
+        success: false, 
+        error: 'Failed to send email: ' + err.message + ' | Fallback: ' + err2.message 
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+}
+
 
 function normalizeSheetName(name) {
   var n = name.toLowerCase();
