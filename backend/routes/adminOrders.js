@@ -232,6 +232,10 @@ router.put('/admin/orders/:orderId/cancellation', async (req, res) => {
           `Your order cancellation request has been approved. Your order ${orderId} has been cancelled successfully.`
         );
       }
+
+      // Automatically remove/delete the order from Google Sheets and cache after cancellation
+      await deleteOrder(orderId);
+      console.log(`[admin/cancellation] Order ${orderId} permanently deleted from Google Sheets and database.`);
     } else {
       order.cancellationStatus = 'REJECTED';
       order.orderStatus = ORDER_STATUSES.ORDER_CONFIRMED; // Restore to confirmed
@@ -370,6 +374,10 @@ router.post('/admin/orders/:orderId/cancel', async (req, res) => {
         `Your order ${orderId} has been cancelled by our administration.`
       );
     }
+
+    // Automatically remove/delete the order from Google Sheets and cache after cancellation
+    await deleteOrder(orderId);
+    console.log(`[admin/cancel] Order ${orderId} permanently deleted from Google Sheets and database.`);
 
     res.json({ success: true, message: 'Order successfully cancelled.', order });
 
