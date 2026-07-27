@@ -1765,7 +1765,7 @@ export default function AdminDashboard() {
               <div style={{ display: 'flex', gap: '12px', marginTop: '12px', fontSize: '11px', color: textSecondary, flexWrap: 'wrap', alignItems: 'center' }}>
                 <span>🟢 Free</span>
                 <span>🔴 Booked</span>
-                <span>⚡ Mini Consultation</span>
+                <span>⚡ Followup Consultation</span>
                 {slotViewDate && slotViewDate !== today && (
                   <button
                     onClick={() => setSlotViewDate(null)}
@@ -1912,12 +1912,12 @@ export default function AdminDashboard() {
                                 background: '#fff', color: '#1e293b', boxSizing: 'border-box'
                               }}
                             >
-                              <optgroup label="Regular (1-hour slots)">
+                              <optgroup label="Review Consultation (1-hour slots)">
                                 {TIME_SLOTS.map(slot => (
                                   <option key={slot} value={slot}>{slot}</option>
                                 ))}
                               </optgroup>
-                              <optgroup label="⚡ Mini Consultation (15-min slots)">
+                              <optgroup label="⚡ Followup Consultation (15-min slots)">
                                 {EMERGENCY_SLOTS.map(slot => (
                                   <option key={slot} value={slot}>⚡ {slot}</option>
                                 ))}
@@ -2100,9 +2100,9 @@ export default function AdminDashboard() {
             {/* Summary + Actions */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderTop: `1px solid ${borderCard}`, paddingTop: '16px' }}>
               <div style={{ fontSize: '12px', color: textSecondary }}>
-                <span style={{ fontWeight: 700, color: textPrimary }}>{editRegularSlots.size}</span> regular
+                <span style={{ fontWeight: 700, color: textPrimary }}>{editRegularSlots.size}</span> Review Consultation
                 {' + '}
-                <span style={{ fontWeight: 700, color: EMERGENCY_COLOR }}>{editEmergencySlots.size}</span> Mini Consultation slots open for this day
+                <span style={{ fontWeight: 700, color: EMERGENCY_COLOR }}>{editEmergencySlots.size}</span> Followup Consultation slots open for this day
               </div>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button

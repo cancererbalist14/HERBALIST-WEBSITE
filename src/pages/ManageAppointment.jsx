@@ -13,7 +13,7 @@ const PRIMARY = '#1a6e52';
 const ACCENT = '#38bed5';
 const LIGHT_BG = '#f8fafc';
 const DARK = '#0f172a';
-const EMERGENCY_COLOR = '#f97316'; // used for Mini Consultation coloring
+const EMERGENCY_COLOR = '#f97316'; // used for Followup Consultation coloring
 
 // Regular 1-hour time slots
 const REGULAR_SLOTS = [
@@ -21,7 +21,7 @@ const REGULAR_SLOTS = [
   '11:00 AM - 12:00 PM',
 ];
 
-// Emergency 15-min slots (Mini Consultation)
+// Emergency 15-min slots (Followup Consultation)
 const EMERGENCY_SLOTS = [
   '03:00 PM - 03:15 PM',
   '03:15 PM - 03:30 PM',
@@ -195,7 +195,8 @@ export default function ManageAppointment() {
   };
 
   const isEmergency = appointment?.treatment?.toLowerCase().includes('emergency') || 
-                      appointment?.treatment === 'Mini Consultation';
+                      appointment?.treatment?.toLowerCase().includes('mini') ||
+                      appointment?.treatment?.toLowerCase().includes('followup');
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '80vh', padding: '60px 20px' }}>
