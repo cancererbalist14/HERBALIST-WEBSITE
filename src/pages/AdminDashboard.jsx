@@ -2182,18 +2182,7 @@ export default function AdminDashboard() {
                 <option value="DELIVERED">Delivered</option>
               </select>
 
-              <button
-                onClick={handleDeleteAllOrders}
-                style={{
-                  padding: '10px 16px', borderRadius: '10px', border: '1.5px solid #fecaca',
-                  background: '#fef2f2', color: '#dc2626', fontWeight: 600, fontSize: '13.5px',
-                  cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px'
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; }}
-              >
-                🗑️ Delete All
-              </button>
+
 
               <button
                 onClick={() => fetchOrders(secret, true)}
