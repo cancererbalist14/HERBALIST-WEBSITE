@@ -202,6 +202,16 @@ router.post('/verify-payment', async (req, res) => {
       promises.push(zohoBooksPromise);
     }
 
+    // Email confirmation (customer + admin) - sent concurrently with other integrations
+    const emailPromise = (async () => {
+      try {
+        await sendOrderConfirmationEmails(orderRow);
+      } catch (emailErr) {
+        console.error('[verify-payment] Email error:', emailErr.message);
+      }
+    })();
+    promises.push(emailPromise);
+
     // Wait for all integrations to finish before sending response (prevent serverless termination)
     await Promise.all(promises);
 
@@ -210,10 +220,6 @@ router.post('/verify-payment', async (req, res) => {
     if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
       addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_CONFIRMED, 'Order verification completed. Ready for shipment.');
     }
-
-    // Email confirmation (customer + admin) - sent ONLY after backend has successfully processed everything
-    const finalOrder = await getOrderByIdAsync(orderId) || orderRow;
-    await sendOrderConfirmationEmails(finalOrder);
 
     /* ── 4. Respond success ─────────────────────────────────────── */
     res.json({ success: true, orderId, paymentId: razorpay_payment_id });

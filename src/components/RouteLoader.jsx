@@ -43,7 +43,7 @@ function resolveSkeleton(pathname) {
 }
 
 /* How long to show the skeleton (ms) */
-const SKELETON_DURATION = 650;
+const SKELETON_DURATION = 150;
 
 export default function RouteLoader({ children }) {
   const location = useLocation();
@@ -81,7 +81,7 @@ export default function RouteLoader({ children }) {
           key={`sk-${location.pathname}`}
           style={{
             opacity: 1,
-            transition: 'opacity 0.25s ease',
+            transition: 'opacity 0.15s ease',
           }}
         >
           <SkeletonComponent />
@@ -92,7 +92,7 @@ export default function RouteLoader({ children }) {
       <div
         style={{
           opacity: visible ? 1 : 0,
-          transition: 'opacity 0.35s ease',
+          transition: 'opacity 0.25s ease',
           display: loading ? 'none' : 'block',
           minHeight: loading ? 0 : undefined,
         }}

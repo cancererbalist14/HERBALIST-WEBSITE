@@ -32,7 +32,7 @@ import DataRetentionPolicy from './pages/DataRetentionPolicy';
 import DataDeletionPolicy from './pages/DataDeletionPolicy';
 import RefundPolicy from './pages/RefundPolicy';
 import NotFound from './pages/NotFound';
-import AdminDashboard from './pages/AdminDashboard';
+const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
 import TrackOrder from './pages/TrackOrder';
 import MyOrders from './pages/MyOrders';
 import OrderDetails from './pages/OrderDetails';
@@ -149,7 +149,11 @@ function App() {
                   <Route path="/data-retention-policy" element={<DataRetentionPolicy />} />
                   <Route path="/refund-policy" element={<RefundPolicy />} />
 
-                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin" element={
+                    <React.Suspense fallback={<div style={{ padding: '100px 20px', textAlign: 'center', color: '#64748b', fontSize: '16px' }}>Loading Dashboard...</div>}>
+                      <AdminDashboard />
+                    </React.Suspense>
+                  } />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </RouteLoader>

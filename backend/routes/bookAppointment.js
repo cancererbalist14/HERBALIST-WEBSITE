@@ -46,7 +46,7 @@ const ALL_SLOTS = [...REGULAR_SLOTS, ...EMERGENCY_SLOTS];
 // If a date has no entry, ALL slots are enabled (default/open).
 const slotConfigStore = {};
 let lastSlotConfigSyncTime = 0;
-const SLOT_CONFIG_SYNC_COOLDOWN_MS = 10000;
+const SLOT_CONFIG_SYNC_COOLDOWN_MS = 60000; // 60 seconds cache
 
 // Replaces commas, trims whitespace, and converts to lowercase to make date lookups robust
 function normalizeDateKey(dateStr) {
@@ -148,16 +148,26 @@ function getEnabledSlotsForDate(date) {
 }
 
 /* ── Gmail transporter ───────────────────────────────────────────── */
-function createTransporter() {
+/* ── Caching & Pooling Gmail Transporter ── */
+let cachedTransporter = null;
+
+function getTransporter() {
+  if (cachedTransporter) return cachedTransporter;
+
   const user = process.env.GMAIL_USER;
   const pass = process.env.GMAIL_APP_PASSWORD;
   if (!user || !pass) return null;
-  return nodemailer.createTransport({
+
+  cachedTransporter = nodemailer.createTransport({
+    pool: true, // Enable SMTP connection pooling
+    maxConnections: 5,
+    maxMessages: 100,
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
     auth: { user, pass },
   });
+  return cachedTransporter;
 }
 
 async function sendEmailViaAppsScript(to, subject, htmlBody) {
@@ -196,7 +206,7 @@ async function sendEmailViaAppsScript(to, subject, htmlBody) {
 }
 
 async function sendMailWrapper({ to, subject, text, html }) {
-  const transporter = createTransporter();
+  const transporter = getTransporter();
   let smtpSuccess = false;
   let smtpError = null;
 
@@ -669,7 +679,7 @@ async function saveToSheets(appt) {
 const appointmentStore = [];
 let cachedAppointments = null;
 let lastApptSyncTime = 0;
-const APPT_SYNC_COOLDOWN_MS = 5000;
+const APPT_SYNC_COOLDOWN_MS = 30000; // 30 seconds cache
 
 async function syncAppointmentsFromSheets(force = false) {
   const url = process.env.APPS_SCRIPT_URL;
