@@ -228,11 +228,11 @@ app.use('/api', submitOrderRoute);
 app.use('/api', bookAppointmentRoute);
 app.use('/api', dynamicContentRoute);
 app.use('/api', orderActionsRoute);
-app.use('/api', adminOrdersRoute);
 app.use('/api', shiprocketWebhookRoute);
 app.use('/api', zohoSignRoute);
 app.use('/api', zohoCampaignsRoute);
 app.use('/api', zohoDeskRoute);
+app.use('/api', adminOrdersRoute);
 
 /* ── Global error handler (must be LAST middleware) ─────────── */
 // Catches any error thrown in async route handlers (e.g. unexpected throws

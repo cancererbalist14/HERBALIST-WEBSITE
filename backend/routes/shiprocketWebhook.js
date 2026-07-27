@@ -11,7 +11,9 @@ const {
   getOrderByAwb, 
   saveOrder, 
   addOrderEvent, 
-  updateOrderStatus 
+  updateOrderStatus,
+  deleteOrder,
+  saveRefund
 } = require('./ordersDb');
 const { ORDER_STATUSES, ORDER_STATUS_LABELS, mapShiprocketStatus } = require('./orderStatuses');
 const { getShiprocketTrackingByShipment } = require('./shiprocket');
@@ -79,6 +81,8 @@ router.post('/shiprocket/webhook', async (req, res) => {
         customMsg = `We attempted to deliver your package, but the delivery failed. The courier will re-attempt delivery.`;
       } else if (internalStatus === ORDER_STATUSES.RTO_INITIATED) {
         customMsg = `Your package is returning to sender (RTO) due to multiple failed delivery attempts.`;
+      } else if (internalStatus === ORDER_STATUSES.CANCELLED) {
+        customMsg = `Your order has been cancelled.`;
       }
 
       order.orderStatus = internalStatus;
@@ -94,6 +98,36 @@ router.post('/shiprocket/webhook', async (req, res) => {
 
       // Trigger status update email
       await sendStatusNotificationEmail(order, internalStatus, customMsg);
+
+      // If the status is CANCELLED (cancelled from Shiprocket), delete/clear from Google Sheets and cache
+      if (internalStatus === ORDER_STATUSES.CANCELLED) {
+        // Trigger refund flow if prepaid
+        if (order.paymentMethod?.toLowerCase().includes('online') && order.paymentStatus === 'PAID') {
+          order.refundStatus = 'APPROVED';
+          saveOrder(order);
+
+          const refundData = {
+            refundId: `RF-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+            orderId: order.orderId,
+            amount: order.orderAmount,
+            method: 'Razorpay',
+            status: 'APPROVED',
+            reason: 'Order Cancelled on Shiprocket',
+            approvedAt: new Date().toISOString()
+          };
+          saveRefund(refundData);
+
+          addOrderEvent(
+            order.orderId,
+            'REFUND',
+            ORDER_STATUSES.REFUND_APPROVED,
+            `Refund of ₹${order.orderAmount} approved for cancelled order. Ready to initiate.`
+          );
+        }
+
+        await deleteOrder(order.orderId);
+        console.log(`[shiprocket-webhook] Order ${order.orderId} cancelled from Shiprocket and permanently deleted from Google Sheets and database.`);
+      }
     }
 
     res.json({ success: true, message: 'Webhook processed.' });
@@ -161,6 +195,8 @@ router.get('/shiprocket/sync', async (req, res) => {
             } else if (internalStatus === ORDER_STATUSES.DELIVERED) {
               customMsg = `Your package has been successfully delivered.`;
               order.paymentStatus = 'PAID';
+            } else if (internalStatus === ORDER_STATUSES.CANCELLED) {
+              customMsg = `Your order has been cancelled.`;
             }
 
             order.orderStatus = internalStatus;
@@ -175,6 +211,37 @@ router.get('/shiprocket/sync', async (req, res) => {
             );
 
             await sendStatusNotificationEmail(order, internalStatus, customMsg);
+
+            // If the status is CANCELLED (cancelled from Shiprocket), delete/clear from Google Sheets and cache
+            if (internalStatus === ORDER_STATUSES.CANCELLED) {
+              // Trigger refund flow if prepaid
+              if (order.paymentMethod?.toLowerCase().includes('online') && order.paymentStatus === 'PAID') {
+                order.refundStatus = 'APPROVED';
+                saveOrder(order);
+
+                const refundData = {
+                  refundId: `RF-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+                  orderId: order.orderId,
+                  amount: order.orderAmount,
+                  method: 'Razorpay',
+                  status: 'APPROVED',
+                  reason: 'Order Cancelled on Shiprocket',
+                  approvedAt: new Date().toISOString()
+                };
+                saveRefund(refundData);
+
+                addOrderEvent(
+                  order.orderId,
+                  'REFUND',
+                  ORDER_STATUSES.REFUND_APPROVED,
+                  `Refund of ₹${order.orderAmount} approved for cancelled order. Ready to initiate.`
+                );
+              }
+
+              await deleteOrder(order.orderId);
+              console.log(`[shiprocket-sync] Order ${order.orderId} cancelled from Shiprocket and permanently deleted from Google Sheets and database.`);
+            }
+
             syncCount++;
           }
         }
