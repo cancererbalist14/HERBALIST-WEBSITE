@@ -473,11 +473,11 @@ function updateRow(sheet, params) {
 }
 
 function deleteRow(sheet, params, ss) {
-  var sheetName = sheet.getName();
+  var sheetName = sheet.getName().toLowerCase();
   var idKey = 'orderId';
   if (sheetName === 'appointments') idKey = 'apptId';
   else if (sheetName === 'refunds') idKey = 'refundId';
-  else if (sheetName === 'orderEvents') idKey = 'eventId';
+  else if (sheetName === 'orderevents') idKey = 'eventId';
   
   var idVal = params[idKey];
   if (!idVal) {
