@@ -4,6 +4,7 @@ const express   = require('express');
 const cors      = require('cors');
 const helmet    = require('helmet');
 const rateLimit = require('express-rate-limit');
+const crypto    = require('crypto');
 
 const createOrderRoute    = require('./routes/createOrder');
 const verifyPaymentRoute  = require('./routes/verifyPayment');
@@ -113,6 +114,106 @@ app.get('/', (_req, res) =>
 app.get('/api/health', (_req, res) =>
   res.json({ status: 'ok', service: 'Cancer Herbalist Payment API' })
 );
+
+/* ── Admin Cookie Verification & Helpers ─────────────────────── */
+const parseCookies = (cookieHeader) => {
+  if (!cookieHeader) return {};
+  const list = {};
+  cookieHeader.split(';').forEach((cookie) => {
+    const parts = cookie.split('=');
+    list[parts.shift().trim()] = decodeURI(parts.join('='));
+  });
+  return list;
+};
+
+const generateAdminToken = () => {
+  const secret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+  const expiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  const payload = expiry.toString();
+  const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  return `${payload}.${signature}`;
+};
+
+const verifyAdminToken = (token) => {
+  if (!token) return false;
+  const parts = token.split('.');
+  if (parts.length !== 2) return false;
+  const [payload, signature] = parts;
+  const expiry = parseInt(payload, 10);
+  if (isNaN(expiry) || expiry < Date.now()) return false;
+  
+  const secret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+  const expectedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  return signature === expectedSignature;
+};
+
+const loginLimiter = rateLimit({
+  windowMs: rateLimitWindowMs,
+  max: 15, // Max 15 attempts per 15 mins
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts. Please try again after 15 minutes.' },
+});
+
+/* ── Admin Page & Auth Endpoints ────────────────────────────── */
+app.get('/admin', async (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies['admin_token'];
+
+  if (!verifyAdminToken(token)) {
+    // Return 404 if not authenticated
+    return res.status(404).send('Not Found');
+  }
+
+  // Serve React Admin index.html by fetching it from the frontend URL
+  try {
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/+$/, '');
+    const indexRes = await fetch(`${frontendUrl}/index.html`);
+    if (!indexRes.ok) {
+      throw new Error(`Failed to fetch index.html from frontend: status ${indexRes.status}`);
+    }
+    const html = await indexRes.text();
+    
+    // Set headers to prevent caching of the admin HTML page, ensuring cookie changes are always verified
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Content-Type', 'text/html');
+    return res.send(html);
+  } catch (err) {
+    console.error('[server] Error serving secure admin html:', err.message);
+    return res.status(500).send('Internal Server Error. Admin UI loading failed.');
+  }
+});
+
+app.post('/api/admin/login', loginLimiter, (req, res) => {
+  const { password } = req.body;
+  const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+
+  if (password !== adminSecret) {
+    return res.status(401).json({ success: false, error: 'Incorrect password' });
+  }
+
+  const token = generateAdminToken();
+
+  res.cookie('admin_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  });
+
+  return res.json({ success: true, key: adminSecret });
+});
+
+app.post('/api/admin/logout', (req, res) => {
+  res.clearCookie('admin_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+  });
+  return res.json({ success: true });
+});
 
 /* ── Routes ─────────────────────────────────────────────────── */
 app.use('/api', publicLimiter);

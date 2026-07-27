@@ -33,6 +33,7 @@ import DataDeletionPolicy from './pages/DataDeletionPolicy';
 import RefundPolicy from './pages/RefundPolicy';
 import NotFound from './pages/NotFound';
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+import AdminLogin from './pages/AdminLogin';
 import TrackOrder from './pages/TrackOrder';
 import MyOrders from './pages/MyOrders';
 import OrderDetails from './pages/OrderDetails';
@@ -154,6 +155,7 @@ function App() {
                       <AdminDashboard />
                     </React.Suspense>
                   } />
+                  <Route path="/admin-login" element={<AdminLogin />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </RouteLoader>

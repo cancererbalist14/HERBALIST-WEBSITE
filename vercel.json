@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/admin",
+      "destination": "https://cancer-herbalist-rhgj.vercel.app/admin"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

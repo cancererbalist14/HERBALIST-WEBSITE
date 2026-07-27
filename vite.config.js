@@ -7,6 +7,12 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,   // expose to local network — lets you test on phone via 192.168.x.x:3000
-    open: true
+    open: true,
+    proxy: {
+      '/admin': {
+        target: 'http://localhost:5001',
+        changeOrigin: true,
+      }
+    }
   }
 })
