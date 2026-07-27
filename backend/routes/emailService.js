@@ -7,7 +7,7 @@
  *   2. Admin notification to the clinic inbox
  *
  * Setup: Set GMAIL_USER and GMAIL_APP_PASSWORD in backend/.env
- * Sender: drherbalistindia@gmail.com (App Password required)
+ * Sender: cancerherbalist@gmail.com (App Password required)
  */
 
 const nodemailer = require('nodemailer');

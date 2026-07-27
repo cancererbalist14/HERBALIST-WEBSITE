@@ -47,6 +47,59 @@ REVERSE_KEY_MAP['Order Total (₹)'] = 'orderAmount';
 REVERSE_KEY_MAP['Unit Price (₹)'] = 'unitPrice';
 REVERSE_KEY_MAP['Status'] = 'orderStatus';
 
+function doPost(e) {
+  try {
+    var postData = JSON.parse(e.postData.contents);
+    var action = postData.action;
+    
+    if (action === 'sendEmail') {
+      return sendEmail(postData);
+    }
+    
+    var sheetName = postData.sheet || 'orders';
+    sheetName = normalizeSheetName(sheetName);
+    
+    var ss;
+    try {
+      ss = SpreadsheetApp.openById("1dfGA_WunqNH3cIpghIbBuIR42p4KXba_EVIac_9mH4c");
+    } catch (err) {
+      try {
+        ss = SpreadsheetApp.getActiveSpreadsheet();
+      } catch (e2) {}
+    }
+    
+    if (!ss) {
+      return ContentService.createTextOutput(JSON.stringify({ 
+        success: false, 
+        error: "Spreadsheet not found or access denied." 
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+    }
+    
+    if (action === 'appendRow') {
+      return appendRow(sheet, postData);
+    }
+    if (action === 'updateRow') {
+      return updateRow(sheet, postData);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: false, 
+      error: "Invalid action in POST request." 
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: false, 
+      error: "POST error: " + err.message 
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
 function doGet(e) {
   var action = e.parameter.action;
   var sheetName = e.parameter.sheet || 'orders';
