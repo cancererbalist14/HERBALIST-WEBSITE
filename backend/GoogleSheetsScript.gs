@@ -300,10 +300,10 @@ function sendEmail(params) {
 
 function normalizeSheetName(name) {
   var n = name.toLowerCase();
-  if (n === 'orders') return 'orders';
-  if (n === 'appointments') return 'appointments';
-  if (n === 'refunds') return 'refunds';
-  if (n === 'orderevents' || n === 'events') return 'orderEvents';
+  if (n === 'orders') return 'Orders';
+  if (n === 'appointments') return 'Appointments';
+  if (n === 'refunds') return 'Refunds';
+  if (n === 'orderevents' || n === 'events') return 'OrderEvents';
   return name;
 }
 
