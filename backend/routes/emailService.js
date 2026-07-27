@@ -328,7 +328,7 @@ async function sendOrderConfirmationEmails(order) {
 
   console.log(`[emailService] Sending to customer: ${order.email}, admin: ${process.env.ADMIN_EMAIL}`);
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
   const emailPromises = [];
 
   // 1. Customer confirmation (only if we have their email)
@@ -492,7 +492,7 @@ async function sendStatusNotificationEmail(order, status, customerMessage) {
     subject = `⏳ Refund Initiated — ${order.orderId} | Cancer Herbalist`;
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
   const emailPromises = [];
 
   // 1. Customer notification (only if valid email exists)

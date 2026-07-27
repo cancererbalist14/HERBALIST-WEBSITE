@@ -128,7 +128,7 @@ export default function Footer() {
               {[
                 { href: 'tel:' + contactInfo.phone.replace(/[^0-9+]/g, ''), icon: <FaPhoneAlt />,      text: contactInfo.phone },
                 { href: 'mailto:' + contactInfo.email, icon: <FaEnvelope />,     text: contactInfo.email },
-                { href: 'mailto:cancerherbalist@gmail.com', icon: <FaEnvelope />,   text: 'cancerherbalist@gmail.com', sub: 'Appointment Bookings & Patient Enquiries' },
+                { href: 'mailto:drherbalistindia@gmail.com', icon: <FaEnvelope />,   text: 'drherbalistindia@gmail.com', sub: 'Appointment Bookings & Patient Enquiries' },
               ].map((c, i) => (
                 <a
                   key={i}

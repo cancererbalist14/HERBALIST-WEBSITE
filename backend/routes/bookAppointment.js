@@ -849,7 +849,7 @@ router.post('/book-appointment', async (req, res) => {
   // Save to in-memory store
   appointmentStore.push(appt);
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
   const data = { apptId, name, phone, email, treatment, stage, message, appointmentDay, appointmentSlot };
 
   try {
@@ -1108,7 +1108,7 @@ router.delete('/public/appointments/:apptId', async (req, res) => {
     await deleteRowFromSheets(apptId);
 
     // Send emails
-    const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
 
     // 1. To Patient
     sendMailWrapper({
@@ -1200,7 +1200,7 @@ router.put('/public/appointments/:apptId', async (req, res) => {
     await updateRowInSheets(updatedAppt);
 
     // Send emails
-    const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
     const origin = req.headers.origin || 'http://localhost:5173';
 
     // 1. To Patient
