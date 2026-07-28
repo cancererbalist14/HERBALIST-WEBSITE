@@ -52,6 +52,7 @@ function fsRead(key) {
     if (fs.existsSync(file)) return JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch (e) {
     console.error(`[fsRead] ${key}:`, e.message);
+    throw new Error(`Filesystem read failure for "${key}": ${e.message}`);
   }
   return null;
 }
@@ -85,6 +86,7 @@ async function dbRead(key) {
       .single();
     if (error && error.code !== 'PGRST116') { // PGRST116 = not found
       console.error(`[dbRead] Supabase error for "${key}":`, error.message);
+      throw new Error(`Database read failure for "${key}": ${error.message}`);
     }
     return data ? data.value : null;
   }
@@ -96,17 +98,24 @@ async function dbRead(key) {
  * Returns true on success, false on failure.
  */
 async function dbWrite(key, value) {
+  let success = true;
   if (supabase) {
     const { error } = await supabase
       .from('site_data')
       .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
     if (error) {
       console.error(`[dbWrite] Supabase error for "${key}":`, error.message);
-      return false;
+      success = false;
     }
-    return true;
   }
-  return fsWrite(key, value);
+  // In local development, also write to local data files so they can be committed to Git.
+  if (!IS_VERCEL) {
+    const fsSuccess = fsWrite(key, value);
+    if (!supabase) success = fsSuccess;
+  } else if (!supabase) {
+    success = fsWrite(key, value);
+  }
+  return success;
 }
 
-module.exports = { dbRead, dbWrite };
+module.exports = { dbRead, dbWrite, isUsingCloudStorage: !!supabase };

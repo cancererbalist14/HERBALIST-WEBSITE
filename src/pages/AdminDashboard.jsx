@@ -119,6 +119,7 @@ export default function AdminDashboard() {
   const [contentTab, setContentTab] = useState('products'); // 'products' | 'testimonials' | 'general'
   const [dynProducts, setDynProducts] = useState([]);
   const [dynTestimonials, setDynTestimonials] = useState([]);
+  const [isUsingCloudStorage, setIsUsingCloudStorage] = useState(true);
 
   useEffect(() => {
     if (globalContent) {
@@ -172,7 +173,10 @@ export default function AdminDashboard() {
     try {
       const pRes = await fetch(`${BACKEND_URL}/api/dynamic-products`);
       const pData = await pRes.json();
-      if (pData.success) setDynProducts(pData.products || []);
+      if (pData.success) {
+        setDynProducts(pData.products || []);
+        setIsUsingCloudStorage(pData.isUsingCloudStorage !== false);
+      }
 
       const tRes = await fetch(`${BACKEND_URL}/api/dynamic-testimonials`);
       const tData = await tRes.json();
@@ -2467,6 +2471,31 @@ export default function AdminDashboard() {
                 </p>
               </div>
             </div>
+
+            {!isUsingCloudStorage && window.location.hostname !== 'localhost' && (
+              <div style={{
+                background: '#fffbeb',
+                border: '1.5px solid #fef3c7',
+                borderLeft: '5px solid #d97706',
+                padding: '16px 20px',
+                borderRadius: '12px',
+                marginBottom: '24px',
+                color: '#92400e',
+                fontSize: '13.5px',
+                lineHeight: '1.6',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px'
+              }}>
+                <span style={{ fontSize: '20px' }}>⚠️</span>
+                <div>
+                  <strong style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Temporary/Ephemeral Database Active</strong>
+                  Supabase database credentials are not configured in your Vercel project environment variables. 
+                  Any price or copy changes you make here will only save temporarily in server memory and will be **wiped out / reset** to default committed code prices whenever the Vercel server restarts (cold starts). 
+                  To save changes permanently, please configure the <code style={{ background: '#fef08a', padding: '2px 6px', borderRadius: '4px' }}>SUPABASE_URL</code> and <code style={{ background: '#fef08a', padding: '2px 6px', borderRadius: '4px' }}>SUPABASE_SERVICE_KEY</code> variables in your Vercel Project Settings.
+                </div>
+              </div>
+            )}
 
             {/* Sub tabs for content types */}
             <div style={{ display: 'flex', gap: '10px', marginBottom: '32px', borderBottom: `1.5px solid var(--border-color)`, paddingBottom: '16px', flexWrap: 'wrap' }}>

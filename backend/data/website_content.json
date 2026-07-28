@@ -1,0 +1,640 @@
+{
+  "contact": {
+    "email": "cancerherbalist@gmail.com",
+    "phone": "+91 88845 88835",
+    "address": "Bangalore, India",
+    "timings": "Mon–Sat, 9 AM–6 PM",
+    "whatsapp": "7742320607"
+  },
+  "stats": [
+    {
+      "label": "Patients Served",
+      "value": 4000,
+      "suffix": "+",
+      "sublabel": "Worldwide"
+    },
+    {
+      "label": "Countries",
+      "value": 10,
+      "suffix": "+",
+      "sublabel": "Global Reach"
+    },
+    {
+      "label": "Consultations",
+      "value": 7000,
+      "suffix": "+",
+      "sublabel": "Completed"
+    },
+    {
+      "label": "Years of Research Experience",
+      "value": 35,
+      "suffix": "+",
+      "sublabel": "Expert Practice"
+    },
+    {
+      "label": "Satisfaction Rate",
+      "value": 98,
+      "suffix": "%",
+      "sublabel": "Patient Feedback"
+    }
+  ],
+  "whyChooseUs": {
+    "items": [
+      {
+        "desc": "Every patient receives a unique herbal formula tailored to their specific cancer type, staging, and treatment history.",
+        "title": "Personalized Protocols"
+      },
+      {
+        "desc": "All herbs are screened against your medications to eliminate drug-herb interactions before we begin.",
+        "title": "Safety-First Approach"
+      },
+      {
+        "desc": "Weekly check-ins, diet adjustments, and formula refinements so you are never alone on your healing path.",
+        "title": "Continuous Support"
+      },
+      {
+        "desc": "We source from GMP-certified organic farms with full lab-tested purity and potency reports.",
+        "title": "Certified Organic Sourcing"
+      }
+    ],
+    "title": "Why Patients Trust Us",
+    "subtitle": "Our integrative approach combines clinical precision with compassionate, whole-person care."
+  },
+  "healingPillars": {
+    "items": [
+      {
+        "desc": "Precision-crafted tinctures combining ancient wisdom with modern pharmacognosy research.",
+        "stat": "20+",
+        "title": "Herbal Formulation",
+        "statLabel": "Custom Blends"
+      },
+      {
+        "desc": "Anti-cancer nutrition plans, breathing protocols, and stress-reduction frameworks.",
+        "stat": "95%",
+        "title": "Lifestyle Integration",
+        "statLabel": "Patient Compliance"
+      },
+      {
+        "desc": "Targeted adaptogens and immunomodulators to strengthen your bodys natural defenses.",
+        "stat": "87%",
+        "title": "Immune Optimization",
+        "statLabel": "Improved Markers"
+      }
+    ],
+    "title": "Three Pillars of Recovery",
+    "subtitle": "A clinically structured framework that addresses the physical, nutritional, and immunological dimensions of cancer care."
+  },
+  "heroSlides": [
+    {
+      "id": 1,
+      "badge": "🌿 Natural Cancer Treatment Specialists",
+      "ctaHref": "/contact",
+      "subline": "Combining ancient herbal wisdom with modern medical knowledge for personalized cancer support.",
+      "ctaLabel": "Book Free Consultation",
+      "headline": "Fight Cancer Holistically",
+      "statLabel": "Patients Supported",
+      "statValue": "4000+",
+      "highlights": [
+        "Natural Herbal Treatments",
+        "Certified Practitioners",
+        "Personalized Care Plans",
+        "Regular Support (9AM–6PM)"
+      ],
+      "headlineAccent": "Holistically",
+      "secondaryCtaHref": "/testimonials",
+      "secondaryCtaLabel": "Watch Story"
+    },
+    {
+      "id": 2,
+      "badge": "⏰ Unmatched Patient Dedication",
+      "ctaHref": "/contact",
+      "subline": "While the industry average is just 15 minutes, Prof. Ramesh personally reviews your reports, scans, and history in a deep one-on-one session.",
+      "ctaLabel": "Book Your Session",
+      "headline": "1–2 Hours With Every Patient",
+      "statLabel": "Personal Time Per Patient",
+      "statValue": "1–2 Hrs",
+      "highlights": [
+        "Full Report Review",
+        "Scan & Biopsy Analysis",
+        "Personalized Strategy",
+        "Zero Rushed Consultations"
+      ],
+      "headlineAccent": "Every Patient",
+      "secondaryCtaHref": "/testimonials",
+      "secondaryCtaLabel": "Read Success Stories"
+    },
+    {
+      "id": 3,
+      "badge": "🎗️ Complete Cancer Coverage",
+      "ctaHref": "/care-programs",
+      "subline": "From common to rare — breast, lung, blood, brain, pancreatic and beyond. No diagnosis is out of scope. We build a personalised herbal pathway for every patient.",
+      "ctaLabel": "Find Your Program",
+      "headline": "Every Cancer Type, One Team",
+      "statLabel": "No Cancer Is Out of Scope",
+      "statValue": "∞",
+      "highlights": [
+        "Breast & Gynaecological",
+        "Lung & Respiratory",
+        "Blood & Lymphatic",
+        "Brain, Bone & Rare Types"
+      ],
+      "headlineAccent": "One Team",
+      "secondaryCtaHref": "/care-programs",
+      "secondaryCtaLabel": "See All Programs"
+    },
+    {
+      "id": 4,
+      "badge": "🧪 Integrative, Not Alternative",
+      "ctaHref": "/contact",
+      "subline": "Our herbal protocols are screened for drug-herb interactions and complement your conventional treatment — reducing side effects and supporting recovery.",
+      "ctaLabel": "Start Integrative Care",
+      "headline": "Works Alongside Chemotherapy",
+      "statLabel": "Patients Report Improved Energy",
+      "statValue": "87%",
+      "highlights": [
+        "No Drug Conflicts",
+        "Reduces Chemo Side Effects",
+        "Supports Immunity",
+        "Improves Quality of Life"
+      ],
+      "headlineAccent": "Chemotherapy",
+      "secondaryCtaHref": "/store",
+      "secondaryCtaLabel": "Explore Our Products"
+    },
+    {
+      "id": 5,
+      "badge": "❤️ No Patient Left Alone",
+      "ctaHref": "/contact",
+      "subline": "Your protocol evolves with you. Our team refines your diet plans, herbal formulas, and lifestyle guidance every week based on how your body responds.",
+      "ctaLabel": "Join Our Program",
+      "headline": "Weekly Follow-Ups, Every Time",
+      "statLabel": "Patient Retention Rate",
+      "statValue": "95%",
+      "highlights": [
+        "Custom Diet Charts",
+        "WhatsApp Support Line",
+        "Formula Adjustments",
+        "Monthly Report Reviews"
+      ],
+      "headlineAccent": "Every Time",
+      "secondaryCtaHref": "/doctors",
+      "secondaryCtaLabel": "Meet Our Team"
+    },
+    {
+      "id": 6,
+      "badge": "🛡️ Certified, Safe & Trusted",
+      "ctaHref": "/store",
+      "subline": "Every herbal product is lab-tested, made by standardized extracts, and FSSAI certified. We're not making claims — we're backed by science, certification, and 35+ years of research & practice.",
+      "ctaLabel": "Shop Certified Products",
+      "headline": "FSSAI Certified Pharmaceuticals",
+      "statLabel": "Years of Research & Practice",
+      "statValue": "35+",
+      "highlights": [
+        "Lab-Tested Purity",
+        "Standardized Extracts",
+        "FSSAI Licence Verified",
+        "35+ Years of Research"
+      ],
+      "headlineAccent": "Pharmaceuticals",
+      "secondaryCtaHref": "/about",
+      "secondaryCtaLabel": "Learn About Us"
+    }
+  ],
+  "aboutVideo": {
+    "title": "Watch Our Story",
+    "subtitle": "Discover how we combine scientific research and botanical medicine to support cancer patients.",
+    "videoUrl": "https://res.cloudinary.com/zm8wxsqy/video/upload/v1783229564/Cancer_video_ahljqs.mp4",
+    "thumbnailUrl": "/logo.png"
+  },
+  "aboutCaseStudies": {
+    "items": [
+      {
+        "badge": "4th Stage Colon Cancer",
+        "title": "UK Patient Recovery",
+        "description": "Recovery of a 62-year-old patient diagnosed with 4th stage Colon Cancer from London, UK. The response and recovery details surprised oncologists in the UK."
+      },
+      {
+        "badge": "4th Stage Lung Cancer",
+        "title": "Long-Term Survival Recovery",
+        "description": "A female patient who was given only a few months to live recovered completely from 4th stage Lung Cancer. She has been leading a normal, healthy life past 2 years."
+      },
+      {
+        "badge": "4th Stage Pancreatic Cancer",
+        "title": "Inoperable Tumor Response",
+        "description": "A 67-year-old patient from Chennai with IV stage Pancreatic Cancer was deemed inoperable. After 4 months of Nutrition Therapy (NT) at Cancer Herbalist, he recovered completely and has lived normally for over 2 years."
+      },
+      {
+        "badge": "Elderly Care (Ages 80+)",
+        "title": "Enhanced Response in Elderly",
+        "description": "Satisfactory clinical observations in patients aged 80 and above. Results show a higher rate of response to botanical medicine protocols, often because they do not carry the burden of concurrent aggressive therapies."
+      },
+      {
+        "badge": "Neck Cancer & Heart Failure",
+        "title": "Complex Double Condition Recovery",
+        "description": "A rare success case of a heart failure patient from Hyderabad suffering from Neck Cancer who achieved complete cure/remission in 3 months of supportive therapy."
+      }
+    ],
+    "title": "Clinical Success & Case Studies",
+    "subtitle": "Verified cases demonstrating recovery and significant quality-of-life improvements using Herbal Chemotherapy (HCT) and Nutrition Therapy (NT)."
+  },
+  "aboutHero": {
+    "badge": "About Cancer Herbalist",
+    "subline": "Since 2012 Cancer Herbalist has been a trusted partner for patients navigating cancer — combining the wisdom of botanical medicine with the rigour of modern integrative oncology to support healing at every level.",
+    "cta1Link": "/contact",
+    "cta2Link": "/care-programs",
+    "headline": "Two Decades of",
+    "cta1Label": "Book Free Consultation",
+    "cta2Label": "Our Approach",
+    "headlineAccent": "Healing Through Nature"
+  },
+  "aboutStory": {
+    "badge": "Our Story",
+    "title": "A Mission Born from Compassion",
+    "highlights": [
+      "Carefully selected herbal medicines as part of a holistic care approach",
+      "Trusted herbal formulations developed through years of clinical practice",
+      "Traditional herbal medicines integrated with supportive patient care",
+      "Quality herbal formulations guided by extensive clinical experience"
+    ],
+    "paragraphs": [
+      "Cancer Herbalist has emerged as a leading integrative oncology center, combining the symbiotic spirit of science and tradition. Our therapies work on the same molecular pathways studied in modern oncology—incorporating clinical research, receptor concepts, oncogene studies, and epigenetics with premium, standardized herbal extracts.",
+      "Founded by a team of pharmacologists and clinical researchers, we specialize in Herbal Chemotherapy (HCT) and Nutrition Therapy (NT). These protocols are designed to target cancer at its roots—including cancer stem cells and NF-κB pathways—while actively protecting healthy cells and downregulating pro-oncogenes.",
+      "Based in Bangalore, India, and serving patients worldwide, we are dedicated to providing evidence-based botanical support that integrates seamlessly with conventional treatments. We offer hope and real science to patients navigating their cancer journey."
+    ],
+    "founderImage": "/images/doctor1.png",
+    "founderQuote": "Nature holds the answers. We hold the knowledge to translate them into healing.",
+    "founderQuoteAuthor": "Prof Ramesh Babu, Founder"
+  },
+  "aboutMission": {
+    "title": "Mission & Vision",
+    "subtitle": "Two guiding stars that shape every decision we make.",
+    "visionText": "A world where every cancer patient — regardless of geography or background — has access to integrative care that honours the whole person: body, mind, and spirit. Where herbal medicine and modern oncology are not opposites, but partners in healing.",
+    "missionText": "To provide safe, personalised, evidence-based herbal support protocols that complement conventional cancer treatment — reducing side effects, improving quality of life, and empowering patients to take an active role in their own healing.",
+    "visionTitle": "Our Vision",
+    "missionTitle": "Our Mission"
+  },
+  "aboutValues": {
+    "items": [
+      {
+        "desc": "Every patient is treated like family. We listen deeply, respond with empathy, and walk beside you through every step of your healing journey.",
+        "color": "#ef4444",
+        "title": "Compassionate Care"
+      },
+      {
+        "desc": "Our herbal protocols are grounded in peer-reviewed research, clinical studies, and decades of integrative oncology practice — not guesswork.",
+        "color": "#8b5cf6",
+        "title": "Evidence-Based Science"
+      },
+      {
+        "desc": "Every formula is screened for drug-herb interactions and contraindications. Transparency with your oncology team is non-negotiable.",
+        "color": "#38bed5",
+        "title": "Safety First, Always"
+      },
+      {
+        "desc": "Our research team continuously reviews the latest phytotherapy literature so your protocol reflects the most current science available.",
+        "color": "#f59e0b",
+        "title": "Continuous Innovation"
+      },
+      {
+        "desc": "We treat the whole person — body, mind, and spirit — through herbal medicine, nutrition coaching, and emotional wellbeing support.",
+        "color": "#10b981",
+        "title": "Holistic Wellness"
+      },
+      {
+        "desc": "Whether you are in Bangalore or abroad, our teleconsultation platform brings world-class integrative oncology support to your home.",
+        "color": "#3b82f6",
+        "title": "Accessible to All"
+      }
+    ],
+    "title": "Our Core Values",
+    "subtitle": "These principles are not aspirational — they are the living standards by which every practitioner at Cancer Herbalist operates, every day."
+  },
+  "aboutMilestones": {
+    "items": [
+      {
+        "desc": "Following a remarkable recovery in one of our early brain cancer patients, we expanded our mission by opening our first integrative herbal oncology clinic in Bangalore.",
+        "year": "2012",
+        "title": "Clinic Founded"
+      },
+      {
+        "desc": "Recognized by integrative medicine bodies for developing standardized, evidence-informed herbal support protocols for cancer patients.",
+        "year": "2014",
+        "title": "Clinical Recognition"
+      },
+      {
+        "desc": "Established a dedicated botanical research laboratory to study herbal formulations, bioavailability, and drug-herb interactions.",
+        "year": "2016",
+        "title": "Research Wing Opens"
+      },
+      {
+        "desc": "Launched our digital consultation platform, enabling patients across India and internationally to access our specialized care remotely.",
+        "year": "2016",
+        "title": "Global Teleconsultation"
+      },
+      {
+        "desc": "Expanded our multidisciplinary team of herbalists, nutritionists, and integrative oncologists to serve a wider range of cancer types.",
+        "year": "2020",
+        "title": "Integrative Team Grows"
+      },
+      {
+        "desc": "Celebrating 20 years of service — continuing to refine our protocols, train new practitioners, and deepen our commitment to patient wellbeing.",
+        "year": "2024",
+        "title": "Two Decades of Healing"
+      },
+      {
+        "desc": "Building on years of experience by supporting patients at every stage of their cancer journey with compassionate integrative care.",
+        "year": "2026",
+        "title": "Continuing Our Mission"
+      }
+    ],
+    "title": "Two Decades of Milestones"
+  },
+  "aboutApproach": {
+    "items": [
+      {
+        "desc": "We begin by deeply understanding your diagnosis, medical history, current treatment, and personal goals — before prescribing anything.",
+        "step": "01",
+        "title": "Listen & Understand"
+      },
+      {
+        "desc": "No two patients are the same. Every formula, dietary plan, and follow-up schedule is crafted specifically for you.",
+        "step": "02",
+        "title": "Personalise"
+      },
+      {
+        "desc": "We work alongside your oncology team — sharing protocols, respecting boundaries, and ensuring complete safety.",
+        "step": "03",
+        "title": "Collaborate"
+      },
+      {
+        "desc": "Healing is a journey. Monthly check-ins, WhatsApp support, and protocol adjustments ensure you are never alone.",
+        "step": "04",
+        "title": "Support Continuously"
+      }
+    ],
+    "title": "Our Care Approach",
+    "subtitle": "A four-principle framework that guides how we engage with every patient, every time."
+  },
+  "aboutFounderProfile": {
+    "name": "Prof. Ramesh Babu",
+    "role": "Founder & Chief Herbalist",
+    "image": "/images/doctor1.2.png",
+    "quote": "Your immune system deserves a real conversation — not a footnote in a 15-minute appointment.",
+    "title": "Meet the Founder",
+    "subtitle": "The Person Behind the Practice",
+    "paragraphs": [
+      "He spends one to two hours with every patient — compared to the industry average of 5 minutes. Not because he has to. Because he believes that no meaningful healing conversation can happen in a fraction of that time.",
+      "Prof. Ramesh Babu uses conventional treatment every day. He is not against it. He has seen it save lives. But he also sees what it leaves behind — fatigue, fear, and a body that needs more than a prescription to recover.",
+      "That conviction is why Cancer Herbalist was built the way it was — unhurried, deeply personal, and rooted in the belief that the body's own intelligence, properly supported, is one of the most powerful healing forces in medicine."
+    ],
+    "credentials": [
+      "University Trained Integrative Pharmacologist",
+      "Member — Karnataka State Pharmacy Council",
+      "Board-Registered Practitioner"
+    ],
+    "quoteAuthor": "Prof. Ramesh Babu"
+  },
+  "careProgramsHero": {
+    "badge": "Our Care Programs",
+    "title": "Specialized Herbal Care",
+    "subline": "Evidence-based herbal support for every cancer type, combined with a structured 5-step process from first consultation to full recovery.",
+    "titleAccent": "Your Healing Journey"
+  },
+  "careProgramsList": [
+    {
+      "desc": "Targeted herbal formulas to regulate hormone levels, support cell health and minimise treatment side effects.",
+      "slug": "breast-cancer",
+      "title": "Breast Cancer"
+    },
+    {
+      "desc": "Respiratory herbs that improve lung capacity, reduce coughing and support pulmonary tissue resilience.",
+      "slug": "lung-cancer",
+      "title": "Lung Cancer"
+    },
+    {
+      "desc": "Gut-healing botanicals that optimise digestion, restore intestinal flora and soothe abdominal inflammation.",
+      "slug": "colon-cancer",
+      "title": "Colon Cancer"
+    },
+    {
+      "desc": "Herbs targeting endocrine health, reducing pelvic inflammation and supporting urinary tract function.",
+      "slug": "prostate-cancer",
+      "title": "Prostate Cancer"
+    },
+    {
+      "desc": "Hepatoprotective herbs that boost liver detoxification, aid cell regeneration and improve metabolic strength.",
+      "slug": "liver-cancer",
+      "title": "Liver Cancer"
+    },
+    {
+      "desc": "Immune tonics and blood-purifying botanicals supporting marrow health and optimising energy levels.",
+      "slug": "blood-cancer",
+      "title": "Blood Cancer"
+    }
+  ],
+  "careProgramsSteps": [
+    {
+      "num": "01",
+      "desc": "A no-obligation discovery call with our senior practitioners. We listen to your story, understand your diagnosis and explain how our programs work.",
+      "title": "Free Consultation"
+    },
+    {
+      "num": "02",
+      "desc": "Detailed review of all medical records, diagnostic reports, imaging, lab values and medication list to fully assess your health.",
+      "title": "Comprehensive Evaluation"
+    },
+    {
+      "num": "03",
+      "desc": "A customised herbal remedy plan with targeted nutritional and lifestyle guidance tailored to your specific cancer type and stage.",
+      "title": "Personalised Treatment Plan"
+    },
+    {
+      "num": "04",
+      "desc": "Receive premium herbal formulations with step-by-step instructions on dosages, timing and dietary protocols to follow.",
+      "title": "Treatment Guidance"
+    },
+    {
+      "num": "05",
+      "desc": "Continuous monitoring, weekly check-ins, symptom tracking and formula adjustments to keep your recovery on track.",
+      "title": "Ongoing Follow-Up Support"
+    }
+  ],
+  "treatmentMethodsHero": {
+    "badge": "Our Approach to Healing",
+    "title": "How We Treat Cancer",
+    "subline": "Our integrative herbal oncology approach combines ancient botanical wisdom with modern clinical evidence to support your body through every phase of the cancer journey.",
+    "titleAccent": "Naturally"
+  },
+  "treatmentMethodsPhilosophy": [
+    {
+      "desc": "We use over 200 clinically validated medicinal plants, sourced sustainably and prepared to pharmaceutical-grade standards. Each formula is designed for bioavailability and synergy.",
+      "title": "Herbal Medicine"
+    },
+    {
+      "desc": "Every herb in our protocols has peer-reviewed research supporting its use. We regularly review updated clinical literature to ensure our formulas reflect the latest science.",
+      "title": "Evidence-Based Protocols"
+    },
+    {
+      "desc": "We work alongside your oncology team—not against them. Our practitioners are trained in herb-drug interactions and communicate transparently with your medical providers.",
+      "title": "Integrative Oncology"
+    },
+    {
+      "desc": "Cancer treatment affects the mind, body, and spirit. We address all three through herbal medicine, nutrition coaching, mindfulness guidance, and emotional support.",
+      "title": "Holistic Wellbeing"
+    },
+    {
+      "desc": "All protocols are reviewed for drug-herb interactions, contraindications, and patient-specific risk factors. Patient safety is our highest priority at every stage.",
+      "title": "Safety First"
+    },
+    {
+      "desc": "No two patients are alike. We create entirely individualized treatment plans based on cancer type, staging, conventional treatment, and personal health history.",
+      "title": "Personalized Care"
+    }
+  ],
+  "treatmentMethodsJourney": [
+    {
+      "num": "01",
+      "desc": "Your journey begins with a no-obligation discovery call with one of our senior practitioners. We listen to your story, understand your diagnosis, discuss your goals, and explain how our programs work.",
+      "title": "Free Consultation",
+      "detail": "Duration: 30–45 minutes | Format: Phone, video, or in-person | Cost: Free"
+    },
+    {
+      "num": "02",
+      "desc": "A detailed review of all your medical records, diagnostic reports, imaging, lab values, and current medication list. We assess your overall health, nutritional status, and treatment-related symptoms.",
+      "title": "Comprehensive Clinical Evaluation",
+      "detail": "Includes: Medical history form, symptom questionnaire, diet diary review"
+    },
+    {
+      "num": "03",
+      "desc": "We design a multi-modal herbal protocol specific to your cancer type, current treatment phase, and personal health goals. This includes a custom herbal formula, nutritional recommendations, and lifestyle guidance.",
+      "title": "Personalized Treatment Plan",
+      "detail": "Delivered within 48–72 hours of evaluation | Written protocol + video explanation"
+    },
+    {
+      "num": "04",
+      "desc": "Your pharmaceutical-grade herbal formulations are prepared and delivered to your door with clear dosing instructions, storage guidelines, and a schedule that integrates with your existing treatment.",
+      "title": "Treatment Initiation",
+      "detail": "Includes: Detailed dosing guide, symptom tracking journal, emergency contact"
+    },
+    {
+      "num": "05",
+      "desc": "Regular monthly check-ins with your practitioner to review progress, assess response, update your formula as needed, and address any new symptoms or concerns that arise during treatment.",
+      "title": "Ongoing Monitoring & Adjustment",
+      "detail": "Monthly video calls + unlimited WhatsApp support between sessions"
+    }
+  ],
+  "treatmentMethodsCancers": [
+    "Breast Cancer",
+    "Lung Cancer",
+    "Colon & Colorectal Cancer",
+    "Prostate Cancer",
+    "Liver Cancer",
+    "Blood Cancers (Leukemia, Lymphoma, Myeloma)",
+    "Cervical Cancer",
+    "Ovarian Cancer",
+    "Pancreatic Cancer",
+    "Kidney Cancer",
+    "Bladder Cancer",
+    "Skin Cancer"
+  ],
+  "treatmentMethodsSideEffects": [
+    "Nausea & Vomiting",
+    "Extreme Fatigue",
+    "Hair Loss Support",
+    "Peripheral Neuropathy",
+    "Mouth Sores",
+    "Appetite Loss",
+    "Immune Suppression",
+    "Anxiety & Depression",
+    "Sleep Disturbances",
+    "Pain Management",
+    "Hormone Imbalances",
+    "Weight Changes"
+  ],
+  "doctorsHero": {
+    "badge": "OUR NUTRACEUTICAL TEAM",
+    "title": "Meet Our Expert Team",
+    "subtitle": "Our multidisciplinary team of medical doctors, naturopaths, and botanical researchers is dedicated to providing comprehensive, personalized care for cancer patients."
+  },
+  "doctorsList": [
+    {
+      "id": 1,
+      "bio": "Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD in Pharmaceutical Sciences, demonstrating his deep expertise in natural products and integrative oncology. With over two decades of dedicated practice, he has made significant contributions to herbal formulation and patient-centric cancer care.",
+      "name": "Prof. Ramesh Babu",
+      "role": "Pharmacologist — M.Pharm, PhD",
+      "image": "/images/doctor1.png",
+      "specialty": "Integrative Pharmacology & Herbal Oncology",
+      "experience": "22 Years Experience"
+    },
+    {
+      "id": 2,
+      "bio": "Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individual's unique needs throughout their treatment journey.",
+      "name": "Nutraceutical Team",
+      "role": "Multidisciplinary Research & Care Team",
+      "image": "/images/doctor33.png",
+      "specialty": "Clinical Nutrition, Herbal Research & Patient Support"
+    }
+  ],
+  "patientEducationHero": {
+    "badge": "Patient Education Centre",
+    "title": "Fight Cancer Better",
+    "subtitle": "Knowledge is your most powerful weapon. Explore easy-to-understand educational guides that help you understand your immune system, nutrition, and mental wellness — everything a cancer warrior needs."
+  },
+  "patientEducationStats": [
+    {
+      "icon": "🧬",
+      "label": "T-Cells in Your Body",
+      "value": "2 Billion+"
+    },
+    {
+      "icon": "🛡️",
+      "label": "Of Blood Lymphocytes Are NK Cells",
+      "value": "5–15%"
+    },
+    {
+      "icon": "🔬",
+      "label": "Immune Surveillance",
+      "value": "24/7"
+    },
+    {
+      "icon": "❤️",
+      "label": "Capacity to Learn & Adapt",
+      "value": "∞"
+    }
+  ],
+  "patientEducationArticles": [
+    {
+      "id": "tcells-vs-nk-cells",
+      "icon": "🛡️",
+      "badge": "🧬 Immune Defence",
+      "title": "T-Cells vs NK Cells: Your Body's Cancer-Fighting Warriors",
+      "excerpt": "Discover the two key immune cell types — T-cells and NK cells — that form your body's frontline defense against cancer, and learn how they work together to hunt and destroy malignant cells.",
+      "category": "Immunology",
+      "disabled": false,
+      "gradient": "linear-gradient(135deg, #0b5b67 0%, #38bed5 100%)",
+      "readTime": "10 min read"
+    },
+    {
+      "id": "coming-soon-nutrition",
+      "icon": "🌿",
+      "badge": "🥦 Diet & Healing",
+      "title": "Anti-Cancer Nutrition: Foods That Fuel Your Immunity",
+      "excerpt": "Learn which superfoods, herbs, and dietary strategies can support your immune system during and after cancer treatment.",
+      "category": "Nutrition",
+      "disabled": true,
+      "gradient": "linear-gradient(135deg, #2ca8be 0%, #e0f7fa 100%)",
+      "readTime": "Coming Soon"
+    },
+    {
+      "id": "coming-soon-mindset",
+      "icon": "🧠",
+      "badge": "🧠 Mind & Body",
+      "title": "The Psychology of Healing: Building a Fighter's Mindset",
+      "excerpt": "Explore evidence-backed mental wellness strategies — from meditation to visualization — that help cancer patients stay resilient and hopeful.",
+      "category": "Mental Wellness",
+      "disabled": true,
+      "gradient": "linear-gradient(135deg, #38bed5 0%, #0b5b67 100%)",
+      "readTime": "Coming Soon"
+    }
+  ]
+}

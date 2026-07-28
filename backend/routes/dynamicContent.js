@@ -3,7 +3,7 @@ const router  = express.Router();
 const fs      = require('fs');
 const path    = require('path');
 const priceListModule  = require('./priceList');
-const { dbRead, dbWrite } = require('../utils/supabaseDb');
+const { dbRead, dbWrite, isUsingCloudStorage } = require('../utils/supabaseDb');
 
 // On Vercel (production), the project filesystem is READ-ONLY.
 // Only /tmp is writable. Use /tmp in production, local data/ in development.
@@ -191,7 +191,7 @@ seedDatabase();
 router.get('/dynamic-products', async (req, res) => {
   try {
     const dynamic = await dbRead('products') || [];
-    res.json({ success: true, products: dynamic });
+    res.json({ success: true, products: dynamic, isUsingCloudStorage });
   } catch (err) {
     console.error('[products GET] Error:', err.message);
     res.status(500).json({ success: false, error: 'Failed to fetch products.' });
