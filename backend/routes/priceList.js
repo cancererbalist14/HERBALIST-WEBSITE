@@ -8,27 +8,22 @@
  * Values are prices in INR (₹).
  */
 
-const PRODUCT_PRICES = {
-  1:  799,   // Cap CH95 (30Cap)
-  2:  2599,  // C3M Powder
-  3:  2299,  // CUP Powder
-  4:  799,   // Cap Withangen (30Cap)
-  5:  2999,  // Cap AC95 (30Cap)
-  6:  2199,  // Cap Livocin (30Cap)
-  7:  799,   // Cap Fulvican (30Cap)
-  8:  1599,  // Frank Oil 100ml
-  9:  599,   // Tab Cyanolina (60Tab)
-  10: 999,   // Tab Phytox (60Tab)
-  11: 1199,  // Quinoil
-  12: 1599,  // Anacose Powder
-  13: 999,   // Methicon
-  14: 2699,  // Cap K27 (30Cap)
-  15: 3299,  // Cap Oxy95 (30Cap)
-  16: 3999,  // Cap OxyForte (30Cap)
-  17: 1399,  // Cap PSP (30Cap)
-  18: 1799,  // 3C (30Cap)
-  19: 3740,  // Tab BLOO
-};
+const fs = require('fs');
+const path = require('path');
+
+const PRODUCT_PRICES = {};
+try {
+  const file = path.join(__dirname, '..', 'data', 'products.json');
+  if (fs.existsSync(file)) {
+    const list = JSON.parse(fs.readFileSync(file, 'utf8'));
+    list.forEach(p => {
+      if (p.id) PRODUCT_PRICES[p.id] = Number(p.price);
+    });
+  }
+} catch (e) {
+  console.error('Failed to load initial prices in priceList.js:', e);
+}
+
 
 const MAX_QUANTITY_PER_ITEM = 50;   // safety cap per product line
 const MAX_ORDER_AMOUNT      = 200000; // ₹2,00,000 max order
