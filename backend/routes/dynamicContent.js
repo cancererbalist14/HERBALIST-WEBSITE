@@ -830,16 +830,6 @@ const seedDatabase = async () => {
     }
     let updatedProducts = false;
 
-    // Force update product 1's price if it's set to test values like 10
-    if (products.length > 0) {
-      const p1 = products.find(p => p.id === 1);
-      if (p1 && (p1.price !== 799 || p1.originalPrice !== 1099)) {
-        p1.price = 799;
-        p1.originalPrice = 1099;
-        updatedProducts = true;
-      }
-    }
-
     initialProducts.forEach(ip => {
       const existing = products.find(p => p.id === ip.id);
       if (!existing) {
