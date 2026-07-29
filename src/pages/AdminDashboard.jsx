@@ -984,7 +984,7 @@ Cancer Herbalist Team`;
         </div>
 
         {arr.length === 0 ? (
-          <p style={{ color: '#94a3b8', fontSize: '12.5px', margin: '10px 0', textAlign: 'center' }}>No items yet. Click "Add Item" above.</p>
+          <p style={{ color: '#94a3b8', fontSize: '12.5px', margin: '10px 0', textAlign: 'center' }}>No items yet. Click &quot;Add Item&quot; above.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {arr.map((item, idx) => (
@@ -4105,7 +4105,7 @@ Cancer Herbalist Team`;
                         <FaInfoCircle style={{ color: PRIMARY }} /> Guidelines for Copy Updates
                       </h3>
                       <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.8' }}>
-                        <li><strong>Instant Sync:</strong> Changes are written to the database and will update globally on the site immediately upon clicking "Save Website Copy".</li>
+                        <li><strong>Instant Sync:</strong> Changes are written to the database and will update globally on the site immediately upon clicking &quot;Save Website Copy&quot;.</li>
                         <li><strong>Safe Defaults:</strong> If you clear a field, the site will automatically fallback to default values to prevent layout breaks.</li>
                         <li><strong>SEO Compliance:</strong> Avoid changing titles to very long texts as it may affect metadata responsiveness.</li>
                         <li><strong>WhatsApp:</strong> Ensure the WhatsApp number is written with country code and digits only (e.g. <code>918884588835</code>) so the click-to-chat links work correctly.</li>
@@ -4175,7 +4175,7 @@ Cancer Herbalist Team`;
                               <strong style={{ fontSize: '13.5px', color: 'var(--text-primary)' }}>{t.name} ({t.location})</strong>
                               <span style={{ color: '#fbbf24', fontSize: '12px' }}>{'★'.repeat(t.rating)}</span>
                             </div>
-                            <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', textOverflow: 'ellipsis', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>"{t.text}"</p>
+                            <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', textOverflow: 'ellipsis', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>&ldquo;{t.text}&rdquo;</p>
                             {(t.videoUrl || t.thumbnailUrl) && (
                               <div style={{ display: 'flex', gap: '8px', marginTop: '4px', fontSize: '11px', color: '#047857', fontWeight: 600 }}>
                                 {t.thumbnailUrl && <span>🖼️ Thumbnail</span>}
@@ -4463,7 +4463,7 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
               try {
                 await onEditOrder(order.orderId, editForm);
                 setIsEditing(false);
-              } catch (err) {}
+              } catch (err) { /* ignore */ }
             }}
             style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
           >

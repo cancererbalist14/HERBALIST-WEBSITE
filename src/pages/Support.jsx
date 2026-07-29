@@ -154,7 +154,7 @@ export default function Support() {
                 Raise a Support <span style={{ color: ACCENT }}>Ticket</span>
               </h2>
               <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '28px', lineHeight: '1.7' }}>
-                Describe your issue and we'll get back to you within 24 business hours via email.
+                Describe your issue and we&apos;ll get back to you within 24 business hours via email.
               </p>
 
               {/* Category Selector */}

@@ -346,7 +346,7 @@ export default function MyOrders() {
             <FaInbox style={{ fontSize: '48px', color: '#cbd5e1', marginBottom: '16px' }} />
             <h3 style={{ margin: '0 0 8px', color: '#0f172a', fontWeight: 700 }}>No Orders Found</h3>
             <p style={{ margin: '0 auto 24px', fontSize: '13.5px', maxWidth: '400px' }}>
-              We couldn't find any orders linked to your current browser cache. Enter your checkout phone or email in the box above to import them.
+              We couldn&apos;t find any orders linked to your current browser cache. Enter your checkout phone or email in the box above to import them.
             </p>
             <button
               onClick={() => navigate('/store')}

@@ -199,7 +199,7 @@ export default function Home() {
               { title: 'Liver Cancer', slug: 'liver-cancer', desc: 'Hepatoprotective herbs that boost liver detoxification, aid cell regeneration and improve metabolic strength.' },
               { title: 'Blood Cancer', slug: 'blood-cancer', desc: 'Immune tonics and blood-purifying botanicals supporting marrow health and optimising energy levels.' }
             ]).slice(0, 6).map((svc, i) => {
-              const icons = [<FaRibbon />, <FaLungs />, <FaAppleAlt />, <FaHeartbeat />, <FaRegHospital />, <FaTint />];
+              const icons = [<FaRibbon key={0} />, <FaLungs key={1} />, <FaAppleAlt key={2} />, <FaHeartbeat key={3} />, <FaRegHospital key={4} />, <FaTint key={5} />];
               return (
                 <motion.div
                   key={svc.slug || svc.title}

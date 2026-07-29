@@ -230,7 +230,7 @@ export default function Checkout() {
           Complete Your <span style={{ color: ACCENT }}>Order</span>
         </h1>
         <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>
-          Fill in your shipping details and we'll dispatch within 24 hours.
+          Fill in your shipping details and we&apos;ll dispatch within 24 hours.
         </p>
       </section>
 

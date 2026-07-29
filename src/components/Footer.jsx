@@ -85,7 +85,7 @@ export default function Footer() {
 
             <p style={{ lineHeight: '1.8', fontSize: '0.875rem', color: WHITE60, marginBottom: '24px' }}>
               Integrating evidence-based phytotherapeutic treatments and dietary nutrition to assist your
-              body's natural recovery cycles. Trusted by patients across India and worldwide.
+              body&apos;s natural recovery cycles. Trusted by patients across India and worldwide.
             </p>
 
             {/* Social Icons */}

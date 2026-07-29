@@ -199,7 +199,7 @@ export default function VideoTestimonials() {
                 </div>
 
                 <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', fontStyle: 'italic' }}>
-                  "{video.title}"
+                  &ldquo;{video.title}&rdquo;
                 </p>
               </div>
             </motion.div>

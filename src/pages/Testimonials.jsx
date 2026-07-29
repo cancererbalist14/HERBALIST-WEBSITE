@@ -11,7 +11,7 @@ function getEmbedUrl(url) {
   if (url.includes('/embed/')) return url;
   
   if (url.includes('youtube.com/watch')) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     if (match && match[2].length === 11) {
       return `https://www.youtube.com/embed/${match[2]}`;
@@ -236,7 +236,7 @@ export default function Testimonials() {
                       <FaCheckCircle style={{ fontSize: '9px' }} /> {video.status}
                     </span>
                   </div>
-                  <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', fontStyle: 'italic', marginBottom: '16px' }}>"{video.title}"</p>
+                  <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', fontStyle: 'italic', marginBottom: '16px' }}>&ldquo;{video.title}&rdquo;</p>
                   <button
                     onClick={(e) => { e.stopPropagation(); navigate(`/testimonials/${video.id}`); }}
                     style={{
@@ -388,7 +388,7 @@ export default function Testimonials() {
                       {[...Array(review.rating)].map((_, idx) => <FaStar key={idx} />)}
                     </div>
                   </div>
-                  <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', marginBottom: '20px' }}>"{review.text}"</p>
+                  <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', marginBottom: '20px' }}>&ldquo;{review.text}&rdquo;</p>
                 </div>
                 <div>
                   <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--dark-2)' }}>{review.name}</div>

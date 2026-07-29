@@ -185,7 +185,7 @@ export default function Contact() {
     }
 
     // 1. Name validation
-    const nameRegex = /^[a-zA-Z\s\-\.\'\u00C0-\u00FF]+$/;
+    const nameRegex = /^[a-zA-Z\s\-.'\u00C0-\u00FF]+$/;
     if (!nameRegex.test(formData.name.trim())) {
       setError('Full Name contains invalid characters. Only letters, spaces, and basic punctuation are allowed.');
       return;
@@ -540,7 +540,7 @@ export default function Contact() {
                       ⚠️ You already have an active booking
                     </p>
                     <p style={{ margin: '0 0 14px', fontSize: '13px', color: '#7c2d12' }}>
-                      We found a future booking for <strong>"{existingAppt.treatment}"</strong> on <strong>{existingAppt.appointmentDay} at {existingAppt.appointmentSlot}</strong> under this email/phone.
+                      We found a future booking for <strong>&ldquo;{existingAppt.treatment}&rdquo;</strong> on <strong>{existingAppt.appointmentDay} at {existingAppt.appointmentSlot}</strong> under this email/phone.
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '10px' }}>
                       <button
@@ -632,7 +632,7 @@ export default function Contact() {
                   }}>
                     <p style={{ margin: '0 0 6px', fontWeight: 700 }}>⚠️ You already have an active booking</p>
                     <p style={{ margin: '0 0 12px', color: '#7c2d12' }}>
-                      An appointment is already registered on <strong>{duplicateApptError.appointmentDay} at {duplicateApptError.appointmentSlot}</strong> for "{duplicateApptError.treatment}". Only one appointment per person is allowed.
+                      An appointment is already registered on <strong>{duplicateApptError.appointmentDay} at {duplicateApptError.appointmentSlot}</strong> for &ldquo;{duplicateApptError.treatment}&rdquo;. Only one appointment per person is allowed.
                     </p>
                     <div style={{ display: 'flex', gap: '12px' }}>
                       <Link to={`/manage-appointment?id=${duplicateApptError.apptId}`} style={{
@@ -941,7 +941,7 @@ Please confirm my booking.`)}`}
                     onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
                     onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
                   >
-                    <FaWhatsapp style={{ fontSize: '18px' }} /> Didn't receive message? Chat on WhatsApp
+                    <FaWhatsapp style={{ fontSize: '18px' }} /> Didn&apos;t receive message? Chat on WhatsApp
                   </a>
                   <button onClick={reset} style={{ background: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT, color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
                     Book Another Appointment

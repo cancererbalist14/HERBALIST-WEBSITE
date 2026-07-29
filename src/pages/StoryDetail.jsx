@@ -157,7 +157,7 @@ export default function StoryDetail() {
           </div>
 
           <h1 style={{ color: '#fff', fontSize: 'clamp(1.6rem, 4vw, 2.6rem)', fontFamily: 'Playfair Display, serif', lineHeight: 1.3, marginBottom: '10px' }}>
-            {story.name}'s Healing Journey
+            {story.name}&apos;s Healing Journey
           </h1>
 
           <div style={{ display: 'flex', gap: '24px', marginBottom: '30px', color: 'rgba(255,255,255,0.7)', fontSize: '14px', flexWrap: 'wrap' }}>

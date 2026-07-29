@@ -300,7 +300,7 @@ function EnquiryModal({ product, onClose }) {
                   color: '#64748b', fontSize: '13.5px', lineHeight: 1.7,
                   marginBottom: '20px', marginTop: 0
                 }}>
-                  Fill in your details and we'll get back to you within 24 hours.
+                  Fill in your details and we&apos;ll get back to you within 24 hours.
                 </p>
 
                 <label style={{
@@ -1384,7 +1384,7 @@ export default function ProductDetail() {
                   {review.title}
                 </h4>
                 <p style={{ margin: 0, fontSize: '13.5px', color: '#475569', lineHeight: 1.6 }}>
-                  "{review.text}"
+                  &ldquo;{review.text}&rdquo;
                 </p>
               </div>
             ))}

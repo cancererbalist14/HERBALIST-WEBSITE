@@ -111,7 +111,7 @@ export default function About() {
             }}>
               <FaQuoteLeft style={{ color: ACCENT, fontSize: '24px', marginBottom: '12px' }} />
               <p style={{ color: '#334155', fontSize: '14px', lineHeight: '1.75', fontStyle: 'italic', margin: 0, fontFamily: 'Playfair Display, serif' }}>
-                "{aboutStory.founderQuote || 'Nature holds the answers when paired with rigorous pharmacology science.'}"
+                &ldquo;{aboutStory.founderQuote || 'Nature holds the answers when paired with rigorous pharmacology science.'}&rdquo;
               </p>
               <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{ width: '36px', height: '2px', background: ACCENT, borderRadius: '2px' }} />

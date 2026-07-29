@@ -45,11 +45,11 @@ export default function TreatmentMethods() {
   const treatmentMethodsSideEffects = content?.treatmentMethodsSideEffects || [];
 
   const staticPhilosophyIcons = [
-    <FaLeaf />, <FaFlask />, <FaUserMd />, <FaHeart />, <FaShieldAlt />, <FaSeedling />
+    <FaLeaf key={0} />, <FaFlask key={1} />, <FaUserMd key={2} />, <FaHeart key={3} />, <FaShieldAlt key={4} />, <FaSeedling key={5} />
   ];
 
   const staticJourneyIcons = [
-    <FaCalendarAlt />, <FaFileMedical />, <FaFileSignature />, <FaCapsules />, <FaUserShield />
+    <FaCalendarAlt key={0} />, <FaFileMedical key={1} />, <FaFileSignature key={2} />, <FaCapsules key={3} />, <FaUserShield key={4} />
   ];
 
   const activePhilosophy = treatmentMethodsPhilosophy.map((p, i) => ({

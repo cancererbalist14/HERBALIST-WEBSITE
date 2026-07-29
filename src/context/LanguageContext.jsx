@@ -47,7 +47,7 @@ function initWidget() {
       },
       'google_translate_element'
     );
-  } catch (_) {}
+  } catch (_) { /* ignore */ }
 }
 
 function applyGoogleTranslate(langCode) {

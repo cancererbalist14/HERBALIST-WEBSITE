@@ -36,7 +36,7 @@ export default function NotFound() {
         </h1>
 
         <p style={{ color: '#64748b', fontSize: '15px', lineHeight: '1.7', marginBottom: '36px' }}>
-          The page you're looking for doesn't exist or may have been moved. Let us guide you back to your healing journey.
+          The page you&apos;re looking for doesn&apos;t exist or may have been moved. Let us guide you back to your healing journey.
         </p>
 
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>

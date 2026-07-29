@@ -41,7 +41,7 @@ export default function PrivacyPolicy() {
         <div style={{ background: '#fff', borderRadius: '20px', padding: '40px', boxShadow: '0 4px 24px rgba(0,0,0,0.07)', border: '1px solid #e2e8f0' }}>
 
           <p style={{ color: '#64748b', lineHeight: '1.85', fontSize: '14.5px', marginBottom: '36px', padding: '16px 20px', background: '#f1f5f9', borderRadius: '10px', borderLeft: `4px solid ${ACCENT}` }}>
-            Cancer Herbalist ("we", "our", "us") is committed to protecting your privacy. This policy explains how we collect, use, and protect your personal information when you visit our website or use our services.
+            Cancer Herbalist (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) is committed to protecting your privacy. This policy explains how we collect, use, and protect your personal information when you visit our website or use our services.
           </p>
 
           <Section title="1. Information We Collect">
@@ -103,7 +103,7 @@ export default function PrivacyPolicy() {
           </Section>
 
           <Section title="9. Changes to This Policy">
-            <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with a revised "Last updated" date. Continued use of our services after changes constitutes acceptance of the updated policy.</p>
+            <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with a revised &quot;Last updated&quot; date. Continued use of our services after changes constitutes acceptance of the updated policy.</p>
           </Section>
 
           <Section title="10. Contact Us">

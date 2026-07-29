@@ -65,11 +65,11 @@ export default function CarePrograms(){
   const careProgramsSteps = content?.careProgramsSteps || [];
 
   const staticServicesIcons = [
-    <FaRibbon/>, <FaLungs/>, <FaAppleAlt/>, <FaHeartbeat/>, <FaRegHospital/>, <FaTint/>
+    <FaRibbon key={0}/>, <FaLungs key={1}/>, <FaAppleAlt key={2}/>, <FaHeartbeat key={3}/>, <FaRegHospital key={4}/>, <FaTint key={5}/>
   ];
 
   const staticStepsIcons = [
-    <FaCalendarAlt/>, <FaFileMedical/>, <FaFileSignature/>, <FaCapsules/>, <FaUserShield/>
+    <FaCalendarAlt key={0}/>, <FaFileMedical key={1}/>, <FaFileSignature key={2}/>, <FaCapsules key={3}/>, <FaUserShield key={4}/>
   ];
 
   const activeServices = careProgramsList.map((svc, i) => ({
@@ -174,7 +174,7 @@ export default function CarePrograms(){
             <motion.div animate={{opacity:[0.2,1,0.2],scale:[1,1.05,1]}} transition={{duration:2.5,repeat:Infinity,ease:'easeInOut'}} style={{fontSize:'clamp(64px,14vw,96px)',lineHeight:0.85,color:A,fontFamily:'Georgia,serif',marginBottom:16,userSelect:'none'}}>&#8734;</motion.div>
             <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.6rem,4vw,2.4rem)',color:'#0f172a',fontWeight:900,marginBottom:14}}>We treat <span style={{color:A}}>every</span> type of cancer</h2>
             <p style={{color:'#64748b',fontSize:'0.97rem',lineHeight:1.8,maxWidth:560,margin:'0 auto'}}>
-              Whether common or rare, Prof. Ramesh's team creates a personalised herbal pathway for <strong style={{color:'#0f172a'}}>every known cancer type</strong> — no case is ever turned away.
+              Whether common or rare, Prof. Ramesh&apos;s team creates a personalised herbal pathway for <strong style={{color:'#0f172a'}}>every known cancer type</strong> — no case is ever turned away.
             </p>
           </motion.div>
         </motion.div>

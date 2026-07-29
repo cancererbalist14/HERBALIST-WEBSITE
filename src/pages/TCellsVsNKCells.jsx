@@ -70,10 +70,10 @@ export default function TCellsVsNKCells() {
             <span style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', padding: '5px 14px', borderRadius: '50px', fontSize: '12px', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: '4px' }}><FaClock /> 10 min read</span>
           </div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} style={{ color: '#fff', fontSize: 'clamp(1.6rem, 4vw, 2.6rem)', fontFamily: 'Playfair Display, serif', lineHeight: 1.25, marginBottom: '20px' }}>
-            T-Cells vs NK Cells: Your Body's Cancer-Fighting Warriors
+            T-Cells vs NK Cells: Your Body&apos;s Cancer-Fighting Warriors
           </motion.h1>
           <p style={{ color: 'rgba(255,255,255,0.85)', maxWidth: '700px', lineHeight: 1.8, fontSize: 'clamp(0.9rem, 2vw, 1.05rem)' }}>
-            A patient-friendly guide to understanding the two immune cell types that form your body's frontline defense against cancer and infection.
+            A patient-friendly guide to understanding the two immune cell types that form your body&apos;s frontline defense against cancer and infection.
           </p>
         </div>
       </div>

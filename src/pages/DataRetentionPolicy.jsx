@@ -63,7 +63,7 @@ export default function DataRetentionPolicy() {
                 4. How to Request Data Deletion
               </h3>
               <p>
-                To request permanent erasure of your data, please send an email to <a href="mailto:cancerherbalist@gmail.com" style={{ color: ACCENT, fontWeight: 600 }}>cancerherbalist@gmail.com</a> with the subject line <strong>"Data Deletion Request"</strong>. Include your full name, registered email address, and phone number. Our privacy officer will process your request within 7 business days and send a formal confirmation of erasure.
+                To request permanent erasure of your data, please send an email to <a href="mailto:cancerherbalist@gmail.com" style={{ color: ACCENT, fontWeight: 600 }}>cancerherbalist@gmail.com</a> with the subject line <strong>&quot;Data Deletion Request&quot;</strong>. Include your full name, registered email address, and phone number. Our privacy officer will process your request within 7 business days and send a formal confirmation of erasure.
               </p>
             </div>
 

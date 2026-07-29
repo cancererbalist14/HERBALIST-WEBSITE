@@ -153,7 +153,7 @@ export default function Reviews() {
                   marginBottom: '20px',
                 }}
               >
-                "{review.text}"
+                &ldquo;{review.text}&rdquo;
               </p>
 
               <div>
