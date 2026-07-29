@@ -12,6 +12,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const { validateSchema } = require('../utils/validateSchema');
 const { checkAuthLockout, recordAuthFailure, recordAuthSuccess } = require('../middleware/authRateLimiter');
+const { sendWhatsAppMessage } = require('../utils/whatsapp');
 const router = express.Router();
 
 /* ── Slot constants ─────────────────────────────────────────────── */
@@ -853,16 +854,41 @@ router.post('/book-appointment', async (req, res) => {
   const data = { apptId, name, phone, email, treatment, stage, message, appointmentDay, appointmentSlot };
 
   try {
-    const [emailResPatient, emailResAdmin] = await Promise.all([
-      // 1. Patient confirmation
+    const waOrigin = req.headers.origin || 'http://localhost:5173';
+    const whatsappBody = `*Appointment Confirmed — Cancer Herbalist* 🌿
+
+Dear *${name}*,
+
+Your consultation appointment has been successfully confirmed. Here are the booking details:
+
+📅 *Date:* ${appointmentDay}
+🕐 *Time Slot:* ${appointmentSlot}
+🩺 *Consultation Type:* ${treatment}
+🆔 *Appointment ID:* ${apptId}
+
+*What to expect:*
+1. Our Consultant will call you at your registered phone number (*${phone}*) at the booked time.
+2. Please keep your medical reports and prescriptions ready for reference.
+3. The consultation is completely free with no obligations.
+
+🔄 *Reschedule or Cancel Online:*
+${waOrigin}/manage-appointment?id=${apptId}
+
+If you have any questions, feel free to reply to this message.
+
+Thank you,
+Cancer Herbalist Team`;
+
+    const [emailResPatient, emailResAdmin, sheetsRes, whatsappRes] = await Promise.all([
+      // 1. Patient confirmation email
       sendMailWrapper({
         to: email,
         subject: `✅ Appointment Confirmed — ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
         text: `Dear ${name},\n\nYour consultation appointment has been confirmed.\n\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\n\nOur Consultant will call you at your registered number at the booked time.\nQuestions? WhatsApp: +91 88845 88835\n\n— Cancer Herbalist Team`,
-        html: buildPatientEmailHtml(data, req.headers.origin || 'http://localhost:5173'),
+        html: buildPatientEmailHtml(data, waOrigin),
       }),
 
-      // 2. Admin notification
+      // 2. Admin notification email
       sendMailWrapper({
         to: adminEmail,
         subject: `📅 New Appointment: ${name} — ${appointmentDay} ${appointmentSlot}`,
@@ -872,6 +898,9 @@ router.post('/book-appointment', async (req, res) => {
 
       // 3. Save to Google Sheets
       saveToSheets(appt),
+
+      // 4. WhatsApp notification
+      sendWhatsAppMessage(phone, whatsappBody),
     ]);
 
     const warnings = [];
@@ -880,6 +909,9 @@ router.post('/book-appointment', async (req, res) => {
     }
     if (!emailResAdmin.success) {
       warnings.push(`Doctor email failed: ${emailResAdmin.error}`);
+    }
+    if (whatsappRes && !whatsappRes.success && whatsappRes.error !== 'Credentials not configured') {
+      warnings.push(`WhatsApp failed: ${whatsappRes.error}`);
     }
 
     if (warnings.length > 0) {
@@ -1125,6 +1157,25 @@ router.delete('/public/appointments/:apptId', async (req, res) => {
       text: `Appointment Cancelled by Patient\n\nPatient Name: ${appt.name}\nPhone: ${appt.phone}\nEmail: ${appt.email}\nSlot Cancelled: ${appt.appointmentDay} at ${appt.appointmentSlot}\nConsultation: ${appt.treatment}\n`,
     }).catch(e => console.error('[publicCancel] Admin email failed:', e.message));
 
+    // 3. WhatsApp to Patient
+    const cancelWaBody = `*Appointment Cancelled — Cancer Herbalist* 🌿
+
+Dear *${appt.name}*,
+
+This message is to confirm that your consultation appointment has been successfully *cancelled* as requested.
+
+📅 *Cancelled Date:* ${appt.appointmentDay}
+🕐 *Cancelled Time:* ${appt.appointmentSlot}
+🩺 *Consultation Type:* ${appt.treatment}
+🆔 *Appointment ID:* ${appt.apptId}
+
+If you did not request this cancellation or would like to rebook, please contact us or visit:
+${req.headers.origin || 'http://localhost:5173'}/contact
+
+Thank you,
+Cancer Herbalist Team`;
+
+    sendWhatsAppMessage(appt.phone, cancelWaBody).catch(e => console.error('[publicCancel] WhatsApp failed:', e.message));
 
     res.json({ success: true, message: 'Appointment cancelled successfully.' });
   } catch (err) {
@@ -1203,7 +1254,6 @@ router.put('/public/appointments/:apptId', async (req, res) => {
     const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
     const origin = req.headers.origin || 'http://localhost:5173';
 
-    // 1. To Patient
     sendMailWrapper({
       to: currentAppt.email,
       subject: `📅 Appointment Rescheduled — New Slot: ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
@@ -1226,6 +1276,27 @@ router.put('/public/appointments/:apptId', async (req, res) => {
       text: `Appointment Rescheduled by Patient\n\nPatient Name: ${currentAppt.name}\nPhone: ${currentAppt.phone}\nEmail: ${currentAppt.email}\nOld Slot: ${oldDay} at ${oldSlot}\nNew Slot: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n`,
     }).catch(e => console.error('[publicReschedule] Admin email failed:', e.message));
 
+    // 3. WhatsApp to Patient
+    const rescheduleWaBody = `*Appointment Rescheduled — Cancer Herbalist* 🌿
+
+Dear *${currentAppt.name}*,
+
+Your consultation appointment has been successfully *rescheduled*. Here are the updated details:
+
+📅 *New Date:* ${appointmentDay}
+🕐 *New Time:* ${appointmentSlot}
+🩺 *Consultation Type:* ${currentAppt.treatment}
+🆔 *Appointment ID:* ${currentAppt.apptId}
+
+*Please note:* Our Consultant will call you at the updated scheduled time.
+
+🔄 *Manage Online:*
+${origin}/manage-appointment?id=${currentAppt.apptId}
+
+Thank you,
+Cancer Herbalist Team`;
+
+    sendWhatsAppMessage(currentAppt.phone, rescheduleWaBody).catch(e => console.error('[publicReschedule] WhatsApp failed:', e.message));
 
     res.json({ success: true, message: 'Appointment rescheduled successfully.' });
   } catch (err) {
@@ -1280,6 +1351,21 @@ router.delete('/appointments/:apptId', checkAdmin, async (req, res) => {
       }).catch(e => console.error('[bookAppointment] Cancellation email failed:', e.message));
       console.log(`[bookAppointment] Cancellation email triggered to ${appt.email}`);
     }
+
+    // ── Send cancellation WhatsApp to patient ──────────────────────
+    const cancelWaBody = `*Appointment Cancelled — Cancer Herbalist* 🌿
+
+Dear *${appt.name}*,
+
+Your appointment on *${appt.appointmentDay}* at *${appt.appointmentSlot}* has been cancelled by our team.
+
+If you have any questions or would like to rebook, please message us or visit:
+${req.headers.origin || 'http://localhost:5173'}/contact
+
+Thank you,
+Cancer Herbalist Team`;
+
+    sendWhatsAppMessage(appt.phone, cancelWaBody).catch(e => console.error('[adminCancel] WhatsApp failed:', e.message));
 
     // Remove from local cache
     appointmentStore.splice(idx, 1);
@@ -1355,6 +1441,33 @@ router.put('/appointments/:apptId', checkAdmin, async (req, res) => {
         }),
       }).catch(e => console.error('[bookAppointment] Reschedule email failed:', e.message));
       console.log(`[bookAppointment] Reschedule email triggered to ${currentAppt.email}`);
+    }
+
+    // ── Send reschedule WhatsApp to patient (only if slot actually changed) ──
+    if (isActuallyRescheduled) {
+      const waOrigin = req.headers.origin || 'http://localhost:5173';
+      const rescheduleWaBody = `*Appointment Rescheduled — Cancer Herbalist* 🌿
+
+Dear *${currentAppt.name}*,
+
+Your consultation appointment has been rescheduled by our team. Here are the updated details:
+
+📅 *New Date:* ${appointmentDay}
+🕐 *New Time:* ${appointmentSlot}
+🩺 *Consultation Type:* ${currentAppt.treatment}
+🆔 *Appointment ID:* ${currentAppt.apptId}
+
+*Please note:* Our Consultant will call you at the updated scheduled time.
+
+🔄 *Manage Online:*
+${waOrigin}/manage-appointment?id=${currentAppt.apptId}
+
+If you have any questions, feel free to reply to this message.
+
+Thank you,
+Cancer Herbalist Team`;
+
+      sendWhatsAppMessage(currentAppt.phone, rescheduleWaBody).catch(e => console.error('[adminReschedule] WhatsApp failed:', e.message));
     }
 
     res.json({ success: true, appointment: updatedAppt });

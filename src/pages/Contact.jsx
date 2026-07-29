@@ -131,6 +131,7 @@ export default function Contact() {
   const [existingAppt, setExistingAppt] = useState(null);
   const [bypassDuplicateCheck, setBypassDuplicateCheck] = useState(false);
   const [duplicateApptError, setDuplicateApptError] = useState(null);
+  const [bookedApptId, setBookedApptId] = useState('');
 
 
   React.useEffect(() => {
@@ -299,6 +300,7 @@ export default function Contact() {
         setWarning('');
       }
 
+      setBookedApptId(data.apptId || '');
       setSending(false);
       setStep(3);
     } catch (err) {
@@ -318,6 +320,7 @@ export default function Contact() {
     setCheckingBooking(false);
     setExistingAppt(null);
     setBypassDuplicateCheck(false);
+    setBookedApptId('');
   };
 
   return (
@@ -894,18 +897,56 @@ export default function Contact() {
                     A confirmation email has been sent to <strong style={{ color: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT }}>{formData.email}</strong>
                   </p>
                 )}
-                <p style={{ color: '#64748b', lineHeight: '1.8', marginBottom: '24px' }}>
+                <p style={{ color: '#64748b', lineHeight: '1.8', marginBottom: '8px' }}>
                   Our team will call you at <strong>{formData.phone}</strong> at the booked time.
+                </p>
+                <p style={{ color: '#16a34a', fontWeight: 600, fontSize: '13.5px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  💬 A WhatsApp confirmation has also been sent directly to your number.
                 </p>
                 <div style={{ background: apptType === 'emergency' ? '#fff7ed' : `${ACCENT}10`, border: `1px solid ${apptType === 'emergency' ? '#fed7aa' : `${ACCENT}33`}`, borderRadius: '14px', padding: '16px 20px', marginBottom: '28px', textAlign: 'left' }}>
                   {apptType === 'emergency' && <p style={{ margin: '0 0 6px', color: EMERGENCY_COLOR, fontSize: '12px', fontWeight: 700 }}>⚡ FOLLOWUP CONSULTATION</p>}
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>📅 <strong>{formData.selectedDay?.full}</strong></p>
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>🕐 <strong>{formData.selectedSlot}</strong></p>
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>🩺 <strong>{formData.treatment}</strong></p>
+                  {bookedApptId && <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>🆔 <strong>Appointment ID:</strong> <code style={{ background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', fontSize: '12px' }}>{bookedApptId}</code></p>}
                 </div>
-                <button onClick={reset} style={{ background: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT, color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
-                  Book Another Appointment
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px' }}>
+                  <a
+                    href={`https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(`Hi Cancer Herbalist, I just booked an appointment online. Here are my details:
+
+👤 Patient Name: ${formData.name}
+📅 Date: ${formData.selectedDay?.full}
+🕐 Time Slot: ${formData.selectedSlot}
+🩺 Consultation Type: ${formData.treatment}
+🆔 Appointment ID: ${bookedApptId}
+
+Please confirm my booking.`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      background: '#25D366',
+                      color: '#fff',
+                      padding: '14px 20px',
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      fontSize: '14.5px',
+                      transition: 'opacity 0.2s',
+                      boxShadow: '0 4px 12px rgba(37,211,102,0.2)'
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                  >
+                    <FaWhatsapp style={{ fontSize: '18px' }} /> Didn't receive message? Chat on WhatsApp
+                  </a>
+                  <button onClick={reset} style={{ background: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT, color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
+                    Book Another Appointment
+                  </button>
+                </div>
                 <p style={{ color: '#64748b', fontSize: '12px', marginTop: '10px', marginBottom: '0', lineHeight: '1.5' }}>
                   To book an appointment for a family member or another person, please ensure you use their separate email address and phone number.
                 </p>

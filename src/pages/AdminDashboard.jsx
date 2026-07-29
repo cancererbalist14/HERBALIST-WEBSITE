@@ -97,6 +97,36 @@ export default function AdminDashboard() {
     return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   };
 
+  const getWhatsAppLink = (appt) => {
+    if (!appt || !appt.phone) return '#';
+    const cleanPhone = String(appt.phone).replace(/\D/g, '');
+    const phoneWithCc = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+    const text = `*Appointment Confirmed — Cancer Herbalist* 🌿
+
+Dear *${appt.name}*,
+
+Your consultation appointment has been successfully confirmed. Here are the booking details:
+
+📅 *Date:* ${appt.appointmentDay}
+🕐 *Time:* ${appt.appointmentSlot}
+🩺 *Consultation Type:* ${appt.treatment}
+🆔 *Appointment ID:* ${appt.apptId}
+
+*What to expect:*
+1. Our Consultant will call you at your registered phone number (*${appt.phone}*) at the booked time.
+2. Please keep your medical reports and prescriptions ready for reference.
+3. The consultation is completely free with no obligations.
+
+🔄 *Reschedule or Cancel Online:*
+${window.location.origin}/manage-appointment?id=${appt.apptId}
+
+If you have any questions, feel free to reply to this message.
+
+Thank you,
+Cancer Herbalist Team`;
+    return `https://wa.me/${phoneWithCc}?text=${encodeURIComponent(text)}`;
+  };
+
   // ── Website Content Management State ──
   const { content: globalContent, updateContent: saveGlobalContent, refreshContent } = useContent();
   const [generalForm, setGeneralForm] = useState(null);
@@ -1686,7 +1716,7 @@ export default function AdminDashboard() {
                     ) : (
                       <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
                         <a
-                          href={`https://wa.me/91${String(a.phone).replace(/\D/g,'')}`}
+                          href={getWhatsAppLink(a)}
                           target="_blank" rel="noreferrer"
                           onClick={e => e.stopPropagation()}
                           className="appointment-action-btn"
@@ -1845,7 +1875,7 @@ export default function AdminDashboard() {
                     <>
                       <div style={{ width: '100%' }}>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          <a href={`https://wa.me/91${String(selectedAppt.phone).replace(/\D/g,'')}`}
+                          <a href={getWhatsAppLink(selectedAppt)}
                             target="_blank" rel="noreferrer"
                             style={{
                               flex: 1, background: '#25d366', color: '#fff', padding: '10px',
