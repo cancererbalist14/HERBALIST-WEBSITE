@@ -10,7 +10,7 @@
 
 import { useState, useCallback } from 'react';
 
-const rawBackendUrl = import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app';
+const rawBackendUrl = import.meta.env.VITE_BACKEND_URL || '';
 const BACKEND_URL   = rawBackendUrl.replace(/\/+$/, '');
 
 export function useOrderSubmit() {

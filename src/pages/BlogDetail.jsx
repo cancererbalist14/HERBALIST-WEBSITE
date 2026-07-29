@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { FaArrowLeft, FaClock, FaUser, FaCalendarAlt, FaLeaf } from 'react-icons/fa';
 
 const ACCENT = '#38bed5';
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 const blogData = {
   1: {

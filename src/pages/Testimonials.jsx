@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaPlay, FaTimes, FaVideo, FaCheckCircle, FaStar, FaQuoteLeft, FaBookmark, FaRegChartBar, FaNotesMedical, FaRegClock, FaRibbon, FaFlask, FaUsers, FaGlobe, FaCalendarAlt, FaStethoscope, FaHourglassHalf } from 'react-icons/fa';
 
 const ACCENT = '#38bed5';
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 function getEmbedUrl(url) {
   if (!url) return '';

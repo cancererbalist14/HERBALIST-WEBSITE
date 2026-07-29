@@ -9,7 +9,7 @@ import { products } from './ProductDetail'; // Importing products from ProductDe
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
 
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 export default function Wishlist() {
   const navigate = useNavigate();

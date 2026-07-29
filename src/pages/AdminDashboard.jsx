@@ -5,7 +5,7 @@ import {
 } from 'react-icons/fa';
 import { useContent } from '../context/ContentContext';
 
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 const THEMES = {
   green: { primary: '#1a6e52', accent: '#38bed5', name: '🌿 Green Recovery' },
   blue: { primary: '#0f4c81', accent: '#4b9cd3', name: '🌊 Ocean Calm' },

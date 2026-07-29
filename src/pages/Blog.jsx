@@ -4,7 +4,7 @@ import { FaSearch, FaClock, FaUser } from 'react-icons/fa';
 import { useContent } from '../context/ContentContext';
 
 const ACCENT = '#38bed5';
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 const blogs = [
   {

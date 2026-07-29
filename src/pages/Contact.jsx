@@ -6,7 +6,7 @@ import {
   FaLeaf, FaUserMd, FaChevronRight
 } from 'react-icons/fa';
 
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 const ACCENT = '#38bed5';
 const EMERGENCY_COLOR = '#f97316';

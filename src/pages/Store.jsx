@@ -8,7 +8,7 @@ import { products } from './ProductDetail';
 
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 const categories = ['All', 'Immunity', 'Anti-Tumor', 'Detox', 'Stress & Recovery', 'Nutrition', 'Essential Oils', 'Alkaline Therapy'];
 

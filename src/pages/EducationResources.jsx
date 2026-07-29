@@ -11,7 +11,7 @@ import { useContent } from '../context/ContentContext';
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
 const DARK = '#0a1628';
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 const CATEGORIES = [
   { id: 'all', label: 'All Resources', icon: <FaBookOpen /> },

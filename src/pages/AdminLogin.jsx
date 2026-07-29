@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaLock, FaLeaf, FaArrowRight, FaSpinner, FaHome } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
 

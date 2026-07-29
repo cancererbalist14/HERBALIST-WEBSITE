@@ -14,7 +14,7 @@ const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 // ── Shared product data (must match Store.jsx) ─────────────────────────────
 import productsData from '../../backend/data/products.json';

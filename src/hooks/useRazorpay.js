@@ -15,7 +15,7 @@ import { useState, useCallback } from 'react';
 // ── Point this to your backend URL ─────────────────────────────────────────
 // During development: http://localhost:5000
 // After deploying to Vercel: https://your-vercel-app.vercel.app
-const rawBackendUrl = import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app';
+const rawBackendUrl = import.meta.env.VITE_BACKEND_URL || '';
 const BACKEND_URL = rawBackendUrl.replace(/\/+$/, '');
 
 /* Dynamically loads Razorpay checkout.js (only once) */
