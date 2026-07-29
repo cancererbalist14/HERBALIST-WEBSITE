@@ -52,10 +52,19 @@ const isLocalOrigin = (origin) => {
   }
 };
 
+const isVercelOrigin = (origin) => {
+  try {
+    const url = new URL(origin);
+    return url.hostname.endsWith('.vercel.app');
+  } catch (e) {
+    return false;
+  }
+};
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow server-to-server requests (no origin), whitelisted origins, and local network origins
-    if (!origin || allowedOrigins.includes(origin) || isLocalOrigin(origin)) {
+    // Allow server-to-server requests (no origin), whitelisted origins, local network, and Vercel domains
+    if (!origin || allowedOrigins.includes(origin) || isLocalOrigin(origin) || isVercelOrigin(origin)) {
       return callback(null, true);
     }
     callback(new Error(`CORS: origin "${origin}" not allowed`));
