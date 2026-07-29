@@ -98,19 +98,12 @@ router.post('/submit-order', async (req, res) => {
     saveOrder(orderRow);
     addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been successfully placed and confirmed. We are scheduling it for shipment.');
 
-    /* ── 3. Respond immediately — integrations run in background ──────── */
-    // The order is already saved in memory. Respond to the customer instantly.
-    res.json({
-      success: true,
-      orderId,
-      shiprocketOrderId: null, // will be updated in background
-    });
+    /* ── 3. Execute integrations concurrently (prevent serverless termination) ── */
+    const promises = [];
 
-    /* ── 4. Execute integrations in background (fire-and-forget) ────── */
-    // These run AFTER the response is sent, so the customer isn't waiting.
-    setImmediate(async () => {
-      // Google Sheets
-      if (process.env.APPS_SCRIPT_URL) {
+    // Google Sheets
+    if (process.env.APPS_SCRIPT_URL) {
+      const sheetsPromise = (async () => {
         try {
           const url = new URL(process.env.APPS_SCRIPT_URL);
           Object.entries(orderRow).forEach(([k, v]) =>
@@ -121,10 +114,13 @@ router.post('/submit-order', async (req, res) => {
         } catch (e) {
           console.warn('[submit-order] Sheets error:', e.message);
         }
-      }
+      })();
+      promises.push(sheetsPromise);
+    }
 
-      // Shiprocket
-      if (process.env.SHIPROCKET_EMAIL && process.env.SHIPROCKET_PASSWORD) {
+    // Shiprocket
+    if (process.env.SHIPROCKET_EMAIL && process.env.SHIPROCKET_PASSWORD) {
+      const shiprocketPromise = (async () => {
         try {
           const srData = await createShiprocketOrder(orderRow);
           const shiprocketOrderId = srData.order_id || srData.id || null;
@@ -155,41 +151,59 @@ router.post('/submit-order', async (req, res) => {
             addOrderEvent(orderId, 'SYSTEM_ERROR', ORDER_STATUSES.SHIPMENT_CREATION_FAILED, 'Fulfillment creation failed. Our support team will manually process it.', { error: srErr.message });
           }
         }
-      } else {
-        console.warn('[submit-order] SHIPROCKET_EMAIL/PASSWORD not set — skipping Shiprocket.');
-      }
+      })();
+      promises.push(shiprocketPromise);
+    }
 
-      // Log order verified event if shipment creation succeeded
-      const updatedOrder = await getOrderByIdAsync(orderId);
-      if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
-        addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_CONFIRMED, 'Order verification completed. Ready for shipment.');
-      }
-
-      // Zoho CRM
-      if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_REFRESH_TOKEN) {
+    // Zoho CRM
+    if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_REFRESH_TOKEN) {
+      const zohoPromise = (async () => {
         try {
           await pushOrderToZoho(orderRow);
         } catch (err) {
           console.error('[submit-order] Zoho CRM error:', err.message);
         }
-      }
+      })();
+      promises.push(zohoPromise);
+    }
 
-      // Zoho Books
-      if (process.env.ZOHO_BOOKS_ORGANIZATION_ID) {
+    // Zoho Books
+    if (process.env.ZOHO_BOOKS_ORGANIZATION_ID) {
+      const zohoBooksPromise = (async () => {
         try {
           await pushOrderToZohoBooks(orderRow);
         } catch (err) {
           console.error('[submit-order] Zoho Books error:', err.message);
         }
-      }
+      })();
+      promises.push(zohoBooksPromise);
+    }
 
-      // Email confirmation (customer + admin)
+    // Email confirmation (customer + admin)
+    const emailPromise = (async () => {
       try {
         const finalOrder = await getOrderByIdAsync(orderId) || orderRow;
         await sendOrderConfirmationEmails(finalOrder);
       } catch (emailErr) {
         console.error('[submit-order] Email error:', emailErr.message);
       }
+    })();
+    promises.push(emailPromise);
+
+    // Wait for all integrations to finish before sending response
+    await Promise.all(promises);
+
+    // Log order verified event if shipment creation succeeded
+    const updatedOrder = await getOrderByIdAsync(orderId);
+    if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
+      addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_CONFIRMED, 'Order verification completed. Ready for shipment.');
+    }
+
+    /* ── 4. Respond to client ── */
+    res.json({
+      success: true,
+      orderId,
+      shiprocketOrderId: updatedOrder ? updatedOrder.shiprocketOrderId : null,
     });
 
 
