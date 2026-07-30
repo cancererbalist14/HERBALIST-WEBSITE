@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postinstall": "npm run build",
+    "postinstall": "npm install --prefix backend && npm run build",
     "start": "node backend/server.js",
     "build:prod": "vite build && node backend/server.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 100",
