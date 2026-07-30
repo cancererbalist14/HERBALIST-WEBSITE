@@ -72,10 +72,29 @@ const isVercelOrigin = (origin) => {
   }
 };
 
+const isHostingerOrigin = (origin) => {
+  try {
+    const url = new URL(origin);
+    return (
+      url.hostname.endsWith('.hostingersite.com') ||
+      url.hostname.endsWith('.hostinger.site') ||
+      url.hostname.endsWith('.hostinger.com')
+    );
+  } catch (e) {
+    return false;
+  }
+};
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow server-to-server requests (no origin), whitelisted origins, local network, and Vercel domains
-    if (!origin || allowedOrigins.includes(origin) || isLocalOrigin(origin) || isVercelOrigin(origin)) {
+    // Allow: no origin (server-to-server), whitelisted, local, Vercel, Hostinger
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      isLocalOrigin(origin) ||
+      isVercelOrigin(origin) ||
+      isHostingerOrigin(origin)
+    ) {
       return callback(null, true);
     }
     callback(new Error(`CORS: origin "${origin}" not allowed`));
