@@ -175,8 +175,16 @@ const seedDatabase = async () => {
     if (!webContent) {
       await dbWrite('website_content', defaultWebsiteContent);
     } else {
+      // Ensure the contact numbers are correctly updated in the database
+      if (!webContent.contact) webContent.contact = {};
+      webContent.contact.whatsapp = '918884588835';
+      webContent.contact.phone = '+91 88845 88835';
+
       // Merge structure in case we add fields later
       const merged = { ...defaultWebsiteContent, ...webContent };
+      merged.contact.whatsapp = '918884588835';
+      merged.contact.phone = '+91 88845 88835';
+
       await dbWrite('website_content', merged);
     }
   } catch (err) {
