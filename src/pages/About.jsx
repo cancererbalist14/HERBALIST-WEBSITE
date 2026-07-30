@@ -79,7 +79,7 @@ export default function About() {
       <section style={{ background: '#fff', padding: 'clamp(50px, 8vw, 100px) 20px' }}>
         <div className="about-story-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center' }}>
           {/* Image side */}
-          <motion.div data-aos="fade-right" style={{ position: 'relative', paddingBottom: '60px', paddingRight: '28px' }}>
+          <motion.div className="founder-img-wrapper" data-aos="fade-right" style={{ position: 'relative', paddingBottom: '60px', paddingRight: '28px' }}>
             <img
               src={aboutStory.founderImage || '/images/doctor1.png'}
               alt={aboutStory.founderQuoteAuthor || 'Prof Ramesh Babu — Founder, Cancer Herbalist'}
@@ -405,6 +405,17 @@ export default function About() {
         @media (max-width: 900px) {
           .about-story-grid {
             grid-template-columns: 1fr !important;
+          }
+          .founder-img-wrapper {
+            padding-bottom: 0 !important;
+            padding-right: 0 !important;
+            margin-bottom: 24px !important;
+          }
+          .quote-card {
+            position: static !important;
+            margin: 24px auto 0 !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
           }
         }
       `}</style>

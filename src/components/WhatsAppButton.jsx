@@ -79,13 +79,8 @@ export default function WhatsAppButton() {
         }
         @media (max-width: 768px) {
           .whatsapp-btn {
-            bottom: 90px !important; /* Move up on mobile to avoid overlapping with StickyMobileBar */
-            right: 20px !important;
-            width: 50px !important;
-            height: 50px !important;
-            fontSize: 26px !important;
+            display: none !important;
           }
-          .whatsapp-tooltip { display: none !important; }
         }
       `}</style>
     </>

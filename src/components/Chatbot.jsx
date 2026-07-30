@@ -499,7 +499,7 @@ export default function Chatbot() {
         }
         @media (max-width: 768px) {
           .chatbot-btn {
-            bottom: 150px !important; /* Move up on mobile to avoid overlapping with StickyMobileBar and WhatsApp */
+            bottom: 88px !important; /* Position right above the 68px sticky mobile bar */
             right: 20px !important;
             width: 50px !important;
             height: 50px !important;
