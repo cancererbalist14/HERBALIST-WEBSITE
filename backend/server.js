@@ -123,10 +123,6 @@ const adminLimiter = rateLimit({
 app.use(express.json({ limit: '10mb' })); // Support Base64 image uploads in admin copy editor
 
 /* ── Health check ───────────────────────────────────────────── */
-app.get('/', (_req, res) =>
-  res.send('Cancer Herbalist Backend API is running successfully. 🌿')
-);
-
 app.get('/api/health', (_req, res) =>
   res.json({ status: 'ok', service: 'Cancer Herbalist Payment API' })
 );
