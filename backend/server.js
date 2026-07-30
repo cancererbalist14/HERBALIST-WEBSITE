@@ -20,8 +20,15 @@ const zohoCampaignsRoute     = require('./routes/zohoCampaigns');
 const zohoDeskRoute          = require('./routes/zohoDesk');
 
 const app  = express();
-app.set('trust proxy', 1); // Trust Vercel's proxy for accurate rate limiting and to prevent ValidationErrors
+app.set('trust proxy', 1); // Trust proxy for accurate rate limiting
 const PORT = process.env.PORT || 5001;
+
+// ── Resolve the built React frontend (dist/) ──────────────────
+// In production (Hostinger), the full project is deployed together:
+//   /project-root/
+//     backend/server.js   ← this file
+//     dist/               ← built React app (npm run build)
+const DIST_DIR = path.join(__dirname, '..', 'dist');
 
 
 /* ── Security headers ──────────────────────────────────────── */
@@ -165,7 +172,7 @@ const loginLimiter = rateLimit({
 });
 
 /* ── Admin Page & Auth Endpoints ────────────────────────────── */
-app.get('/admin', async (req, res) => {
+app.get('/admin', (req, res) => {
   const cookies = parseCookies(req.headers.cookie);
   const token = cookies['admin_token'];
 
@@ -174,23 +181,15 @@ app.get('/admin', async (req, res) => {
     return res.status(404).send('Not Found');
   }
 
-  // Serve React Admin index.html by fetching it from the frontend URL
-  try {
-    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/+$/, '');
-    const indexRes = await fetch(`${frontendUrl}/index.html`);
-    if (!indexRes.ok) {
-      throw new Error(`Failed to fetch index.html from frontend: status ${indexRes.status}`);
+  // Serve React index.html directly from the local dist/ folder
+  const indexPath = path.join(DIST_DIR, 'index.html');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  return res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('[server] Error serving admin index.html:', err.message);
+      res.status(500).send('Internal Server Error. Admin UI loading failed.');
     }
-    const html = await indexRes.text();
-    
-    // Set headers to prevent caching of the admin HTML page, ensuring cookie changes are always verified
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    res.setHeader('Content-Type', 'text/html');
-    return res.send(html);
-  } catch (err) {
-    console.error('[server] Error serving secure admin html:', err.message);
-    return res.status(500).send('Internal Server Error. Admin UI loading failed.');
-  }
+  });
 });
 
 app.post('/api/admin/login', loginLimiter, (req, res) => {
@@ -242,6 +241,20 @@ app.use('/api', zohoSignRoute);
 app.use('/api', zohoCampaignsRoute);
 app.use('/api', zohoDeskRoute);
 app.use('/api', adminOrdersRoute);
+
+/* ── Serve React static files (production) ──────────────────── */
+// Serves built CSS, JS, images from dist/
+app.use(express.static(DIST_DIR));
+
+// Catch-all: for any route not matched above, send React's index.html
+// This lets React Router handle client-side navigation (e.g. /products, /checkout)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(DIST_DIR, 'index.html'), (err) => {
+    if (err) {
+      res.status(500).send('Error loading application.');
+    }
+  });
+});
 
 /* ── Global error handler (must be LAST middleware) ─────────── */
 // Catches any error thrown in async route handlers (e.g. unexpected throws
