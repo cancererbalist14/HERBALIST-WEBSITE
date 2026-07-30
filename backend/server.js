@@ -1,4 +1,5 @@
 const path = require('path');
+const fs   = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express   = require('express');
 const cors      = require('cors');
@@ -24,11 +25,14 @@ app.set('trust proxy', 1); // Trust proxy for accurate rate limiting
 const PORT = process.env.PORT || 5001;
 
 // ── Resolve the built React frontend (dist/) ──────────────────
-// In production (Hostinger), the full project is deployed together:
-//   /project-root/
-//     backend/server.js   ← this file
-//     dist/               ← built React app (npm run build)
-const DIST_DIR = path.join(__dirname, '..', 'dist');
+// Try multiple possible locations for dist/ to handle different
+// working directory setups on various hosting platforms.
+const possibleDistDirs = [
+  path.join(__dirname, '..', 'dist'),   // Normal: backend/../dist
+  path.join(process.cwd(), 'dist'),     // Fallback: cwd/dist
+];
+const DIST_DIR = possibleDistDirs.find(d => fs.existsSync(path.join(d, 'index.html')))
+  || possibleDistDirs[0]; // default even if not found yet
 
 
 /* ── Security headers ──────────────────────────────────────── */
@@ -121,6 +125,13 @@ const adminLimiter = rateLimit({
 
 /* ── Body parser ────────────────────────────────────────────── */
 app.use(express.json({ limit: '10mb' })); // Support Base64 image uploads in admin copy editor
+
+/* ── Serve React static files (EARLY — before API routes) ───── */
+// Must be placed here so /assets/*.css and /assets/*.js are served
+// directly without going through any API middleware.
+console.log('[server] DIST_DIR:', DIST_DIR);
+console.log('[server] dist/index.html exists:', fs.existsSync(path.join(DIST_DIR, 'index.html')));
+app.use(express.static(DIST_DIR));
 
 /* ── Health check ───────────────────────────────────────────── */
 app.get('/api/health', (_req, res) =>
