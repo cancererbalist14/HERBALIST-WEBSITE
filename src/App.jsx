@@ -43,8 +43,9 @@ import Support from './pages/Support';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
-import Chatbot from './components/Chatbot';
 import RouteLoader from './components/RouteLoader';
+import Chatbot from './components/Chatbot';
+import BackButton from './components/BackButton';
 import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider } from './context/CartContext';
 import { ContentProvider } from './context/ContentContext';
@@ -162,6 +163,7 @@ function App() {
             </main>
 
             <Footer />
+            <BackButton />
             <WhatsAppButton />
             <Chatbot />
             <CartDrawer />

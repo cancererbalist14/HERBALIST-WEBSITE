@@ -110,9 +110,9 @@ export default function Hero() {
     goTo((current - 1 + activeSlides.length) % activeSlides.length, -1);
   }, [current, goTo, activeSlides.length]);
 
-  // Auto-advance every 4s — always on
+  // Auto-advance every 8s — always on
   useEffect(() => {
-    const t = setInterval(next, 4000);
+    const t = setInterval(next, 8000);
     return () => clearInterval(t);
   }, [next]);
 
