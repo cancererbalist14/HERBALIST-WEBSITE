@@ -13,6 +13,7 @@ const nodemailer = require('nodemailer');
 const { validateSchema } = require('../utils/validateSchema');
 const { checkAuthLockout, recordAuthFailure, recordAuthSuccess } = require('../middleware/authRateLimiter');
 const { sendWhatsAppMessage } = require('../utils/whatsapp');
+const { dbRead, dbWrite } = require('../utils/supabaseDb');
 const router = express.Router();
 
 /* ── Slot constants ─────────────────────────────────────────────── */
@@ -55,17 +56,50 @@ function normalizeDateKey(dateStr) {
   return String(dateStr).trim().toLowerCase().replace(/,/g, '');
 }
 
+// Helper to check if a day (e.g. "Saturday, 1 August, 2026") is yesterday or earlier in India Standard Time (IST)
+function isDateInPast(dayStr) {
+  try {
+    const cleanDay = String(dayStr).replace(/^[a-zA-Z]+,\s*/, '').replace(/,/g, '').trim();
+    const parsed = new Date(cleanDay);
+    if (isNaN(parsed.getTime())) return false;
+
+    // Get today's start date in India timezone
+    const todayStr = new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });
+    const [d, m, y] = todayStr.split('/');
+    const todayStart = new Date(Number(y), Number(m) - 1, Number(d));
+
+    return parsed.getTime() < todayStart.getTime();
+  } catch (e) {
+    return false;
+  }
+}
+
 async function syncSlotConfigFromSheets(force = false) {
-  const url = process.env.APPS_SCRIPT_URL;
-  if (!url) return false;
   const now = Date.now();
   if (!force && (now - lastSlotConfigSyncTime < SLOT_CONFIG_SYNC_COOLDOWN_MS)) return true;
   try {
+    // 1. Read from Supabase/Local JSON database first
+    const dbConfig = await dbRead('slot_config');
+    if (dbConfig && typeof dbConfig === 'object') {
+      // Clear and rebuild from database
+      Object.keys(slotConfigStore).forEach(k => delete slotConfigStore[k]);
+      Object.keys(dbConfig).forEach(date => {
+        slotConfigStore[date] = {
+          regularSlots: new Set(dbConfig[date].regularSlots || []),
+          emergencySlots: new Set(dbConfig[date].emergencySlots || [])
+        };
+      });
+      lastSlotConfigSyncTime = now;
+      return true;
+    }
+
+    // 2. Fallback to Google Sheets (first-time seed if DB is empty)
+    const url = process.env.APPS_SCRIPT_URL;
+    if (!url) return false;
     const res = await fetch(`${url}?action=getRows&sheet=slotConfig`);
     if (!res.ok) throw new Error(`Status ${res.status}`);
     const data = await res.json();
     if (data.success) {
-      // Clear and rebuild from sheets
       Object.keys(slotConfigStore).forEach(k => delete slotConfigStore[k]);
       (data.rows || []).forEach(row => {
         if (!row || !row.date) return;
@@ -73,37 +107,44 @@ async function syncSlotConfigFromSheets(force = false) {
         if (!slotConfigStore[normalizedKey]) {
           slotConfigStore[normalizedKey] = { regularSlots: new Set(), emergencySlots: new Set() };
         }
-        if (row.slot === '[NONE]') {
-          // Placeholder row for completely closed slot configs
-          return;
-        }
+        if (row.slot === '[NONE]') return;
         if (row.slotType === 'emergency') {
           slotConfigStore[normalizedKey].emergencySlots.add(row.slot);
         } else {
           slotConfigStore[normalizedKey].regularSlots.add(row.slot);
         }
       });
-      lastSlotConfigSyncTime = Date.now();
+
+      // Save to database immediately
+      const serialized = {};
+      Object.keys(slotConfigStore).forEach(date => {
+        serialized[date] = {
+          regularSlots: [...slotConfigStore[date].regularSlots],
+          emergencySlots: [...slotConfigStore[date].emergencySlots]
+        };
+      });
+      await dbWrite('slot_config', serialized);
+
+      lastSlotConfigSyncTime = now;
       return true;
     }
   } catch (err) {
-    console.warn('[slotConfig] Failed to sync from Sheets:', err.message);
+    console.warn('[slotConfig] Failed to sync slot configurations:', err.message);
   }
   return false;
 }
 
-async function saveSlotConfigToSheets(date, slots, slotType) {
+// Background worker for Google Sheets
+async function saveSlotConfigToSheetsBackground(date, slots, slotType) {
   const url = process.env.APPS_SCRIPT_URL;
   if (!url) return;
   try {
-    // First delete existing rows for this date+type
     const delUrl = new URL(url);
     delUrl.searchParams.append('action', 'deleteSlotConfig');
     delUrl.searchParams.append('date', date);
     delUrl.searchParams.append('slotType', slotType);
     await fetch(delUrl.toString()).catch(() => {});
 
-    // Save [NONE] as placeholder if no slots are enabled to preserve closed state
     const slotsToInsert = slots.length > 0 ? slots : ['[NONE]'];
     for (const slot of slotsToInsert) {
       const rowUrl = new URL(url);
@@ -115,20 +156,66 @@ async function saveSlotConfigToSheets(date, slots, slotType) {
       await fetch(rowUrl.toString()).catch(() => {});
     }
   } catch (err) {
-    console.warn('[slotConfig] Sheets save error:', err.message);
+    console.warn('[slotConfig] Sheets background save error:', err.message);
+  }
+}
+
+async function saveSlotConfigToSheets(date, slots, slotType) {
+  try {
+    // 1. Update local in-memory config store
+    const normalizedKey = normalizeDateKey(date);
+    if (!slotConfigStore[normalizedKey]) {
+      slotConfigStore[normalizedKey] = { regularSlots: new Set(), emergencySlots: new Set() };
+    }
+    if (slotType === 'emergency') {
+      slotConfigStore[normalizedKey].emergencySlots = new Set(slots);
+    } else {
+      slotConfigStore[normalizedKey].regularSlots = new Set(slots);
+    }
+
+    // 2. Persist to Supabase/Local JSON database immediately
+    const serialized = {};
+    Object.keys(slotConfigStore).forEach(d => {
+      serialized[d] = {
+        regularSlots: [...slotConfigStore[d].regularSlots],
+        emergencySlots: [...slotConfigStore[d].emergencySlots]
+      };
+    });
+    await dbWrite('slot_config', serialized);
+
+    // 3. Dispatch background Google Sheets write (unawaited)
+    saveSlotConfigToSheetsBackground(date, slots, slotType).catch(() => {});
+  } catch (err) {
+    console.error('[slotConfig] Failed to save config:', err.message);
   }
 }
 
 async function deleteSlotConfigFromSheets(date) {
-  const url = process.env.APPS_SCRIPT_URL;
-  if (!url) return;
   try {
-    const delUrl = new URL(url);
-    delUrl.searchParams.append('action', 'deleteSlotConfig');
-    delUrl.searchParams.append('date', date);
-    await fetch(delUrl.toString());
+    // 1. Update local store
+    const normalizedKey = normalizeDateKey(date);
+    delete slotConfigStore[normalizedKey];
+
+    // 2. Write updated state to database
+    const serialized = {};
+    Object.keys(slotConfigStore).forEach(d => {
+      serialized[d] = {
+        regularSlots: [...slotConfigStore[d].regularSlots],
+        emergencySlots: [...slotConfigStore[d].emergencySlots]
+      };
+    });
+    await dbWrite('slot_config', serialized);
+
+    // 3. Dispatch background Google Sheets delete
+    const url = process.env.APPS_SCRIPT_URL;
+    if (url) {
+      const delUrl = new URL(url);
+      delUrl.searchParams.append('action', 'deleteSlotConfig');
+      delUrl.searchParams.append('date', date);
+      fetch(delUrl.toString()).catch(() => {});
+    }
   } catch (err) {
-    console.warn('[slotConfig] Sheets delete error:', err.message);
+    console.error('[slotConfig] Reset config error:', err.message);
   }
 }
 
@@ -694,20 +781,40 @@ let lastApptSyncTime = 0;
 const APPT_SYNC_COOLDOWN_MS = 30000; // 30 seconds cache
 
 async function syncAppointmentsFromSheets(force = false) {
-  const url = process.env.APPS_SCRIPT_URL;
-  if (!url) return false;
-
   const now = Date.now();
   if (!force && cachedAppointments !== null && (now - lastApptSyncTime < APPT_SYNC_COOLDOWN_MS)) {
     return true;
   }
 
   try {
+    // 1. Read from Supabase/Local JSON database first
+    let dbAppts = await dbRead('appointments');
+    if (dbAppts && Array.isArray(dbAppts)) {
+      // Auto-cleanup: filter out any past appointments
+      const initialCount = dbAppts.length;
+      dbAppts = dbAppts.filter(a => !isDateInPast(a.appointmentDay));
+      
+      // If any past appointments were removed, write back cleaned list to database
+      if (dbAppts.length < initialCount) {
+        console.log(`[bookAppointment] Auto-cleaned ${initialCount - dbAppts.length} past appointments.`);
+        await dbWrite('appointments', dbAppts);
+      }
+
+      cachedAppointments = dbAppts;
+      appointmentStore.length = 0;
+      appointmentStore.push(...dbAppts);
+      lastApptSyncTime = now;
+      return true;
+    }
+
+    // 2. Fallback to Google Sheets (first-time seed if DB is empty)
+    const url = process.env.APPS_SCRIPT_URL;
+    if (!url) return false;
     const res = await fetch(`${url}?action=getRows&sheet=appointments`);
     if (!res.ok) throw new Error(`Status ${res.status}`);
     const data = await res.json();
     if (data.success) {
-      const validAppts = (data.rows || []).filter(a => a && a.apptId && String(a.apptId).trim());
+      let validAppts = (data.rows || []).filter(a => a && a.apptId && String(a.apptId).trim());
       
       // Normalize ISO date strings from Google Sheets to local 'en-IN' format in India timezone
       const isoPattern = /^\d{4}-\d{2}-\d{2}/;
@@ -726,10 +833,16 @@ async function syncAppointmentsFromSheets(force = false) {
         }
       });
 
+      // Auto-cleanup sheets data as well
+      validAppts = validAppts.filter(a => !isDateInPast(a.appointmentDay));
+
+      // Save to database immediately
+      await dbWrite('appointments', validAppts);
+
       cachedAppointments = validAppts;
       appointmentStore.length = 0;
       appointmentStore.push(...validAppts);
-      lastApptSyncTime = Date.now();
+      lastApptSyncTime = now;
       return true;
     }
   } catch (err) {
@@ -865,6 +978,12 @@ router.post('/book-appointment', async (req, res) => {
   const data = { apptId, name, phone, email, treatment, stage, message, appointmentDay, appointmentSlot };
 
   try {
+    // 1. Persist to database immediately
+    await dbWrite('appointments', appointmentStore);
+
+    // 2. Dispatch background Google Sheets save (unawaited)
+    saveToSheets(appt).catch(e => console.warn('[bookAppointment] Background saveToSheets failed:', e.message));
+
     const waOrigin = req.headers.origin || 'http://localhost:5173';
     const whatsappBody = `*Appointment Confirmed — Cancer Herbalist* 🌿
 
@@ -890,7 +1009,7 @@ If you have any questions, feel free to reply to this message.
 Thank you,
 Cancer Herbalist Team`;
 
-    const [emailResPatient, emailResAdmin, sheetsRes, whatsappRes] = await Promise.all([
+    const [emailResPatient, emailResAdmin, whatsappRes] = await Promise.all([
       // 1. Patient confirmation email
       sendMailWrapper({
         to: email,
@@ -907,10 +1026,7 @@ Cancer Herbalist Team`;
         html: buildAdminEmailHtml(data),
       }),
 
-      // 3. Save to Google Sheets
-      saveToSheets(appt),
-
-      // 4. WhatsApp notification
+      // 3. WhatsApp notification
       sendWhatsAppMessage(phone, whatsappBody),
     ]);
 
@@ -1147,8 +1263,11 @@ router.delete('/public/appointments/:apptId', async (req, res) => {
     appointmentStore.splice(idx, 1);
     lastApptSyncTime = 0;
 
-    // Delete from Sheets
-    await deleteRowFromSheets(apptId);
+    // Write to database immediately
+    await dbWrite('appointments', appointmentStore);
+
+    // Delete from Sheets in background (unawaited)
+    deleteRowFromSheets(apptId).catch(() => {});
 
     // Send emails
     const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
@@ -1258,8 +1377,11 @@ router.put('/public/appointments/:apptId', async (req, res) => {
     appointmentStore[idx] = updatedAppt;
     lastApptSyncTime = 0;
 
-    // Sync to Sheets
-    await updateRowInSheets(updatedAppt);
+    // Write to database immediately
+    await dbWrite('appointments', appointmentStore);
+
+    // Sync to Sheets in background (unawaited)
+    updateRowInSheets(updatedAppt).catch(() => {});
 
     // Send emails
     const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
@@ -1382,8 +1504,11 @@ Cancer Herbalist Team`;
     appointmentStore.splice(idx, 1);
     lastApptSyncTime = 0;
 
-    // Delete from Sheets
-    await deleteRowFromSheets(apptId);
+    // Write to database immediately
+    await dbWrite('appointments', appointmentStore);
+
+    // Delete from Sheets in background (unawaited)
+    deleteRowFromSheets(apptId).catch(() => {});
 
     res.json({ success: true, message: 'Appointment cancelled successfully.' });
   } catch (err) {
@@ -1433,8 +1558,11 @@ router.put('/appointments/:apptId', checkAdmin, async (req, res) => {
     appointmentStore[idx] = updatedAppt;
     lastApptSyncTime = 0;
 
-    // Sync to Sheets
-    await updateRowInSheets(updatedAppt);
+    // Write to database immediately
+    await dbWrite('appointments', appointmentStore);
+
+    // Sync to Sheets in background (unawaited)
+    updateRowInSheets(updatedAppt).catch(() => {});
 
     // ── Send reschedule email to patient (only if slot actually changed) ──
     if (isActuallyRescheduled && currentAppt.email && currentAppt.email !== '—') {
@@ -1529,13 +1657,15 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
       status: 'Confirmed'
     };
     
-    // Save to Sheets FIRST — if this fails, we return an error and do NOT push to in-memory store
-    // This prevents the UI from showing success when the data was not persisted.
-    await saveToSheets(appt, true); // throwOnError = true
-
-    // Only update the in-memory store after a confirmed Sheets save
+    // Only update the in-memory store
     appointmentStore.push(appt);
     lastApptSyncTime = 0;
+
+    // Write to database immediately
+    await dbWrite('appointments', appointmentStore);
+
+    // Save to Sheets in background (unawaited)
+    saveToSheets(appt, false).catch(e => console.warn('[bookAppointment] Background slot block save to sheets failed:', e.message));
     
     res.json({ success: true, appointment: appt });
   } catch (err) {

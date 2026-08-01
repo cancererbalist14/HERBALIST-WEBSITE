@@ -41,7 +41,7 @@ export default function AdminDashboard() {
 
   const currentThemeColors = THEMES[theme] || THEMES.green;
   const PRIMARY = currentThemeColors.primary;
-  const ACCENT  = currentThemeColors.accent;
+  const ACCENT = currentThemeColors.accent;
 
   const bgMain = darkMode ? '#0f172a' : '#f8fafc';
   const bgCard = darkMode ? '#1e293b' : '#fff';
@@ -52,24 +52,25 @@ export default function AdminDashboard() {
   const inputBorder = darkMode ? '#475569' : '#cbd5e1';
   const inputText = darkMode ? '#f8fafc' : '#1e293b';
 
-  const [secret, setSecret]         = useState(
+  const [secret, setSecret] = useState(
     () => localStorage.getItem('ch_admin_secret') || ''
   );
-  const [authed, setAuthed]         = useState(
+  const [authed, setAuthed] = useState(
     () => localStorage.getItem('ch_admin_authed') === 'true'
   );
-  const [authError, setAuthError]   = useState('');
-  const [appointments, setAppts]    = useState([]);
-  const [loading, setLoading]       = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [appointments, setAppts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState('');
   const [filterDate, setFilterDate] = useState('today');
   const [selectedAppt, setSelected] = useState(null);
   const [slotViewDate, setSlotViewDate] = useState(null); // date string for the slot grid
   const [quickBlockDate, setQuickBlockDate] = useState(() => {
     const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   });
   const [quickBlockSlot, setQuickBlockSlot] = useState(ALL_SLOTS[0]);
+  const [blockingSlot, setBlockingSlot] = useState(false);
 
   // Reschedule state
   const [rescheduleDate, setRescheduleDate] = useState('');
@@ -142,7 +143,7 @@ Cancer Herbalist Team`;
   // Daily Slot Manager state
   const [slotManagerDate, setSlotManagerDate] = useState(() => {
     const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   });
   const [slotManagerConfig, setSlotManagerConfig] = useState({}); // date -> { regularSlots:[], emergencySlots:[] }
   const [slotManagerLoading, setSlotManagerLoading] = useState(false);
@@ -253,7 +254,7 @@ Cancer Herbalist Team`;
       if (dateFilter && dateFilter !== 'all' && dateFilter !== 'blocked') {
         params.append('date', dateFilter === 'today' ? today : dateFilter);
       }
-      const res  = await fetch(`${BACKEND_URL}/api/appointments?${params}`);
+      const res = await fetch(`${BACKEND_URL}/api/appointments?${params}`);
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to fetch.');
       setAppts(normalizeApptDates(data.appointments || []));
@@ -270,7 +271,7 @@ Cancer Herbalist Team`;
     setLoading(true);
     setAuthError('');
     try {
-      const res  = await fetch(`${BACKEND_URL}/api/appointments?key=${secret}`);
+      const res = await fetch(`${BACKEND_URL}/api/appointments?key=${secret}`);
       const data = await res.json();
       if (res.status === 401 || !data.success) { setAuthError('Wrong password. Try again.'); setLoading(false); return; }
       // Save session to localStorage so Navbar can show admin link
@@ -331,6 +332,8 @@ Cancer Herbalist Team`;
 
   /* ── Block Slot ────────────────────────────────────────── */
   const handleBlockSlot = async (day, slot) => {
+    if (blockingSlot) return;
+    setBlockingSlot(true);
     try {
       const res = await fetch(`${BACKEND_URL}/api/appointments/block?key=${secret}`, {
         method: 'POST',
@@ -343,11 +346,15 @@ Cancer Herbalist Team`;
       fetchAppts(secret, filterDate);
     } catch (err) {
       showToast(`Error: ${err.message}`, 'error');
+    } finally {
+      setBlockingSlot(false);
     }
   };
 
   /* ── Unblock Slot ──────────────────────────────────────── */
   const handleUnblockSlot = async (apptId) => {
+    if (blockingSlot) return;
+    setBlockingSlot(true);
     try {
       const res = await fetch(`${BACKEND_URL}/api/appointments/${apptId}?key=${secret}`, {
         method: 'DELETE',
@@ -359,6 +366,8 @@ Cancer Herbalist Team`;
       fetchAppts(secret, filterDate);
     } catch (err) {
       showToast(`Error: ${err.message}`, 'error');
+    } finally {
+      setBlockingSlot(false);
     }
   };
 
@@ -370,7 +379,7 @@ Cancer Herbalist Team`;
       return;
     }
     if (!window.confirm(`Clear all ${blockedAppts.length} blocked slots on ${day}?`)) return;
-    
+
     setLoading(true);
     try {
       await Promise.all(blockedAppts.map(a =>
@@ -507,8 +516,8 @@ Cancer Herbalist Team`;
 
   const handleApproveCancellation = async (orderId, approved, remarksOrReason) => {
     try {
-      const body = approved 
-        ? { approved: true, remarks: remarksOrReason } 
+      const body = approved
+        ? { approved: true, remarks: remarksOrReason }
         : { approved: false, rejectionReason: remarksOrReason };
       const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/cancellation?key=${secret}`, {
         method: 'PUT',
@@ -529,8 +538,8 @@ Cancer Herbalist Team`;
 
   const handleApproveReturn = async (orderId, approved, physicalReturnRequired, remarksOrReason) => {
     try {
-      const body = approved 
-        ? { approved: true, physicalReturnRequired, remarks: remarksOrReason } 
+      const body = approved
+        ? { approved: true, physicalReturnRequired, remarks: remarksOrReason }
         : { approved: false, rejectionReason: remarksOrReason };
       const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/return?key=${secret}`, {
         method: 'PUT',
@@ -742,7 +751,7 @@ Cancer Herbalist Team`;
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to add product.');
-      
+
       setFormStatus('success');
       showToast('✅ Product added successfully!');
       setProductForm({
@@ -798,7 +807,7 @@ Cancer Herbalist Team`;
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update product.');
-      
+
       setFormStatus('success');
       showToast('✅ Product updated successfully!');
       setEditingProduct(null);
@@ -851,7 +860,7 @@ Cancer Herbalist Team`;
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to add testimonial.');
-      
+
       setFormStatus('success');
       showToast('✅ Testimonial added successfully!');
       setTestimonialForm({
@@ -879,7 +888,7 @@ Cancer Herbalist Team`;
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update testimonial.');
-      
+
       setFormStatus('success');
       showToast('✅ Testimonial updated successfully!');
       setEditingTestimonial(null);
@@ -1093,7 +1102,7 @@ Cancer Herbalist Team`;
   };
 
   /* ── Slot grid helpers ──────────────────────────────── */
-  const todayAppts       = appointments.filter(a =>
+  const todayAppts = appointments.filter(a =>
     a.appointmentDay.toLowerCase().includes(today.toLowerCase())
   );
   const todayBookedSlots = new Set(todayAppts.map(a => a.appointmentSlot));
@@ -1101,8 +1110,8 @@ Cancer Herbalist Team`;
   // Slot grid shows: selected appointment's date > today > first appointment's date
   const slotGridDate = slotViewDate
     || (todayAppts.length > 0 ? today : appointments[0]?.appointmentDay || today);
-  const slotGridAppts   = appointments.filter(a => a.appointmentDay === slotGridDate);
-  const slotGridBooked  = new Set(slotGridAppts.map(a => a.appointmentSlot));
+  const slotGridAppts = appointments.filter(a => a.appointmentDay === slotGridDate);
+  const slotGridBooked = new Set(slotGridAppts.map(a => a.appointmentSlot));
 
   const displayedAppointments = appointments.filter(a => {
     if (filterDate === 'blocked') {
@@ -1559,8 +1568,8 @@ Cancer Herbalist Team`;
           </div>
         </div>
         <div className="admin-header-actions">
-          <button 
-            onClick={() => { fetchAppts(secret, filterDate); fetchOrders(secret); loadDynamicContent(); }} 
+          <button
+            onClick={() => { fetchAppts(secret, filterDate); fetchOrders(secret); loadDynamicContent(); }}
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
@@ -1603,714 +1612,724 @@ Cancer Herbalist Team`;
         {activeDashboardTab === 'appointments' ? (
           <>
             {/* Stats row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-          {[
-            { label: "Today's Appointments",  value: todayAppts.filter(a => a.name !== '[BLOCKED]').length,      icon: '📅', color: PRIMARY },
-            { label: 'Slots Booked Today',     value: todayBookedSlots.size,  icon: '🔴', color: '#ef4444' },
-            { label: 'Slots Free Today',       value: TIME_SLOTS.length - todayBookedSlots.size, icon: '🟢', color: '#22c55e' },
-            { label: 'Total Appointments',     value: appointments.filter(a => a.name !== '[BLOCKED]').length,    icon: '📋', color: ACCENT },
-          ].map(s => (
-            <div key={s.label} style={{
-              background: bgCard, borderRadius: '16px', padding: '20px 24px',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: `1px solid ${s.color}20`,
-            }}>
-              <span style={{ fontSize: '28px' }}>{s.icon}</span>
-              <p style={{ margin: '8px 0 2px', fontSize: '28px', fontWeight: 800, color: s.color }}>{s.value}</p>
-              <p style={{ margin: 0, fontSize: '12px', color: textSecondary, fontWeight: 600 }}>{s.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Filter bar & Quick Block/Unblock Controls */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: '16px',
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-          background: bgCard,
-          padding: '16px 20px',
-          borderRadius: '14px',
-          border: `1px solid ${borderCard}`,
-          boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
-        }}>
-          {/* Filters on Left */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Filter:</span>
-            {['today', 'all', 'blocked'].map(f => (
-              <button key={f} onClick={() => setFilterDate(f)} style={{
-                padding: '8px 16px', borderRadius: '8px', fontWeight: 700, fontSize: '12px',
-                border: `2px solid ${filterDate === f ? PRIMARY : borderCard}`,
-                background: filterDate === f ? `${PRIMARY}12` : darkMode ? '#334155' : '#fff',
-                color: filterDate === f ? PRIMARY : textSecondary,
-                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
-              }}>
-                {f === 'today' ? "📅 Today" : f === 'all' ? "📋 All" : "🔒 Blocked Slots"}
-              </button>
-            ))}
-            {loading && <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: '8px' }}>Loading…</span>}
-            {fetchError && <span style={{ fontSize: '12px', color: '#ef4444' }}>⚠ {fetchError}</span>}
-          </div>
-
-          {/* Quick Block/Unblock Form on Right */}
-          <div style={{
-            display: 'flex',
-            gap: '10px',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            background: darkMode ? '#1e293b' : '#f8fafc',
-            padding: '8px 12px',
-            borderRadius: '10px',
-            border: `1px solid ${borderCard}`
-          }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Quick Block:</span>
-            
-            <input
-              type="date"
-              value={quickBlockDate}
-              onChange={e => setQuickBlockDate(e.target.value)}
-              style={{
-                padding: '6px 10px',
-                borderRadius: '6px',
-                border: `1px solid ${inputBorder}`,
-                background: inputBg,
-                color: inputText,
-                fontSize: '12px',
-                fontFamily: 'inherit',
-                outline: 'none'
-              }}
-            />
-
-            <select
-              value={quickBlockSlot}
-              onChange={e => setQuickBlockSlot(e.target.value)}
-              style={{
-                padding: '6px 10px',
-                borderRadius: '6px',
-                border: `1px solid ${inputBorder}`,
-                background: inputBg,
-                color: inputText,
-                fontSize: '12px',
-                fontFamily: 'inherit',
-                outline: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              {ALL_SLOTS.map(slot => (
-                <option key={slot} value={slot}>{slot}</option>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+              {[
+                { label: "Today's Appointments", value: todayAppts.filter(a => a.name !== '[BLOCKED]').length, icon: '📅', color: PRIMARY },
+                { label: 'Slots Booked Today', value: todayBookedSlots.size, icon: '🔴', color: '#ef4444' },
+                { label: 'Slots Free Today', value: TIME_SLOTS.length - todayBookedSlots.size, icon: '🟢', color: '#22c55e' },
+                { label: 'Total Appointments', value: appointments.filter(a => a.name !== '[BLOCKED]').length, icon: '📋', color: ACCENT },
+              ].map(s => (
+                <div key={s.label} style={{
+                  background: bgCard, borderRadius: '16px', padding: '20px 24px',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: `1px solid ${s.color}20`,
+                }}>
+                  <span style={{ fontSize: '28px' }}>{s.icon}</span>
+                  <p style={{ margin: '8px 0 2px', fontSize: '28px', fontWeight: 800, color: s.color }}>{s.value}</p>
+                  <p style={{ margin: 0, fontSize: '12px', color: textSecondary, fontWeight: 600 }}>{s.label}</p>
+                </div>
               ))}
-            </select>
+            </div>
 
-            <button
-              onClick={() => {
-                const formatted = formatRescheduleDate(quickBlockDate);
-                if (!formatted) {
-                  showToast('Please select a valid date.', 'error');
-                  return;
-                }
-                handleBlockSlot(formatted, quickBlockSlot);
-              }}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                background: PRIMARY,
-                color: '#fff',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '12px',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                transition: 'all 0.15s'
-              }}
-            >
-              🔒 Block
-            </button>
-
-            <button
-              onClick={() => {
-                const formatted = formatRescheduleDate(quickBlockDate);
-                if (!formatted) {
-                  showToast('Please select a valid date.', 'error');
-                  return;
-                }
-                const apptToUnblock = appointments.find(a =>
-                  a.appointmentDay === formatted &&
-                  a.appointmentSlot === quickBlockSlot &&
-                  a.name === '[BLOCKED]'
-                );
-                if (apptToUnblock) {
-                  handleUnblockSlot(apptToUnblock.apptId);
-                } else {
-                  showToast('This slot is not currently blocked.', 'error');
-                }
-              }}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                background: '#ef4444',
-                color: '#fff',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '12px',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                transition: 'all 0.15s'
-              }}
-            >
-              🔓 Unblock
-            </button>
-          </div>
-        </div>
-
-        <div className="admin-main-grid">
-
-          {/* Appointment list */}
-          <div>
-            {displayedAppointments.length === 0 && !loading ? (
-              <div style={{
-                background: '#fff', borderRadius: '16px', padding: '48px',
-                textAlign: 'center', color: '#94a3b8',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-              }}>
-                <FaCalendarAlt style={{ fontSize: '40px', marginBottom: '16px', opacity: 0.4 }} />
-                <p style={{ margin: 0, fontSize: '15px' }}>No appointments found.</p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {displayedAppointments.map(a => {
-                  const isEmergency = EMERGENCY_SLOTS.some(s => a.appointmentSlot === s);
-                  return (
-                  <div
-                    key={a.apptId}
-                    onClick={() => { setSelected(a); setSlotViewDate(a.appointmentDay); }}
-                    className="appointment-item"
-                    style={{
-                      background: '#fff', borderRadius: '14px',
-                      boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-                      border: `1.5px solid ${selectedAppt?.apptId === a.apptId ? (isEmergency ? EMERGENCY_COLOR : PRIMARY) : '#e2e8f0'}`,
-                      cursor: 'pointer', transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = isEmergency ? EMERGENCY_COLOR : PRIMARY}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = selectedAppt?.apptId === a.apptId ? (isEmergency ? EMERGENCY_COLOR : PRIMARY) : '#e2e8f0'}
-                  >
-                    {/* Time badge */}
-                    <div className="appointment-time-badge" style={{
-                      background: isEmergency ? `${EMERGENCY_COLOR}15` : `${PRIMARY}12`,
-                      border: `1.5px solid ${isEmergency ? `${EMERGENCY_COLOR}50` : `${PRIMARY}30`}`,
-                    }}>
-                      <FaClock style={{ color: isEmergency ? EMERGENCY_COLOR : PRIMARY, fontSize: '12px' }} />
-                      <p style={{ margin: '4px 0 0', fontSize: '12px', fontWeight: 700, color: isEmergency ? EMERGENCY_COLOR : PRIMARY, whiteSpace: 'nowrap' }}>
-                        {a.appointmentSlot}
-                      </p>
-                      {isEmergency && (
-                        <span style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: EMERGENCY_COLOR, marginTop: '2px', letterSpacing: '0.3px' }}>
-                          ⚡ MINI CON.
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Details */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                        <FaUser style={{ color: '#64748b', fontSize: '11px' }} />
-                        <strong style={{ fontSize: '14px', color: '#0f172a' }}>{a.name}</strong>
-                        <span style={{
-                          background: isEmergency ? `${EMERGENCY_COLOR}18` : `${ACCENT}18`,
-                          color: isEmergency ? EMERGENCY_COLOR : ACCENT,
-                          fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px',
-                        }}>{a.treatment}</span>
-                        {isEmergency && (
-                          <span style={{ background: EMERGENCY_COLOR, color: '#fff', fontSize: '9px', fontWeight: 800, padding: '2px 7px', borderRadius: '20px' }}>
-                            ⚡ 15 min
-                          </span>
-                        )}
-                      </div>
-                      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <FaPhone style={{ fontSize: '10px' }} /> {a.phone}
-                        </span>
-                        <span style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <FaCalendarAlt style={{ fontSize: '10px' }} /> {a.appointmentDay}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    {a.name === '[BLOCKED]' ? (
-                      <button
-                        onClick={e => {
-                          e.stopPropagation();
-                          handleUnblockSlot(a.apptId);
-                        }}
-                        className="appointment-action-btn"
-                        style={{ background: '#ef4444', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
-                        title="Unblock this slot"
-                      >
-                        <FaTrash style={{ fontSize: '11px' }} /> Clear
-                      </button>
-                    ) : (
-                      <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-                        <a
-                          href={getWhatsAppLink(a)}
-                          target="_blank" rel="noreferrer"
-                          onClick={e => e.stopPropagation()}
-                          className="appointment-action-btn"
-                          style={{ background: '#25d366' }}
-                        >
-                          <FaWhatsapp /> Chat
-                        </a>
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            handleCancelAppointment(a.apptId);
-                          }}
-                          className="appointment-action-btn"
-                          style={{ background: '#ef4444', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
-                          title="Cancel booking"
-                        >
-                          <FaTrash style={{ fontSize: '11px' }} /> Cancel
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Right: Slot grid + detail panel */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-            {/* Today's slot availability */}
+            {/* Filter bar & Quick Block/Unblock Controls */}
             <div style={{
-              background: bgCard, borderRadius: '16px', padding: '20px',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '16px',
+              marginBottom: '24px',
+              flexWrap: 'wrap',
+              background: bgCard,
+              padding: '16px 20px',
+              borderRadius: '14px',
               border: `1px solid ${borderCard}`,
+              boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
             }}>
-              <h3 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 700, color: textPrimary, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <FaClock style={{ color: PRIMARY }} /> Slot Status
-              </h3>
-              <p style={{ margin: '0 0 14px', fontSize: '11px', color: textSecondary, fontWeight: 600 }}>
-                {slotGridDate === today ? 'Today' : slotGridDate}
-              </p>
-              <div className="slot-grid">
-                {ALL_SLOTS.map(slot => {
-                  const booked = slotGridBooked.has(slot);
-                  const appt   = slotGridAppts.find(a => a.appointmentSlot === slot);
-                  const isBlocked = booked && appt?.name === '[BLOCKED]';
-                  const isEmergencySlot = EMERGENCY_SLOTS.includes(slot);
-                  return (
-                    <div
-                      key={slot}
-                      title={booked ? (isBlocked ? 'Blocked Slot' : `${appt?.name} — ${appt?.treatment}`) : 'Click to Block Slot'}
-                      onClick={() => {
-                        if (isBlocked) {
-                          handleUnblockSlot(appt.apptId);
-                        } else if (booked) {
-                          setSelected(appt);
-                        } else {
-                          handleBlockSlot(slotGridDate, slot);
-                        }
-                      }}
-                      style={{
-                        padding: '8px 10px', borderRadius: '8px', fontSize: '10px', fontWeight: 600,
-                        textAlign: 'center', cursor: 'pointer',
-                        background: isBlocked ? '#e2e8f0' : booked ? (isEmergencySlot ? '#fff3e0' : '#fee2e2') : (isEmergencySlot ? '#fff7ed' : '#f0fdf4'),
-                        color:      isBlocked ? '#475569' : booked ? (isEmergencySlot ? '#9a3412' : '#b91c1c') : (isEmergencySlot ? '#c2410c' : '#15803d'),
-                        border:     `1.5px solid ${isBlocked ? '#cbd5e1' : booked ? (isEmergencySlot ? '#fed7aa' : '#fca5a5') : (isEmergencySlot ? '#fdba74' : '#86efac')}`,
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      {slot}<br />
-                      <span style={{ fontSize: '8px', fontWeight: 700, opacity: 0.85 }}>
-                        {isEmergencySlot ? '⚡ ' : ''}
-                        {booked ? (isBlocked ? '🔒 BLOCKED' : `🔴 ${appt?.name?.split(' ')[0]}`) : '🟢 FREE'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-              <div style={{ display: 'flex', gap: '12px', marginTop: '12px', fontSize: '11px', color: textSecondary, flexWrap: 'wrap', alignItems: 'center' }}>
-                <span>🟢 Free</span>
-                <span>🔴 Booked</span>
-                <span>⚡ Followup Consultation</span>
-                {slotViewDate && slotViewDate !== today && (
-                  <button
-                    onClick={() => setSlotViewDate(null)}
-                    style={{ background: 'none', border: 'none', color: ACCENT, cursor: 'pointer', fontSize: '11px', fontWeight: 600, padding: 0 }}
-                  >
-                    ↩ Back to today
-                  </button>
-                )}
-              </div>
-              {slotGridAppts.some(a => a.name === '[BLOCKED]') && (
-                <button
-                  onClick={() => handleClearAllBlocks(slotGridDate)}
-                  style={{
-                    marginTop: '12px', padding: '8px 14px', borderRadius: '8px', border: '1.5px solid #fca5a5',
-                    background: '#fee2e2', color: '#dc2626', fontWeight: 700, fontSize: '11px',
-                    cursor: 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '4px',
-                    transition: 'all 0.15s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = '#fecaca'}
-                  onMouseLeave={e => e.currentTarget.style.background = '#fee2e2'}
-                >
-                  🔓 Clear All Blocked Slots ({slotGridDate === today ? 'Today' : 'This Day'})
-                </button>
-              )}
-            </div>
-
-            {/* Detail panel */}
-            {selectedAppt && (
-              <div style={{
-                background: '#fff', borderRadius: '16px', padding: '20px',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-                border: `1.5px solid ${PRIMARY}30`,
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Appointment Detail</h3>
-                  <button onClick={() => setSelected(null)} style={{
-                    background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#94a3b8',
-                  }}>×</button>
-                </div>
-                {[
-                  { label: 'ID',          val: selectedAppt.apptId,          icon: '🆔' },
-                  { label: 'Patient',     val: selectedAppt.name,            icon: '👤' },
-                  { label: 'Phone',       val: selectedAppt.phone,           icon: '📱' },
-                  { label: 'Email',       val: selectedAppt.email,           icon: '📧' },
-                  { label: 'Consultation',val: selectedAppt.treatment,       icon: '🩺' },
-                  { label: 'Stage',       val: selectedAppt.stage || '—',    icon: '📊' },
-                  { label: 'Date',        val: selectedAppt.appointmentDay,  icon: '📅' },
-                  { label: 'Time',        val: selectedAppt.appointmentSlot, icon: '🕐' },
-                  { label: 'Booked At',  val: selectedAppt.bookedAt,        icon: '⏰' },
-                  { label: 'Message',    val: selectedAppt.message || '—',  icon: '💬' },
-                ].map(row => (
-                  <div key={row.label} style={{
-                    display: 'flex', gap: '10px', padding: '7px 0',
-                    borderBottom: '1px solid #f1f5f9', fontSize: '12.5px',
+              {/* Filters on Left */}
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <span style={{ fontSize: '13px', fontWeight: 700, color: textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Filter:</span>
+                {['today', 'all', 'blocked'].map(f => (
+                  <button key={f} onClick={() => setFilterDate(f)} style={{
+                    padding: '8px 16px', borderRadius: '8px', fontWeight: 700, fontSize: '12px',
+                    border: `2px solid ${filterDate === f ? PRIMARY : borderCard}`,
+                    background: filterDate === f ? `${PRIMARY}12` : darkMode ? '#334155' : '#fff',
+                    color: filterDate === f ? PRIMARY : textSecondary,
+                    cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
                   }}>
-                    <span style={{ minWidth: '90px', color: '#94a3b8', fontWeight: 600 }}>{row.icon} {row.label}</span>
-                    <span style={{ color: '#334155', wordBreak: 'break-all' }}>{row.val}</span>
-                  </div>
+                    {f === 'today' ? "📅 Today" : f === 'all' ? "📋 All" : "🔒 Blocked Slots"}
+                  </button>
                 ))}
-                <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                  {selectedAppt.name === '[BLOCKED]' ? (
-                    <button
-                      onClick={() => handleUnblockSlot(selectedAppt.apptId)}
-                      style={{
-                        width: '100%', background: PRIMARY, color: '#fff', border: 'none',
-                        padding: '12px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
-                        fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                      }}
-                    >
-                      🔓 Unblock Slot
-                    </button>
-                  ) : (
-                    <>
-                      <div style={{ width: '100%' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <a href={getWhatsAppLink(selectedAppt)}
-                            target="_blank" rel="noreferrer"
-                            style={{
-                              flex: 1, background: '#25d366', color: '#fff', padding: '10px',
-                              borderRadius: '10px', textDecoration: 'none', fontWeight: 700,
-                              fontSize: '12px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                            }}>
-                            <FaWhatsapp /> WhatsApp
-                          </a>
-                          <a href={`tel:${selectedAppt.phone}`}
-                            style={{
-                              flex: 1, background: PRIMARY, color: '#fff', padding: '10px',
-                              borderRadius: '10px', textDecoration: 'none', fontWeight: 700,
-                              fontSize: '12px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                            }}>
-                            📞 Call
-                          </a>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-                          <button
-                            onClick={() => setIsEditingReschedule(!isEditingReschedule)}
-                            style={{
-                              flex: 1, background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#475569',
-                              padding: '10px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
-                              fontSize: '12px'
-                            }}
-                          >
-                            🕒 Reschedule
-                          </button>
-                          <button
-                            onClick={() => handleCancelAppointment(selectedAppt.apptId)}
-                            style={{
-                              flex: 1, background: '#fee2e2', border: '1px solid #fecaca', color: '#ef4444',
-                              padding: '10px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
-                              fontSize: '12px'
-                            }}
-                          >
-                            ❌ Cancel Booking
-                          </button>
-                        </div>
-
-                        {isEditingReschedule && (
-                          <div style={{
-                            marginTop: '16px', padding: '14px', background: '#f8fafc',
-                            borderRadius: '12px', border: '1px solid #cbd5e1'
-                          }}>
-                            <h4 style={{ margin: '0 0 10px', fontSize: '12.5px', color: '#334155' }}>Reschedule Appointment</h4>
-                            
-                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px', textAlign: 'left' }}>Date</label>
-                            <input
-                              type="date"
-                              value={rescheduleDate}
-                              onChange={e => setRescheduleDate(e.target.value)}
-                              style={{
-                                width: '100%', padding: '8px', borderRadius: '6px',
-                                border: '1.5px solid #cbd5e1', marginBottom: '10px', fontSize: '13px',
-                                background: '#fff', color: '#1e293b', boxSizing: 'border-box'
-                              }}
-                            />
-
-                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px', textAlign: 'left' }}>Time Slot</label>
-                            <select
-                              value={rescheduleSlot}
-                              onChange={e => setRescheduleSlot(e.target.value)}
-                              style={{
-                                width: '100%', padding: '8px', borderRadius: '6px',
-                                border: '1.5px solid #cbd5e1', marginBottom: '12px', fontSize: '13px',
-                                background: '#fff', color: '#1e293b', boxSizing: 'border-box'
-                              }}
-                            >
-                              <optgroup label="Review Consultation (1-hour slots)">
-                                {TIME_SLOTS.map(slot => (
-                                  <option key={slot} value={slot}>{slot}</option>
-                                ))}
-                              </optgroup>
-                              <optgroup label="⚡ Followup Consultation (15-min slots)">
-                                {EMERGENCY_SLOTS.map(slot => (
-                                  <option key={slot} value={slot}>⚡ {slot}</option>
-                                ))}
-                              </optgroup>
-                            </select>
-
-                            <div style={{ display: 'flex', gap: '6px' }}>
-                              <button
-                                onClick={() => {
-                                  const newDayFormatted = formatRescheduleDate(rescheduleDate);
-                                  if (!newDayFormatted) {
-                                    showToast('Please select a valid date.', 'error');
-                                    return;
-                                  }
-                                  handleRescheduleAppointment(selectedAppt.apptId, newDayFormatted, rescheduleSlot);
-                                }}
-                                style={{
-                                  flex: 1, background: PRIMARY, color: '#fff', border: 'none',
-                                  padding: '8px', borderRadius: '6px', fontWeight: 600, fontSize: '12px',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Save
-                              </button>
-                              <button
-                                onClick={() => setIsEditingReschedule(false)}
-                                style={{
-                                  flex: 1, background: '#e2e8f0', border: 'none', color: '#475569',
-                                  padding: '8px', borderRadius: '6px', fontWeight: 600, fontSize: '12px',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
+                {loading && <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: '8px' }}>Loading…</span>}
+                {fetchError && <span style={{ fontSize: '12px', color: '#ef4444' }}>⚠ {fetchError}</span>}
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* ═══════════════════════════════════════════════════
-            DAILY SLOT MANAGER PANEL
-        ═══════════════════════════════════════════════════ */}
-        <div style={{ marginTop: '32px' }}>
-          <div style={{
-            background: bgCard, borderRadius: '20px', padding: '24px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-            border: `1px solid ${borderCard}`,
-          }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: textPrimary, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  🗓️ Daily Slot Manager
-                </h3>
-                <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSecondary }}>Control which slots patients can book for each day</p>
-              </div>
-              {slotManagerIsCustom && (
-                <span style={{ background: '#fef3c7', color: '#92400e', fontSize: '11px', fontWeight: 700, padding: '4px 12px', borderRadius: '20px', border: '1px solid #fde68a' }}>
-                  ⚙️ Custom config active
-                </span>
-              )}
-            </div>
+              {/* Quick Block/Unblock Form on Right */}
+              <div style={{
+                display: 'flex',
+                gap: '10px',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                background: darkMode ? '#1e293b' : '#f8fafc',
+                padding: '8px 12px',
+                borderRadius: '10px',
+                border: `1px solid ${borderCard}`
+              }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Quick Block:</span>
 
-            {/* Date Picker */}
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: textSecondary, marginBottom: '4px' }}>SELECT DATE</label>
                 <input
                   type="date"
-                  value={slotManagerDate}
-                  onChange={e => {
-                    setSlotManagerDate(e.target.value);
-                    fetchSlotConfig((() => {
-                      const d = new Date(e.target.value + 'T00:00:00');
-                      return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-                    })());
-                  }}
+                  value={quickBlockDate}
+                  onChange={e => setQuickBlockDate(e.target.value)}
                   style={{
-                    padding: '10px 14px', borderRadius: '10px', border: `1.5px solid ${inputBorder}`,
-                    fontSize: '14px', background: inputBg, color: inputText, outline: 'none',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    border: `1px solid ${inputBorder}`,
+                    background: inputBg,
+                    color: inputText,
+                    fontSize: '12px',
+                    fontFamily: 'inherit',
+                    outline: 'none'
                   }}
                 />
-              </div>
-              {slotManagerLoading && <span style={{ fontSize: '12px', color: textSecondary }}>Loading…</span>}
 
-              {/* Quick Presets */}
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'flex-end', paddingBottom: '2px' }}>
-                {[
-                  { label: '🟢 All Open', action: () => { setEditRegularSlots(new Set(TIME_SLOTS)); setEditEmergencySlots(new Set(EMERGENCY_SLOTS)); } },
-                  { label: '🔴 Close All', action: () => { setEditRegularSlots(new Set()); setEditEmergencySlots(new Set()); } },
-                  { label: '☀️ Morning Only', action: () => {
-                    setEditRegularSlots(new Set(['10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM']));
-                    setEditEmergencySlots(new Set());
-                  }},
-                  { label: '🌄 Afternoon Only', action: () => {
-                    setEditRegularSlots(new Set());
-                    setEditEmergencySlots(new Set(['03:00 PM - 03:15 PM', '03:15 PM - 03:30 PM', '03:30 PM - 03:45 PM', '03:45 PM - 04:00 PM']));
-                  }},
-                ].map(preset => (
-                  <button
-                    key={preset.label}
-                    onClick={preset.action}
-                    style={{
-                      padding: '8px 12px', borderRadius: '8px', border: `1.5px solid ${inputBorder}`,
-                      background: inputBg, color: textSecondary, fontWeight: 600, fontSize: '11px',
-                      cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = PRIMARY; e.currentTarget.style.color = PRIMARY; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = inputBorder; e.currentTarget.style.color = textSecondary; }}
-                  >
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Slot Toggles */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-
-              {/* Regular Slots */}
-              <div>
-                <p style={{ margin: '0 0 10px', fontSize: '12px', fontWeight: 700, color: textPrimary }}>🩺 Regular Slots (1-hour)</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {TIME_SLOTS.map(slot => {
-                    const enabled = editRegularSlots.has(slot);
-                    return (
-                      <label key={slot} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '10px 14px', borderRadius: '10px', border: `1.5px solid ${enabled ? '#22c55e55' : inputBorder}`, background: enabled ? '#f0fdf4' : inputBg, transition: 'all 0.15s' }}>
-                        <input
-                          type="checkbox"
-                          checked={enabled}
-                          onChange={() => {
-                            const next = new Set(editRegularSlots);
-                            if (next.has(slot)) next.delete(slot); else next.add(slot);
-                            setEditRegularSlots(next);
-                          }}
-                          style={{ width: '16px', height: '16px', accentColor: '#22c55e', flexShrink: 0 }}
-                        />
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: enabled ? '#15803d' : textSecondary }}>{slot}</span>
-                        <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: enabled ? '#22c55e' : '#94a3b8' }}>{enabled ? '🟢 OPEN' : '🔴 CLOSED'}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Emergency Slots */}
-              <div>
-                <p style={{ margin: '0 0 10px', fontSize: '12px', fontWeight: 700, color: textPrimary }}>⚡ Emergency Slots (15-min)</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {EMERGENCY_SLOTS.map(slot => {
-                    const enabled = editEmergencySlots.has(slot);
-                    return (
-                      <label key={slot} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '10px 14px', borderRadius: '10px', border: `1.5px solid ${enabled ? `${EMERGENCY_COLOR}55` : inputBorder}`, background: enabled ? '#fff7ed' : inputBg, transition: 'all 0.15s' }}>
-                        <input
-                          type="checkbox"
-                          checked={enabled}
-                          onChange={() => {
-                            const next = new Set(editEmergencySlots);
-                            if (next.has(slot)) next.delete(slot); else next.add(slot);
-                            setEditEmergencySlots(next);
-                          }}
-                          style={{ width: '16px', height: '16px', accentColor: EMERGENCY_COLOR, flexShrink: 0 }}
-                        />
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: enabled ? EMERGENCY_COLOR : textSecondary }}>⚡ {slot}</span>
-                        <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: enabled ? EMERGENCY_COLOR : '#94a3b8' }}>{enabled ? '🟢 OPEN' : '🔴 CLOSED'}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Summary + Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderTop: `1px solid ${borderCard}`, paddingTop: '16px' }}>
-              <div style={{ fontSize: '12px', color: textSecondary }}>
-                <span style={{ fontWeight: 700, color: textPrimary }}>{editRegularSlots.size}</span> Review Consultation
-                {' + '}
-                <span style={{ fontWeight: 700, color: EMERGENCY_COLOR }}>{editEmergencySlots.size}</span> Followup Consultation slots open for this day
-              </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button
-                  onClick={resetSlotConfig}
+                <select
+                  value={quickBlockSlot}
+                  onChange={e => setQuickBlockSlot(e.target.value)}
                   style={{
-                    padding: '10px 18px', borderRadius: '10px', border: '1.5px solid #cbd5e1',
-                    background: '#f1f5f9', color: '#475569', fontWeight: 700, fontSize: '13px',
-                    cursor: 'pointer', fontFamily: 'inherit',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    border: `1px solid ${inputBorder}`,
+                    background: inputBg,
+                    color: inputText,
+                    fontSize: '12px',
+                    fontFamily: 'inherit',
+                    outline: 'none',
+                    cursor: 'pointer'
                   }}
-                  title="Clear any custom slots visibility configurations and restore all slots as open by default"
                 >
-                  🔓 Clear Custom Config
+                  {ALL_SLOTS.map(slot => (
+                    <option key={slot} value={slot}>{slot}</option>
+                  ))}
+                </select>
+
+                <button
+                  onClick={() => {
+                    const formatted = formatRescheduleDate(quickBlockDate);
+                    if (!formatted) {
+                      showToast('Please select a valid date.', 'error');
+                      return;
+                    }
+                    handleBlockSlot(formatted, quickBlockSlot);
+                  }}
+                  disabled={blockingSlot}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    background: PRIMARY,
+                    color: '#fff',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '12px',
+                    cursor: blockingSlot ? 'not-allowed' : 'pointer',
+                    opacity: blockingSlot ? 0.6 : 1,
+                    fontFamily: 'inherit',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {blockingSlot ? '⏳ Blocking...' : '🔒 Block'}
                 </button>
+
                 <button
-                  onClick={saveSlotConfig}
-                  disabled={slotManagerSaving}
+                  onClick={() => {
+                    const formatted = formatRescheduleDate(quickBlockDate);
+                    if (!formatted) {
+                      showToast('Please select a valid date.', 'error');
+                      return;
+                    }
+                    const apptToUnblock = appointments.find(a =>
+                      a.appointmentDay === formatted &&
+                      a.appointmentSlot === quickBlockSlot &&
+                      a.name === '[BLOCKED]'
+                    );
+                    if (apptToUnblock) {
+                      handleUnblockSlot(apptToUnblock.apptId);
+                    } else {
+                      showToast('This slot is not currently blocked.', 'error');
+                    }
+                  }}
+                  disabled={blockingSlot}
                   style={{
-                    padding: '10px 24px', borderRadius: '10px', border: 'none',
-                    background: slotManagerSaving ? '#94a3b8' : PRIMARY,
-                    color: '#fff', fontWeight: 700, fontSize: '13px',
-                    cursor: slotManagerSaving ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
-                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    background: '#ef4444',
+                    color: '#fff',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '12px',
+                    cursor: blockingSlot ? 'not-allowed' : 'pointer',
+                    opacity: blockingSlot ? 0.6 : 1,
+                    fontFamily: 'inherit',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    transition: 'all 0.15s'
                   }}
                 >
-                  {slotManagerSaving ? '⏳ Saving…' : '💾 Save Slot Config'}
+                  {blockingSlot ? '⏳ Unblocking...' : '🔓 Unblock'}
                 </button>
               </div>
             </div>
-          </div>
-        </div>
 
-        </>
+            <div className="admin-main-grid">
+
+              {/* Appointment list */}
+              <div>
+                {displayedAppointments.length === 0 && !loading ? (
+                  <div style={{
+                    background: '#fff', borderRadius: '16px', padding: '48px',
+                    textAlign: 'center', color: '#94a3b8',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+                  }}>
+                    <FaCalendarAlt style={{ fontSize: '40px', marginBottom: '16px', opacity: 0.4 }} />
+                    <p style={{ margin: 0, fontSize: '15px' }}>No appointments found.</p>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {displayedAppointments.map(a => {
+                      const isEmergency = EMERGENCY_SLOTS.some(s => a.appointmentSlot === s);
+                      return (
+                        <div
+                          key={a.apptId}
+                          onClick={() => { setSelected(a); setSlotViewDate(a.appointmentDay); }}
+                          className="appointment-item"
+                          style={{
+                            background: '#fff', borderRadius: '14px',
+                            boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+                            border: `1.5px solid ${selectedAppt?.apptId === a.apptId ? (isEmergency ? EMERGENCY_COLOR : PRIMARY) : '#e2e8f0'}`,
+                            cursor: 'pointer', transition: 'all 0.2s',
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.borderColor = isEmergency ? EMERGENCY_COLOR : PRIMARY}
+                          onMouseLeave={e => e.currentTarget.style.borderColor = selectedAppt?.apptId === a.apptId ? (isEmergency ? EMERGENCY_COLOR : PRIMARY) : '#e2e8f0'}
+                        >
+                          {/* Time badge */}
+                          <div className="appointment-time-badge" style={{
+                            background: isEmergency ? `${EMERGENCY_COLOR}15` : `${PRIMARY}12`,
+                            border: `1.5px solid ${isEmergency ? `${EMERGENCY_COLOR}50` : `${PRIMARY}30`}`,
+                          }}>
+                            <FaClock style={{ color: isEmergency ? EMERGENCY_COLOR : PRIMARY, fontSize: '12px' }} />
+                            <p style={{ margin: '4px 0 0', fontSize: '12px', fontWeight: 700, color: isEmergency ? EMERGENCY_COLOR : PRIMARY, whiteSpace: 'nowrap' }}>
+                              {a.appointmentSlot}
+                            </p>
+                            {isEmergency && (
+                              <span style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: EMERGENCY_COLOR, marginTop: '2px', letterSpacing: '0.3px' }}>
+                                ⚡ MINI CON.
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Details */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                              <FaUser style={{ color: '#64748b', fontSize: '11px' }} />
+                              <strong style={{ fontSize: '14px', color: '#0f172a' }}>{a.name}</strong>
+                              <span style={{
+                                background: isEmergency ? `${EMERGENCY_COLOR}18` : `${ACCENT}18`,
+                                color: isEmergency ? EMERGENCY_COLOR : ACCENT,
+                                fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px',
+                              }}>{a.treatment}</span>
+                              {isEmergency && (
+                                <span style={{ background: EMERGENCY_COLOR, color: '#fff', fontSize: '9px', fontWeight: 800, padding: '2px 7px', borderRadius: '20px' }}>
+                                  ⚡ 15 min
+                                </span>
+                              )}
+                            </div>
+                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <FaPhone style={{ fontSize: '10px' }} /> {a.phone}
+                              </span>
+                              <span style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <FaCalendarAlt style={{ fontSize: '10px' }} /> {a.appointmentDay}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Action buttons */}
+                          {a.name === '[BLOCKED]' ? (
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleUnblockSlot(a.apptId);
+                              }}
+                              className="appointment-action-btn"
+                              style={{ background: '#ef4444', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                              title="Unblock this slot"
+                            >
+                              <FaTrash style={{ fontSize: '11px' }} /> Clear
+                            </button>
+                          ) : (
+                            <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                              <a
+                                href={getWhatsAppLink(a)}
+                                target="_blank" rel="noreferrer"
+                                onClick={e => e.stopPropagation()}
+                                className="appointment-action-btn"
+                                style={{ background: '#25d366' }}
+                              >
+                                <FaWhatsapp /> Chat
+                              </a>
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  handleCancelAppointment(a.apptId);
+                                }}
+                                className="appointment-action-btn"
+                                style={{ background: '#ef4444', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                                title="Cancel booking"
+                              >
+                                <FaTrash style={{ fontSize: '11px' }} /> Cancel
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Slot grid + detail panel */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                {/* Today's slot availability */}
+                <div style={{
+                  background: bgCard, borderRadius: '16px', padding: '20px',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+                  border: `1px solid ${borderCard}`,
+                }}>
+                  <h3 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 700, color: textPrimary, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FaClock style={{ color: PRIMARY }} /> Slot Status
+                  </h3>
+                  <p style={{ margin: '0 0 14px', fontSize: '11px', color: textSecondary, fontWeight: 600 }}>
+                    {slotGridDate === today ? 'Today' : slotGridDate}
+                  </p>
+                  <div className="slot-grid">
+                    {ALL_SLOTS.map(slot => {
+                      const booked = slotGridBooked.has(slot);
+                      const appt = slotGridAppts.find(a => a.appointmentSlot === slot);
+                      const isBlocked = booked && appt?.name === '[BLOCKED]';
+                      const isEmergencySlot = EMERGENCY_SLOTS.includes(slot);
+                      return (
+                        <div
+                          key={slot}
+                          title={booked ? (isBlocked ? 'Blocked Slot' : `${appt?.name} — ${appt?.treatment}`) : 'Click to Block Slot'}
+                          onClick={() => {
+                            if (blockingSlot) return;
+                            if (isBlocked) {
+                              handleUnblockSlot(appt.apptId);
+                            } else if (booked) {
+                              setSelected(appt);
+                            } else {
+                              handleBlockSlot(slotGridDate, slot);
+                            }
+                          }}
+                          style={{
+                            padding: '8px 10px', borderRadius: '8px', fontSize: '10px', fontWeight: 600,
+                            textAlign: 'center', cursor: blockingSlot ? 'not-allowed' : 'pointer',
+                            opacity: blockingSlot ? 0.65 : 1,
+                            background: isBlocked ? '#e2e8f0' : booked ? (isEmergencySlot ? '#fff3e0' : '#fee2e2') : (isEmergencySlot ? '#fff7ed' : '#f0fdf4'),
+                            color: isBlocked ? '#475569' : booked ? (isEmergencySlot ? '#9a3412' : '#b91c1c') : (isEmergencySlot ? '#c2410c' : '#15803d'),
+                            border: `1.5px solid ${isBlocked ? '#cbd5e1' : booked ? (isEmergencySlot ? '#fed7aa' : '#fca5a5') : (isEmergencySlot ? '#fdba74' : '#86efac')}`,
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          {slot}<br />
+                          <span style={{ fontSize: '8px', fontWeight: 700, opacity: 0.85 }}>
+                            {isEmergencySlot ? '⚡ ' : ''}
+                            {booked ? (isBlocked ? '🔒 BLOCKED' : `🔴 ${appt?.name?.split(' ')[0]}`) : '🟢 FREE'}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '12px', fontSize: '11px', color: textSecondary, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span>🟢 Free</span>
+                    <span>🔴 Booked</span>
+                    <span>⚡ Followup Consultation</span>
+                    {slotViewDate && slotViewDate !== today && (
+                      <button
+                        onClick={() => setSlotViewDate(null)}
+                        style={{ background: 'none', border: 'none', color: ACCENT, cursor: 'pointer', fontSize: '11px', fontWeight: 600, padding: 0 }}
+                      >
+                        ↩ Back to today
+                      </button>
+                    )}
+                  </div>
+                  {slotGridAppts.some(a => a.name === '[BLOCKED]') && (
+                    <button
+                      onClick={() => handleClearAllBlocks(slotGridDate)}
+                      style={{
+                        marginTop: '12px', padding: '8px 14px', borderRadius: '8px', border: '1.5px solid #fca5a5',
+                        background: '#fee2e2', color: '#dc2626', fontWeight: 700, fontSize: '11px',
+                        cursor: 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '4px',
+                        transition: 'all 0.15s'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#fecaca'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#fee2e2'}
+                    >
+                      🔓 Clear All Blocked Slots ({slotGridDate === today ? 'Today' : 'This Day'})
+                    </button>
+                  )}
+                </div>
+
+                {/* Detail panel */}
+                {selectedAppt && (
+                  <div style={{
+                    background: '#fff', borderRadius: '16px', padding: '20px',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+                    border: `1.5px solid ${PRIMARY}30`,
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                      <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Appointment Detail</h3>
+                      <button onClick={() => setSelected(null)} style={{
+                        background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#94a3b8',
+                      }}>×</button>
+                    </div>
+                    {[
+                      { label: 'ID', val: selectedAppt.apptId, icon: '🆔' },
+                      { label: 'Patient', val: selectedAppt.name, icon: '👤' },
+                      { label: 'Phone', val: selectedAppt.phone, icon: '📱' },
+                      { label: 'Email', val: selectedAppt.email, icon: '📧' },
+                      { label: 'Consultation', val: selectedAppt.treatment, icon: '🩺' },
+                      { label: 'Stage', val: selectedAppt.stage || '—', icon: '📊' },
+                      { label: 'Date', val: selectedAppt.appointmentDay, icon: '📅' },
+                      { label: 'Time', val: selectedAppt.appointmentSlot, icon: '🕐' },
+                      { label: 'Booked At', val: selectedAppt.bookedAt, icon: '⏰' },
+                      { label: 'Message', val: selectedAppt.message || '—', icon: '💬' },
+                    ].map(row => (
+                      <div key={row.label} style={{
+                        display: 'flex', gap: '10px', padding: '7px 0',
+                        borderBottom: '1px solid #f1f5f9', fontSize: '12.5px',
+                      }}>
+                        <span style={{ minWidth: '90px', color: '#94a3b8', fontWeight: 600 }}>{row.icon} {row.label}</span>
+                        <span style={{ color: '#334155', wordBreak: 'break-all' }}>{row.val}</span>
+                      </div>
+                    ))}
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+                      {selectedAppt.name === '[BLOCKED]' ? (
+                        <button
+                          onClick={() => handleUnblockSlot(selectedAppt.apptId)}
+                          style={{
+                            width: '100%', background: PRIMARY, color: '#fff', border: 'none',
+                            padding: '12px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
+                            fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                          }}
+                        >
+                          🔓 Unblock Slot
+                        </button>
+                      ) : (
+                        <>
+                          <div style={{ width: '100%' }}>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <a href={getWhatsAppLink(selectedAppt)}
+                                target="_blank" rel="noreferrer"
+                                style={{
+                                  flex: 1, background: '#25d366', color: '#fff', padding: '10px',
+                                  borderRadius: '10px', textDecoration: 'none', fontWeight: 700,
+                                  fontSize: '12px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                                }}>
+                                <FaWhatsapp /> WhatsApp
+                              </a>
+                              <a href={`tel:${selectedAppt.phone}`}
+                                style={{
+                                  flex: 1, background: PRIMARY, color: '#fff', padding: '10px',
+                                  borderRadius: '10px', textDecoration: 'none', fontWeight: 700,
+                                  fontSize: '12px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                                }}>
+                                📞 Call
+                              </a>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                              <button
+                                onClick={() => setIsEditingReschedule(!isEditingReschedule)}
+                                style={{
+                                  flex: 1, background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#475569',
+                                  padding: '10px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
+                                  fontSize: '12px'
+                                }}
+                              >
+                                🕒 Reschedule
+                              </button>
+                              <button
+                                onClick={() => handleCancelAppointment(selectedAppt.apptId)}
+                                style={{
+                                  flex: 1, background: '#fee2e2', border: '1px solid #fecaca', color: '#ef4444',
+                                  padding: '10px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
+                                  fontSize: '12px'
+                                }}
+                              >
+                                ❌ Cancel Booking
+                              </button>
+                            </div>
+
+                            {isEditingReschedule && (
+                              <div style={{
+                                marginTop: '16px', padding: '14px', background: '#f8fafc',
+                                borderRadius: '12px', border: '1px solid #cbd5e1'
+                              }}>
+                                <h4 style={{ margin: '0 0 10px', fontSize: '12.5px', color: '#334155' }}>Reschedule Appointment</h4>
+
+                                <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px', textAlign: 'left' }}>Date</label>
+                                <input
+                                  type="date"
+                                  value={rescheduleDate}
+                                  onChange={e => setRescheduleDate(e.target.value)}
+                                  style={{
+                                    width: '100%', padding: '8px', borderRadius: '6px',
+                                    border: '1.5px solid #cbd5e1', marginBottom: '10px', fontSize: '13px',
+                                    background: '#fff', color: '#1e293b', boxSizing: 'border-box'
+                                  }}
+                                />
+
+                                <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px', textAlign: 'left' }}>Time Slot</label>
+                                <select
+                                  value={rescheduleSlot}
+                                  onChange={e => setRescheduleSlot(e.target.value)}
+                                  style={{
+                                    width: '100%', padding: '8px', borderRadius: '6px',
+                                    border: '1.5px solid #cbd5e1', marginBottom: '12px', fontSize: '13px',
+                                    background: '#fff', color: '#1e293b', boxSizing: 'border-box'
+                                  }}
+                                >
+                                  <optgroup label="Review Consultation (1-hour slots)">
+                                    {TIME_SLOTS.map(slot => (
+                                      <option key={slot} value={slot}>{slot}</option>
+                                    ))}
+                                  </optgroup>
+                                  <optgroup label="⚡ Followup Consultation (15-min slots)">
+                                    {EMERGENCY_SLOTS.map(slot => (
+                                      <option key={slot} value={slot}>⚡ {slot}</option>
+                                    ))}
+                                  </optgroup>
+                                </select>
+
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                  <button
+                                    onClick={() => {
+                                      const newDayFormatted = formatRescheduleDate(rescheduleDate);
+                                      if (!newDayFormatted) {
+                                        showToast('Please select a valid date.', 'error');
+                                        return;
+                                      }
+                                      handleRescheduleAppointment(selectedAppt.apptId, newDayFormatted, rescheduleSlot);
+                                    }}
+                                    style={{
+                                      flex: 1, background: PRIMARY, color: '#fff', border: 'none',
+                                      padding: '8px', borderRadius: '6px', fontWeight: 600, fontSize: '12px',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    onClick={() => setIsEditingReschedule(false)}
+                                    style={{
+                                      flex: 1, background: '#e2e8f0', border: 'none', color: '#475569',
+                                      padding: '8px', borderRadius: '6px', fontWeight: 600, fontSize: '12px',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ═══════════════════════════════════════════════════
+            DAILY SLOT MANAGER PANEL
+        ═══════════════════════════════════════════════════ */}
+            <div style={{ marginTop: '32px' }}>
+              <div style={{
+                background: bgCard, borderRadius: '20px', padding: '24px',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+                border: `1px solid ${borderCard}`,
+              }}>
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: textPrimary, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      🗓️ Daily Slot Manager
+                    </h3>
+                    <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSecondary }}>Control which slots patients can book for each day</p>
+                  </div>
+                  {slotManagerIsCustom && (
+                    <span style={{ background: '#fef3c7', color: '#92400e', fontSize: '11px', fontWeight: 700, padding: '4px 12px', borderRadius: '20px', border: '1px solid #fde68a' }}>
+                      ⚙️ Custom config active
+                    </span>
+                  )}
+                </div>
+
+                {/* Date Picker */}
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: textSecondary, marginBottom: '4px' }}>SELECT DATE</label>
+                    <input
+                      type="date"
+                      value={slotManagerDate}
+                      onChange={e => {
+                        setSlotManagerDate(e.target.value);
+                        fetchSlotConfig((() => {
+                          const d = new Date(e.target.value + 'T00:00:00');
+                          return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                        })());
+                      }}
+                      style={{
+                        padding: '10px 14px', borderRadius: '10px', border: `1.5px solid ${inputBorder}`,
+                        fontSize: '14px', background: inputBg, color: inputText, outline: 'none',
+                      }}
+                    />
+                  </div>
+                  {slotManagerLoading && <span style={{ fontSize: '12px', color: textSecondary }}>Loading…</span>}
+
+                  {/* Quick Presets */}
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'flex-end', paddingBottom: '2px' }}>
+                    {[
+                      { label: '🟢 All Open', action: () => { setEditRegularSlots(new Set(TIME_SLOTS)); setEditEmergencySlots(new Set(EMERGENCY_SLOTS)); } },
+                      { label: '🔴 Close All', action: () => { setEditRegularSlots(new Set()); setEditEmergencySlots(new Set()); } },
+                      {
+                        label: '☀️ Morning Only', action: () => {
+                          setEditRegularSlots(new Set(['10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM']));
+                          setEditEmergencySlots(new Set());
+                        }
+                      },
+                      {
+                        label: '🌄 Afternoon Only', action: () => {
+                          setEditRegularSlots(new Set());
+                          setEditEmergencySlots(new Set(['03:00 PM - 03:15 PM', '03:15 PM - 03:30 PM', '03:30 PM - 03:45 PM', '03:45 PM - 04:00 PM']));
+                        }
+                      },
+                    ].map(preset => (
+                      <button
+                        key={preset.label}
+                        onClick={preset.action}
+                        style={{
+                          padding: '8px 12px', borderRadius: '8px', border: `1.5px solid ${inputBorder}`,
+                          background: inputBg, color: textSecondary, fontWeight: 600, fontSize: '11px',
+                          cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = PRIMARY; e.currentTarget.style.color = PRIMARY; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = inputBorder; e.currentTarget.style.color = textSecondary; }}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Slot Toggles */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+
+                  {/* Regular Slots */}
+                  <div>
+                    <p style={{ margin: '0 0 10px', fontSize: '12px', fontWeight: 700, color: textPrimary }}>🩺 Regular Slots (1-hour)</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {TIME_SLOTS.map(slot => {
+                        const enabled = editRegularSlots.has(slot);
+                        return (
+                          <label key={slot} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '10px 14px', borderRadius: '10px', border: `1.5px solid ${enabled ? '#22c55e55' : inputBorder}`, background: enabled ? '#f0fdf4' : inputBg, transition: 'all 0.15s' }}>
+                            <input
+                              type="checkbox"
+                              checked={enabled}
+                              onChange={() => {
+                                const next = new Set(editRegularSlots);
+                                if (next.has(slot)) next.delete(slot); else next.add(slot);
+                                setEditRegularSlots(next);
+                              }}
+                              style={{ width: '16px', height: '16px', accentColor: '#22c55e', flexShrink: 0 }}
+                            />
+                            <span style={{ fontSize: '13px', fontWeight: 600, color: enabled ? '#15803d' : textSecondary }}>{slot}</span>
+                            <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: enabled ? '#22c55e' : '#94a3b8' }}>{enabled ? '🟢 OPEN' : '🔴 CLOSED'}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Emergency Slots */}
+                  <div>
+                    <p style={{ margin: '0 0 10px', fontSize: '12px', fontWeight: 700, color: textPrimary }}>⚡ Emergency Slots (15-min)</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {EMERGENCY_SLOTS.map(slot => {
+                        const enabled = editEmergencySlots.has(slot);
+                        return (
+                          <label key={slot} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '10px 14px', borderRadius: '10px', border: `1.5px solid ${enabled ? `${EMERGENCY_COLOR}55` : inputBorder}`, background: enabled ? '#fff7ed' : inputBg, transition: 'all 0.15s' }}>
+                            <input
+                              type="checkbox"
+                              checked={enabled}
+                              onChange={() => {
+                                const next = new Set(editEmergencySlots);
+                                if (next.has(slot)) next.delete(slot); else next.add(slot);
+                                setEditEmergencySlots(next);
+                              }}
+                              style={{ width: '16px', height: '16px', accentColor: EMERGENCY_COLOR, flexShrink: 0 }}
+                            />
+                            <span style={{ fontSize: '13px', fontWeight: 600, color: enabled ? EMERGENCY_COLOR : textSecondary }}>⚡ {slot}</span>
+                            <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: enabled ? EMERGENCY_COLOR : '#94a3b8' }}>{enabled ? '🟢 OPEN' : '🔴 CLOSED'}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Summary + Actions */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderTop: `1px solid ${borderCard}`, paddingTop: '16px' }}>
+                  <div style={{ fontSize: '12px', color: textSecondary }}>
+                    <span style={{ fontWeight: 700, color: textPrimary }}>{editRegularSlots.size}</span> Review Consultation
+                    {' + '}
+                    <span style={{ fontWeight: 700, color: EMERGENCY_COLOR }}>{editEmergencySlots.size}</span> Followup Consultation slots open for this day
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                      onClick={resetSlotConfig}
+                      style={{
+                        padding: '10px 18px', borderRadius: '10px', border: '1.5px solid #cbd5e1',
+                        background: '#f1f5f9', color: '#475569', fontWeight: 700, fontSize: '13px',
+                        cursor: 'pointer', fontFamily: 'inherit',
+                      }}
+                      title="Clear any custom slots visibility configurations and restore all slots as open by default"
+                    >
+                      🔓 Clear Custom Config
+                    </button>
+                    <button
+                      onClick={saveSlotConfig}
+                      disabled={slotManagerSaving}
+                      style={{
+                        padding: '10px 24px', borderRadius: '10px', border: 'none',
+                        background: slotManagerSaving ? '#94a3b8' : PRIMARY,
+                        color: '#fff', fontWeight: 700, fontSize: '13px',
+                        cursor: slotManagerSaving ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                      }}
+                    >
+                      {slotManagerSaving ? '⏳ Saving…' : '💾 Save Slot Config'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </>
         ) : activeDashboardTab === 'orders' ? (
           <div className="admin-card" style={{ padding: '24px', background: '#fff', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
             <div style={{ marginBottom: '24px' }}>
@@ -2334,7 +2353,7 @@ Cancer Herbalist Team`;
                   fontSize: '13.5px', outline: 'none', width: '260px'
                 }}
               />
-              
+
               <select
                 value={orderStatusFilter}
                 onChange={e => setOrderStatusFilter(e.target.value)}
@@ -2382,7 +2401,7 @@ Cancer Herbalist Team`;
 
             {/* Main Orders Grid */}
             <div className="admin-main-grid">
-              
+
               {/* Order List */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {orders.length === 0 && !ordersLoading ? (
@@ -2391,14 +2410,14 @@ Cancer Herbalist Team`;
                   orders
                     .filter(o => {
                       const q = orderSearch.toLowerCase().trim();
-                      const matchesSearch = !q || 
+                      const matchesSearch = !q ||
                         String(o.orderId).toLowerCase().includes(q) ||
                         String(o.customerName).toLowerCase().includes(q) ||
                         String(o.phone).includes(q) ||
                         String(o.email || '').toLowerCase().includes(q);
-                      
+
                       const matchesStatus = orderStatusFilter === 'ALL' || o.orderStatus === orderStatusFilter;
-                      
+
                       return matchesSearch && matchesStatus;
                     })
                     .map(o => {
@@ -2408,7 +2427,7 @@ Cancer Herbalist Team`;
                       if (status.includes('REQUESTED')) { badgeBg = '#fffbeb'; badgeColor = '#d97706'; }
                       else if (status === 'CANCELLED' || status === 'REFUND_FAILED') { badgeBg = '#fef2f2'; badgeColor = '#dc2626'; }
                       else if (status.includes('CONFIRMED') || status.includes('DELIVERED') || status === 'REFUND_PROCESSED') { badgeBg = '#f0fdf4'; badgeColor = '#16a34a'; }
-                      
+
                       return (
                         <div
                           key={o.orderId}
@@ -2426,12 +2445,12 @@ Cancer Herbalist Team`;
                                 {status || '—'}
                               </span>
                               {o.refundStatus && (
-                                <span style={{ 
-                                  fontSize: '10px', 
-                                  fontWeight: 700, 
-                                  padding: '2px 8px', 
-                                  borderRadius: '20px', 
-                                  background: o.refundStatus === 'PROCESSED' ? '#f0fdf4' : o.refundStatus === 'FAILED' ? '#fef2f2' : '#fffbeb', 
+                                <span style={{
+                                  fontSize: '10px',
+                                  fontWeight: 700,
+                                  padding: '2px 8px',
+                                  borderRadius: '20px',
+                                  background: o.refundStatus === 'PROCESSED' ? '#f0fdf4' : o.refundStatus === 'FAILED' ? '#fef2f2' : '#fffbeb',
                                   color: o.refundStatus === 'PROCESSED' ? '#16a34a' : o.refundStatus === 'FAILED' ? '#dc2626' : '#d97706',
                                   display: 'inline-flex',
                                   alignItems: 'center',
@@ -2632,7 +2651,7 @@ Cancer Herbalist Team`;
             </div>
           </div>
         ) : (
-        <div className="admin-card" style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.06)', background: bgCard, border: `1.5px solid ${borderCard}`, borderRadius: '20px' }}>
+          <div className="admin-card" style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.06)', background: bgCard, border: `1.5px solid ${borderCard}`, borderRadius: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
               <div>
                 <h2 style={{ margin: 0, fontFamily: 'Playfair Display, serif', color: textPrimary, fontSize: '1.6rem' }}>
@@ -2662,8 +2681,8 @@ Cancer Herbalist Team`;
                 <span style={{ fontSize: '20px' }}>⚠️</span>
                 <div>
                   <strong style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>Temporary/Ephemeral Database Active</strong>
-                  Supabase database credentials are not configured in your Vercel project environment variables. 
-                  Any price or copy changes you make here will only save temporarily in server memory and will be **wiped out / reset** to default committed code prices whenever the Vercel server restarts (cold starts). 
+                  Supabase database credentials are not configured in your Vercel project environment variables.
+                  Any price or copy changes you make here will only save temporarily in server memory and will be **wiped out / reset** to default committed code prices whenever the Vercel server restarts (cold starts).
                   To save changes permanently, please configure the <code style={{ background: '#fef08a', padding: '2px 6px', borderRadius: '4px' }}>SUPABASE_URL</code> and <code style={{ background: '#fef08a', padding: '2px 6px', borderRadius: '4px' }}>SUPABASE_SERVICE_KEY</code> variables in your Vercel Project Settings.
                 </div>
               </div>
@@ -2740,15 +2759,15 @@ Cancer Herbalist Team`;
 
             {/* Tab content */}
             <div className="admin-content-grid">
-              
+
               {/* LEFT COLUMN: The Creation/Edit Form */}
               <div className="admin-form-container">
                 <h3 style={{ margin: '0 0 20px', fontSize: '15.5px', fontWeight: 800, color: 'var(--text-primary)', borderBottom: '1.5px solid var(--border-color)', paddingBottom: '12px', letterSpacing: '0.2px' }}>
-                  {contentTab === 'products' 
+                  {contentTab === 'products'
                     ? (editingProduct ? `✏️ Edit Product: ${editingProduct.name}` : '🌿 Create New Product')
                     : contentTab === 'testimonials'
-                    ? (editingTestimonial ? `✏️ Edit Testimonial: ${editingTestimonial.name}` : '💬 Add New Testimonial')
-                    : '⚙️ Edit General Website Copy'}
+                      ? (editingTestimonial ? `✏️ Edit Testimonial: ${editingTestimonial.name}` : '💬 Add New Testimonial')
+                      : '⚙️ Edit General Website Copy'}
                 </h3>
 
                 {contentTab === 'general' && generalForm && (
@@ -2786,11 +2805,11 @@ Cancer Herbalist Team`;
                     <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Product Name *</label>
-                        <input type="text" placeholder="e.g. Cap CH95 (30Cap)" required value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="e.g. Cap CH95 (30Cap)" required value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
                         <label style={labelStyle}>Category *</label>
-                        <select value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} style={inputStyle}>
+                        <select value={productForm.category} onChange={e => setProductForm({ ...productForm, category: e.target.value })} style={inputStyle}>
                           {['Immunity', 'Anti-Tumor', 'Detox', 'Stress & Recovery', 'Nutrition', 'Essential Oils', 'Alkaline Therapy'].map(c => (
                             <option key={c} value={c}>{c}</option>
                           ))}
@@ -2801,54 +2820,54 @@ Cancer Herbalist Team`;
                     <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Price (₹) *</label>
-                        <input type="number" placeholder="599" required value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} style={inputStyle} />
+                        <input type="number" placeholder="599" required value={productForm.price} onChange={e => setProductForm({ ...productForm, price: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
                         <label style={labelStyle}>Original Price (₹)</label>
-                        <input type="number" placeholder="799" value={productForm.originalPrice} onChange={e => setProductForm({...productForm, originalPrice: e.target.value})} style={inputStyle} />
+                        <input type="number" placeholder="799" value={productForm.originalPrice} onChange={e => setProductForm({ ...productForm, originalPrice: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
 
                     <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Badge (e.g. Best Seller)</label>
-                        <input type="text" placeholder="Best Seller" value={productForm.badge} onChange={e => setProductForm({...productForm, badge: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="Best Seller" value={productForm.badge} onChange={e => setProductForm({ ...productForm, badge: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
                         <label style={labelStyle}>Size / Pack *</label>
-                        <input type="text" placeholder="30 Capsules / 500mg" required value={productForm.size} onChange={e => setProductForm({...productForm, size: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="30 Capsules / 500mg" required value={productForm.size} onChange={e => setProductForm({ ...productForm, size: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
 
                     <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Icon Emoji</label>
-                        <input type="text" placeholder="🌿" value={productForm.icon} onChange={e => setProductForm({...productForm, icon: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="🌿" value={productForm.icon} onChange={e => setProductForm({ ...productForm, icon: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
                         <label style={labelStyle}>Color Hex</label>
-                        <input type="color" value={productForm.color} onChange={e => setProductForm({...productForm, color: e.target.value})} style={{...inputStyle, padding: '4px', height: '42px'}} />
+                        <input type="color" value={productForm.color} onChange={e => setProductForm({ ...productForm, color: e.target.value })} style={{ ...inputStyle, padding: '4px', height: '42px' }} />
                       </div>
                     </div>
 
                     <div style={{ marginBottom: '16px' }}>
                       <label style={labelStyle}>Description *</label>
-                      <textarea rows={3} placeholder="Describe the product and its therapeutic action..." required value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} style={inputStyle} />
+                      <textarea rows={3} placeholder="Describe the product and its therapeutic action..." required value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })} style={inputStyle} />
                     </div>
 
                     <div style={{ marginBottom: '16px' }}>
                       <label style={labelStyle}>Benefits (Comma separated list)</label>
-                      <input type="text" placeholder="Supports immunity, Reduces inflammation, Cellular repair" value={productForm.benefits} onChange={e => setProductForm({...productForm, benefits: e.target.value})} style={inputStyle} />
+                      <input type="text" placeholder="Supports immunity, Reduces inflammation, Cellular repair" value={productForm.benefits} onChange={e => setProductForm({ ...productForm, benefits: e.target.value })} style={inputStyle} />
                     </div>
 
                     <div className="form-grid-2col" style={{ marginBottom: '24px' }}>
                       <div>
                         <label style={labelStyle}>Key Ingredients</label>
-                        <input type="text" placeholder="Curcumin 95%, Piperine" value={productForm.ingredients} onChange={e => setProductForm({...productForm, ingredients: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="Curcumin 95%, Piperine" value={productForm.ingredients} onChange={e => setProductForm({ ...productForm, ingredients: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
                         <label style={labelStyle}>Dosage Instructions</label>
-                        <input type="text" placeholder="1 capsule twice daily" value={productForm.dosage} onChange={e => setProductForm({...productForm, dosage: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="1 capsule twice daily" value={productForm.dosage} onChange={e => setProductForm({ ...productForm, dosage: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
 
@@ -2881,18 +2900,18 @@ Cancer Herbalist Team`;
                     <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Patient Name / Initials *</label>
-                        <input type="text" placeholder="e.g. Amit K." required value={testimonialForm.name} onChange={e => setTestimonialForm({...testimonialForm, name: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="e.g. Amit K." required value={testimonialForm.name} onChange={e => setTestimonialForm({ ...testimonialForm, name: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
                         <label style={labelStyle}>Location</label>
-                        <input type="text" placeholder="e.g. Delhi, India" value={testimonialForm.location} onChange={e => setTestimonialForm({...testimonialForm, location: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="e.g. Delhi, India" value={testimonialForm.location} onChange={e => setTestimonialForm({ ...testimonialForm, location: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
 
                     <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Rating (1-5 Stars)</label>
-                        <select value={testimonialForm.rating} onChange={e => setTestimonialForm({...testimonialForm, rating: Number(e.target.value)})} style={inputStyle}>
+                        <select value={testimonialForm.rating} onChange={e => setTestimonialForm({ ...testimonialForm, rating: Number(e.target.value) })} style={inputStyle}>
                           {[5, 4, 3, 2, 1].map(num => (
                             <option key={num} value={num}>{num} Stars</option>
                           ))}
@@ -2900,24 +2919,24 @@ Cancer Herbalist Team`;
                       </div>
                       <div>
                         <label style={labelStyle}>Date Indicator</label>
-                        <input type="text" placeholder="e.g. Recent, 1 month ago" value={testimonialForm.date} onChange={e => setTestimonialForm({...testimonialForm, date: e.target.value})} style={inputStyle} />
+                        <input type="text" placeholder="e.g. Recent, 1 month ago" value={testimonialForm.date} onChange={e => setTestimonialForm({ ...testimonialForm, date: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
 
                     <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Thumbnail Image URL</label>
-                        <input type="url" placeholder="https://images.unsplash.com/..." value={testimonialForm.thumbnailUrl} onChange={e => setTestimonialForm({...testimonialForm, thumbnailUrl: e.target.value})} style={inputStyle} />
+                        <input type="url" placeholder="https://images.unsplash.com/..." value={testimonialForm.thumbnailUrl} onChange={e => setTestimonialForm({ ...testimonialForm, thumbnailUrl: e.target.value })} style={inputStyle} />
                       </div>
                       <div>
                         <label style={labelStyle}>Video Link (e.g. YouTube)</label>
-                        <input type="url" placeholder="https://youtube.com/watch?v=..." value={testimonialForm.videoUrl} onChange={e => setTestimonialForm({...testimonialForm, videoUrl: e.target.value})} style={inputStyle} />
+                        <input type="url" placeholder="https://youtube.com/watch?v=..." value={testimonialForm.videoUrl} onChange={e => setTestimonialForm({ ...testimonialForm, videoUrl: e.target.value })} style={inputStyle} />
                       </div>
                     </div>
 
                     <div style={{ marginBottom: '24px' }}>
                       <label style={labelStyle}>Testimonial Message *</label>
-                      <textarea rows={4} placeholder="Write the patient's feedback or healing journey summary..." required value={testimonialForm.text} onChange={e => setTestimonialForm({...testimonialForm, text: e.target.value})} style={inputStyle} />
+                      <textarea rows={4} placeholder="Write the patient's feedback or healing journey summary..." required value={testimonialForm.text} onChange={e => setTestimonialForm({ ...testimonialForm, text: e.target.value })} style={inputStyle} />
                     </div>
 
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
@@ -2944,7 +2963,7 @@ Cancer Herbalist Team`;
 
                 {contentTab === 'general' && generalForm && (
                   <form onSubmit={handleUpdateGeneralContent}>
-                    
+
                     {/* PAGE 1: Contact & Stats */}
                     {generalSubTab === 'contact' && (
                       <div>
@@ -3017,10 +3036,10 @@ Cancer Herbalist Team`;
                                 type="text"
                                 required
                                 value={generalForm.contact?.address || ''}
-                                  onChange={e => setGeneralForm({
-                                    ...generalForm,
-                                    contact: { ...(generalForm.contact || {}), address: e.target.value }
-                                  })}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  contact: { ...(generalForm.contact || {}), address: e.target.value }
+                                })}
                                 style={inputStyle}
                               />
                             </div>
@@ -3700,10 +3719,10 @@ Cancer Herbalist Team`;
                                   })}
                                   style={inputStyle}
                                 />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </details>
+                        </details>
 
                         <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
                           <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
@@ -4236,7 +4255,7 @@ Cancer Herbalist Team`;
               {/* RIGHT COLUMN: Already Added Items List */}
               <div className="admin-list-container">
                 <h3 style={{ margin: '0 0 20px', fontSize: '15.5px', fontWeight: 800, color: 'var(--text-primary)', borderBottom: '1.5px solid var(--border-color)', paddingBottom: '12px', letterSpacing: '0.2px' }}>
-                  {contentTab === 'products' ? 'All Products' : contentTab === 'testimonials' ? 'All Testimonials' : 'ℹ️ Editorial Guidelines'} 
+                  {contentTab === 'products' ? 'All Products' : contentTab === 'testimonials' ? 'All Testimonials' : 'ℹ️ Editorial Guidelines'}
                   {contentTab !== 'general' && ` (${contentTab === 'products' ? dynProducts.length : dynTestimonials.length})`}
                 </h3>
 
@@ -4357,10 +4376,10 @@ Cancer Herbalist Team`;
                     )
                   )}
                 </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </div>
   );
@@ -4689,7 +4708,7 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
       {/* Dynamic Action Panel depending on state */}
       <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '16px', border: '1px solid #e2e8f0' }}>
         <h4 style={{ margin: '0 0 12px', fontSize: '13px', color: '#0f172a', fontWeight: 700 }}>Management Actions</h4>
-        
+
         {/* Case 1: Cancellation Requested */}
         {order.cancellationStatus === 'REQUESTED' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -4786,7 +4805,7 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
         {order.refundStatus === 'APPROVED' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <p style={{ margin: 0, fontSize: '12.5px', color: '#16a34a', fontWeight: 600 }}>💰 Refund approved. Ready to initiate transaction.</p>
-            
+
             {!order.paymentMethod.toLowerCase().includes('online') ? (
               // COD/Manual Refund details
               <>
@@ -4860,8 +4879,8 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
             <p style={{ margin: 0, fontSize: '12.5px', color: '#16a34a', fontWeight: 600 }}>✅ Refund completed successfully.</p>
             {refund && (
               <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#475569' }}>
-                Refund ID: <strong>{refund.refundId}</strong><br/>
-                Txn ID: {refund.paymentGatewayRefundId} ({refund.method})<br/>
+                Refund ID: <strong>{refund.refundId}</strong><br />
+                Txn ID: {refund.paymentGatewayRefundId} ({refund.method})<br />
                 Settled At: {new Date(refund.processedAt).toLocaleString()}
               </p>
             )}
@@ -4954,39 +4973,39 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
 
         {/* Admin Direct Refund — for any PAID prepaid order without an active/completed refund */}
         {order.paymentStatus === 'PAID' &&
-         order.paymentMethod?.toLowerCase().includes('online') &&
-         !['APPROVED', 'INITIATED', 'PROCESSING', 'PROCESSED'].includes(order.refundStatus) && (
-          <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #e2e8f0' }}>
-            <p style={{ margin: '0 0 8px', fontSize: '11.5px', color: '#7c3aed', fontWeight: 600 }}>💸 Manual Refund Override (Admin)</p>
-            <p style={{ margin: '0 0 10px', fontSize: '11px', color: '#64748b' }}>
-              Directly approve &amp; initiate a Razorpay refund for this order without requiring a customer return/cancel request.
-            </p>
-            <button
-              onClick={() => {
-                if (window.confirm(`Initiate Razorpay refund of ₹${order.orderAmount} for order ${order.orderId}? This will immediately credit the customer.`)) {
-                  onInitiateRefund(order.orderId);
-                }
-              }}
-              style={{
-                width: '100%',
-                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                color: '#fff',
-                border: 'none',
-                padding: '10px',
-                borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '12.5px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px'
-              }}
-            >
-              💰 Initiate Refund — ₹{order.orderAmount} via Razorpay
-            </button>
-          </div>
-        )}
+          order.paymentMethod?.toLowerCase().includes('online') &&
+          !['APPROVED', 'INITIATED', 'PROCESSING', 'PROCESSED'].includes(order.refundStatus) && (
+            <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #e2e8f0' }}>
+              <p style={{ margin: '0 0 8px', fontSize: '11.5px', color: '#7c3aed', fontWeight: 600 }}>💸 Manual Refund Override (Admin)</p>
+              <p style={{ margin: '0 0 10px', fontSize: '11px', color: '#64748b' }}>
+                Directly approve &amp; initiate a Razorpay refund for this order without requiring a customer return/cancel request.
+              </p>
+              <button
+                onClick={() => {
+                  if (window.confirm(`Initiate Razorpay refund of ₹${order.orderAmount} for order ${order.orderId}? This will immediately credit the customer.`)) {
+                    onInitiateRefund(order.orderId);
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  fontWeight: 700,
+                  fontSize: '12.5px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
+                }}
+              >
+                💰 Initiate Refund — ₹{order.orderAmount} via Razorpay
+              </button>
+            </div>
+          )}
       </div>
 
       {/* Event history timeline */}
