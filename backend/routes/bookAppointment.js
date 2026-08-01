@@ -648,9 +648,14 @@ function buildRescheduleEmailHtml({ apptId, name, treatment, oldDay, oldSlot, ne
 }
 
 /* ── Save appointment to Google Sheets ───────────────────────── */
-async function saveToSheets(appt) {
+async function saveToSheets(appt, throwOnError = false) {
   const url = process.env.APPS_SCRIPT_URL;
-  if (!url) { console.warn('[bookAppointment] APPS_SCRIPT_URL not set — skipping Sheets.'); return; }
+  if (!url) {
+    const msg = 'APPS_SCRIPT_URL not set — cannot persist to Sheets.';
+    console.warn('[bookAppointment]', msg);
+    if (throwOnError) throw new Error(msg);
+    return;
+  }
   try {
     const sheetUrl = new URL(url);
     // prefix keys so the Apps Script can route to an Appointments sheet
@@ -670,10 +675,16 @@ async function saveToSheets(appt) {
     };
     Object.entries(row).forEach(([k, v]) => sheetUrl.searchParams.append(k, String(v ?? '')));
     const res = await fetch(sheetUrl.toString());
-    if (!res.ok) console.warn('[bookAppointment] Sheets returned status:', res.status);
-    else console.log('[bookAppointment] Appointment saved to Google Sheets.');
+    if (!res.ok) {
+      const errMsg = `Sheets returned status ${res.status}`;
+      console.warn('[bookAppointment]', errMsg);
+      if (throwOnError) throw new Error(errMsg);
+    } else {
+      console.log('[bookAppointment] Appointment saved to Google Sheets.');
+    }
   } catch (e) {
     console.warn('[bookAppointment] Sheets error:', e.message);
+    if (throwOnError) throw e;
   }
 }
 
@@ -1480,14 +1491,20 @@ Cancer Herbalist Team`;
 /* ── POST /api/appointments/block (Admin only) ──────────────── */
 router.post('/appointments/block', checkAdmin, async (req, res) => {
   const { appointmentDay, appointmentSlot } = req.body;
-  
+
+  if (!appointmentDay || !appointmentSlot) {
+    return res.status(400).json({ success: false, error: 'appointmentDay and appointmentSlot are required.' });
+  }
+
   try {
-    await syncAppointmentsFromSheets();
+    // Force a fresh sync so the conflict check sees the latest Sheets data
+    await syncAppointmentsFromSheets(true);
     
-    // Conflict check
+    // Conflict check (case-insensitive trim for robustness)
+    const normalize = (s) => String(s || '').trim().toLowerCase();
     const conflict = appointmentStore.find(a =>
-      a.appointmentDay === appointmentDay &&
-      a.appointmentSlot === appointmentSlot
+      normalize(a.appointmentDay) === normalize(appointmentDay) &&
+      normalize(a.appointmentSlot) === normalize(appointmentSlot)
     );
     if (conflict) {
       return res.status(409).json({
@@ -1512,16 +1529,18 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
       status: 'Confirmed'
     };
     
+    // Save to Sheets FIRST — if this fails, we return an error and do NOT push to in-memory store
+    // This prevents the UI from showing success when the data was not persisted.
+    await saveToSheets(appt, true); // throwOnError = true
+
+    // Only update the in-memory store after a confirmed Sheets save
     appointmentStore.push(appt);
     lastApptSyncTime = 0;
-    
-    // Save to Sheets
-    await saveToSheets(appt);
     
     res.json({ success: true, appointment: appt });
   } catch (err) {
     console.error('[bookAppointment] block error:', err.message);
-    res.status(500).json({ success: false, error: 'Failed to block slot.' });
+    res.status(500).json({ success: false, error: `Failed to block slot: ${err.message}` });
   }
 });
 

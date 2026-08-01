@@ -11,11 +11,7 @@ export default defineConfig({
     proxy: {
       // In dev, proxy both /api and /admin to the local Express backend
       '/api': {
-        target: 'http://localhost:5001',
-        changeOrigin: true,
-      },
-      '/admin': {
-        target: 'http://localhost:5001',
+        target: 'http://127.0.0.1:5001',
         changeOrigin: true,
       }
     }

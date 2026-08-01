@@ -36,7 +36,9 @@ const DIST_DIR = possibleDistDirs.find(d => fs.existsSync(path.join(d, 'index.ht
 
 
 /* ── Security headers ──────────────────────────────────────── */
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 
 /* ── CORS ───────────────────────────────────────────────────── */
 const allowedOrigins = [

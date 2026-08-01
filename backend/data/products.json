@@ -6,8 +6,8 @@
     "size": "30 capsules / 15-day supply",
     "badge": "Best Seller",
     "color": "#38bed5",
-    "price": 799,
-    "dosage": "1 capsule twice daily after meals, or as advised by your healthcare specialist.",
+    "price": 899,
+    "dosage": "1 to 2 capsule twice daily after meals at morning and night , or as advised by your healthcare specialist.",
     "images": [
       "/products/product0.1.jpeg",
       "/products/product0.2.jpeg",
@@ -29,18 +29,18 @@
     ],
     "category": "Immunity",
     "description": "Cap CH95 is a specialized herbal formulation designed to bolster the body's immune system, enhance cellular resilience, and combat chronic fatigue during intensive clinical treatments. Rich in natural immunomodulators and antioxidants, it supports general vitality and wellness.",
-    "ingredients": "Tinospora Cordifolia (Giloy) 250mg, Ocimum Sanctum (Tulsi) 200mg, Withania Somnifera (Ashwagandha) 150mg.",
-    "originalPrice": 1099
+    "ingredients": "Curcumin C3 complex 100% natural",
+    "originalPrice": 599
   },
   {
     "id": 2,
     "icon": "🟡",
     "name": "C3M Powder",
-    "size": "200g jar / 20-day supply",
+    "size": "100g jar / 20-day supply",
     "badge": "Top Rated",
     "color": "#f59e0b",
     "price": 2599,
-    "dosage": "1 scoop (approx. 10g) mixed into warm water, milk, or smoothies daily.",
+    "dosage": "1 to 2 g mixed into warm milk, or smoothies daily. Upto 3 times a day.",
     "images": [
       "/products/product9.1.jpg",
       "/products/product9.2.jpg",
@@ -57,19 +57,19 @@
       "Preserves lean muscle mass and combats weight loss"
     ],
     "category": "Nutrition",
-    "description": "C3M Powder combines premium Medium Chain Triglycerides (MCT) with highly bioavailable Curcumin (standardized to 95% curcuminoids). This synergistic formulation provides readily absorbable calories while delivering powerful anti-inflammatory and cellular protection support.",
-    "ingredients": "Coconut-derived MCT Powder 70%, Curcuma Longa extract (95% curcuminoids) 25%, Piperine 5%.",
-    "originalPrice": 3299
+    "description": "C3M Powder contains premium highly bioavailable Curcumin (standardized to 95% curcuminoids) and Srilankan Piperine. This synergistic formulation provides readily absorbable status while delivering powerful anti-inflammatory and cellular protection support.",
+    "ingredients": "Curcuma Longa extract (95% curcuminoids) 95%, Piperine 5%.",
+    "originalPrice": 2599
   },
   {
     "id": 3,
     "icon": "🍃",
     "name": "CUP Powder",
-    "size": "250g tub / 50-day supply",
-    "badge": null,
+    "size": "100g jar / 30-day supply",
+    "badge": "",
     "color": "#10b981",
     "price": 2299,
-    "dosage": "½ teaspoon dissolved in a glass of water daily on an empty stomach, or as directed by your doctor.",
+    "dosage": "½ teaspoon or 1g dissolved in a glass of warm milk daily 3 times on an empty stomach, or as directed by your doctor.",
     "images": [
       "/products/product11.0.jpg",
       "/products/product11.jpg",
@@ -80,25 +80,24 @@
     "reviews": 76,
     "tagline": "Advanced alkalizing blend to support healthy metabolic pH balance.",
     "benefits": [
-      "Supports optimal metabolic pH buffering",
-      "Alkalizes the cellular microenvironment naturally",
+      "Supports optimal metabolic conditions for the cellular microenvironment naturally",
       "Aids kidney function and metabolic detoxification",
       "Pharmaceutical-grade purity for maximum safety and absorption"
     ],
-    "category": "Alkaline Therapy",
-    "description": "CUP Powder is a pharmaceutical-grade alkalizing formula designed to buffer cellular acidity and support metabolic pH balance. Restoring an optimal alkaline environment helps normalize cellular metabolism and supports overall recovery.",
-    "ingredients": "Purified Sodium Bicarbonate, Potassium Citrate, and alkaline mineral buffers.",
+    "category": "Stress & Recovery",
+    "description": "CUP Powder is a pharmaceutical-grade Curcumin C3 complex designed to restore an optimal environment and helps normalize cellular metabolism and supports overall recovery.",
+    "ingredients": "Purified Curcumin Complex",
     "originalPrice": 2999
   },
   {
     "id": 4,
     "icon": "🌱",
     "name": "Cap Withangen (30Cap)",
-    "size": "30 capsules / 15-day supply",
-    "badge": null,
+    "size": "30 capsules / 30-day supply",
+    "badge": "",
     "color": "#8b5cf6",
     "price": 799,
-    "dosage": "1 capsule twice daily, preferably with warm milk or water after meals.",
+    "dosage": "1-0-0 capsule daily, preferably with warm milk or water after food in the morning.",
     "images": [
       "/products/product4.1.jpg",
       "/products/product4.2.jpg",
@@ -112,22 +111,24 @@
       "Modulates cortisol levels to combat stress",
       "Improves sleep latency and overall sleep quality",
       "Enhances stamina and reduces physical fatigue",
-      "Supports cognitive function, memory, and focus"
+      "Supports cognitive function",
+      "memory",
+      "and focus"
     ],
     "category": "Stress & Recovery",
     "description": "Cap Withangen features high-potency Withania Somnifera (Ashwagandha) extract standardized for maximum withanolide content. It targets the HPA axis to normalize cortisol levels, reduce anxiety, and improve sleep quality during recovery.",
-    "ingredients": "Withania Somnifera (Ashwagandha KSM-66®) extract standardized to 5% withanolides 500mg.",
-    "originalPrice": 1099
+    "ingredients": "Withania Somnifera (Ashwagandha KSM-66®) extract standardized to 5% withanolides 400mg.",
+    "originalPrice": 799
   },
   {
     "id": 5,
     "icon": "💊",
     "name": "Cap AC95 (30Cap)",
-    "size": "30 capsules / 15-day supply",
+    "size": "30 capsules / 30-day supply",
     "badge": "Premium",
     "color": "#0f3460",
     "price": 2999,
-    "dosage": "1 capsule twice daily with meals.",
+    "dosage": "1-0-0 capsule in the morning daily with fat loaded food",
     "images": [
       "/products/product2.1.png",
       "/products/product2.2.jpg",
@@ -144,19 +145,19 @@
       "BioPerine-enhanced for 2000% higher cellular absorption"
     ],
     "category": "Anti-Tumor",
-    "description": "Cap AC95 delivers pharmaceutical-grade Active Curcumin standardized to 95% curcuminoids, enhanced with black pepper extract to maximize cellular absorption. It acts as a powerful anti-inflammatory and supports healthy cell proliferation pathways.",
-    "ingredients": "Curcuma Longa extract (95% curcuminoids) 500mg, BioPerine® (Piper Nigrum extract) 5mg.",
-    "originalPrice": 3999
+    "description": "Cap AC95 delivers pharmaceutical-grade Active molecules of Ashwagandha, Tulsi, Echinacia, green tea standardised extracts enhanced with black pepper extract to maximize cellular absorption. It acts as a powerful anti-inflammatory and supports healthy cell proliferation pathways. It boosts T-cells to remove the damaged cells including cancer cells.",
+    "ingredients": "Withanolides, Srilanka piperine (Piper Nigrum extract) 5mg, Ursolic acid, EGCG, catechins, Echinocides",
+    "originalPrice": 2999
   },
   {
     "id": 6,
     "icon": "🫒",
     "name": "Cap Livocin (30Cap)",
     "size": "30 capsules / 15-day supply",
-    "badge": null,
+    "badge": "",
     "color": "#d97706",
     "price": 2199,
-    "dosage": "1 capsule twice daily after meals.",
+    "dosage": "0-1-0 capsule daily in the afternoon after meals.",
     "images": [
       "/products/product14.jpg",
       "/products/product14.1.jpg",
@@ -169,7 +170,9 @@
     "benefits": [
       "Supports liver enzyme (ALT/AST) normalization",
       "Aids clearance of clinical chemical residues and toxins",
-      "Promotes healthy digestion, appetite, and gut lining",
+      "Promotes healthy digestion",
+      "appetite",
+      "and gut lining",
       "Protects liver cells from oxidative stress and free radicals"
     ],
     "category": "Detox",
@@ -185,7 +188,7 @@
     "badge": "New",
     "color": "#059669",
     "price": 799,
-    "dosage": "1 capsule daily in the morning with warm water or milk, or as directed.",
+    "dosage": "0-0-1 capsule daily in the night with warm water or milk, or as directed by health practitioner.",
     "images": [
       "/products/product13.jpg",
       "/products/product13.1.jpg",
@@ -204,14 +207,14 @@
     "category": "Stress & Recovery",
     "description": "Cap Fulvican features purified Asphaltum Punjabianum (Shilajit) extract rich in fulvic acid and essential trace minerals. It works at the mitochondrial level to rejuvenate energy production, enhance nutrient uptake, and speed up tissue recovery.",
     "ingredients": "Purified Asphaltum Punjabianum (Shilajit) extract 400mg (high fulvic acid content).",
-    "originalPrice": 999
+    "originalPrice": 799
   },
   {
     "id": 8,
     "icon": "🫙",
     "name": "Frank Oil 100ml",
     "size": "100ml bottle",
-    "badge": null,
+    "badge": "",
     "color": "#b45309",
     "price": 1599,
     "dosage": "Aromatherapy: Add 3–5 drops to a diffuser. Topical: Dilute with a carrier oil (e.g. coconut oil) and massage gently.",
@@ -228,22 +231,23 @@
       "Rich in active anti-inflammatory boswellic acids",
       "Promotes relaxation and reduces nervous tension or anxiety",
       "Soothes skin and supports tissue repair when diluted topically",
-      "100% pure steam-distilled essential oil, free of synthetic additives"
+      "100% pure steam-distilled essential oil",
+      "free of synthetic additives"
     ],
     "category": "Essential Oils",
-    "description": "Frank Oil is a premium, therapeutic-grade Frankincense (Boswellia Frerana) essential oil. High in natural boswellic acids, it is ideal for soothing aromatherapy, stress relief, and topical application (diluted) to ease discomfort and inflammation.",
-    "ingredients": "100% Pure Boswellia Frerana (Frankincense) essential oil. FSSAI certified.",
-    "originalPrice": 1999
+    "description": "Frank Oil is a premium, therapeutic-grade Frankincense (Boswellia serrata) essential oil. High in natural boswellic acids, it is ideal for soothing aromatherapy, stress relief, and topical application (diluted) to ease discomfort and inflammation.",
+    "ingredients": "100% Pure Boswellia serrata (Frankincense) essential oil. FSSAI certified.",
+    "originalPrice": 1599
   },
   {
     "id": 9,
     "icon": "🥥",
     "name": "Tab Cyanolina (60Tab)",
     "size": "60 tablets / 30-day supply",
-    "badge": null,
+    "badge": "",
     "color": "#16a34a",
     "price": 599,
-    "dosage": "2 tablets daily with water, preferably in the morning.",
+    "dosage": "1-0-1 tablets daily with water",
     "images": [
       "/products/product16.1.jpg",
       "/products/product16.jpg",
@@ -254,25 +258,28 @@
     "reviews": 47,
     "tagline": "Blue Spirulina extract rich in Phycocyanin for antioxidant support.",
     "benefits": [
-      "Rich in Phycocyanin, a powerful blue antioxidant compound",
+      "Rich in Phycocyanin",
+      "a powerful blue antioxidant compound",
       "Supports red blood cell production and oxygen transport",
-      "Supplies essential plant-based proteins, amino acids, and B-vitamins",
+      "Supplies essential plant-based proteins",
+      "amino acids",
+      "and B-vitamins",
       "Promotes natural cellular detoxification and immune defense"
     ],
     "category": "Nutrition",
-    "description": "Tab Cyanolina provides premium Spirulina tablets standardized for high Phycocyanin content. This blue superfood offers exceptional antioxidant defense, aids cell renewal, and supplies essential amino acids and trace minerals.",
+    "description": "Tab Cyanolina provides premium Spirulina tablets standardized for high Phycocyanin content. This green superfood offers exceptional antioxidant defense, aids cell renewal, and supplies essential amino acids and trace minerals.",
     "ingredients": "Purified Spirulina Platensis extract 500mg. FSSAI certified.",
-    "originalPrice": 799
+    "originalPrice": 599
   },
   {
     "id": 10,
     "icon": "💊",
     "name": "Tab Phytox (60Tab)",
-    "size": "60 tablets / 15-day supply",
-    "badge": null,
+    "size": "30 tablets / 15-day supply",
+    "badge": "",
     "color": "#e11d48",
     "price": 999,
-    "dosage": "2 tablets twice daily after meals with a full glass of water.",
+    "dosage": "2 tablets twice daily after meals with a full glass of water. Exposing to sun give added benefits.",
     "images": [
       "/products/product7.1.jpg",
       "/products/product7.3.jpg",
@@ -285,23 +292,25 @@
     "benefits": [
       "Binds heavy metals and environmental toxins for safe excretion",
       "Supports natural liver and kidney detoxification pathways",
-      "Rich in natural chlorophyll, beta-glucans, and protein",
+      "Rich in natural chlorophyll",
+      "beta-glucans",
+      "and protein",
       "Provides comprehensive cellular nutrient replenishment and energy"
     ],
     "category": "Detox",
-    "description": "Tab Phytox features organic broken cell-wall Chlorella Pyrenoidosa. It is engineered to naturally bind and safely eliminate heavy metals, toxins, and drug metabolites from the body while restoring essential trace nutrition.",
+    "description": "Tab Phytox features organic broken cell-wall Chlorella Pyrenoidosa. It is engineered to naturally bind and safely eliminate heavy metals, toxins, and drug metabolites from the body while restoring essential trace nutrition. Hemoglobin is very similar to Chlorophyll, just iron is replaced by magnesium.",
     "ingredients": "Chlorella Pyrenoidosa (broken cell wall) 400mg, chlorophyll buffers.",
-    "originalPrice": 1299
+    "originalPrice": 999
   },
   {
     "id": 11,
     "icon": "⚗️",
     "name": "Quinoil",
-    "size": "250ml bottle",
-    "badge": null,
+    "size": "100ml bottle",
+    "badge": "",
     "color": "#7c3aed",
     "price": 1199,
-    "dosage": "1 tablespoon (15ml) daily mixed into food, salad dressings, or smoothies.",
+    "dosage": "1 teaspoon (5ml) daily 3 times mixed into food, salad dressings, or smoothies.",
     "images": [
       "/products/product6.1.jpg",
       "/products/product6.2.jpg",
@@ -312,25 +321,29 @@
     "reviews": 63,
     "tagline": "Premium bioactive lipid complex for cellular energy and weight support.",
     "benefits": [
-      "Provides clean, rapid cellular energy bypassing glucose pathway",
+      "Provides clean",
+      "rapid cellular energy bypassing glucose pathway",
       "Supports ketogenic metabolism during intensive clinical recovery",
       "Helps prevent muscle wasting and treatment-related cachexia",
-      "Mild, neutral taste—easy to mix with food, salads, or smoothies"
+      "Mild",
+      "neutral taste—easy to mix with food",
+      "salads",
+      "or smoothies"
     ],
     "category": "Nutrition",
-    "description": "Quinoil is a premium organic lipid blend formulated to provide a concentrated, easily metabolized energy source. Formulated for recovery support, it helps preserve muscle mass and supports ketogenesis without causing blood sugar spikes.",
-    "ingredients": "Medium Chain Triglycerides (C8/C10 lipids) derived from organic coconut oil.",
-    "originalPrice": 1599
+    "description": "Quinoil is a premium formulation to provide a concentrated, native extract of Nigella sativa rich in thymoquinone. Helps the body fight cancer effectively.",
+    "ingredients": "Nigella sativa extract oil without diluents or coloring agents",
+    "originalPrice": 1199
   },
   {
     "id": 12,
     "icon": "🌾",
     "name": "Anacose Powder",
     "size": "150g jar / 30-day supply",
-    "badge": null,
+    "badge": "",
     "color": "#ca8a04",
     "price": 1599,
-    "dosage": "1 scoop (5g) mixed in warm water twice daily before meals.",
+    "dosage": "Half spoon (1g) mixed in warm water twice daily before meals.",
     "images": [
       "/products/product12.0.jpg",
       "/products/product12.1.jpg",
@@ -344,22 +357,24 @@
       "Restores appetite and reduces treatment-induced nausea",
       "Improves overall gastrointestinal health and gut lining stability",
       "Supports nutrient absorption and systemic energy balance",
-      "Rich in natural fibers, minerals, and digestive enzymes"
+      "Rich in natural fibers",
+      "minerals",
+      "and digestive enzymes"
     ],
     "category": "Nutrition",
-    "description": "Anacose Powder is a proprietary dietary supplement designed to stimulate appetite, improve digestion, and reduce treatment-related nausea. Its blend of traditional herbs helps the body absorb vital nutrients efficiently during recovery.",
-    "ingredients": "Trigonella Foenum-Graecum (Fenugreek) extract, Zingiber Officinale (Ginger) extract, Elettaria Cardamomum.",
-    "originalPrice": 1999
+    "description": "Anacose Powder is a proprietary dietary supplement designed to stimulate appetite, improve digestion, and reduce treatment-related nausea. Its blend of traditional herbs helps the body absorb vital nutrients efficiently during recovery. Help fight inflammation, wound healing quicker.",
+    "ingredients": "Anacosus cosmosus extract standardised to enzyme",
+    "originalPrice": 1599
   },
   {
     "id": 13,
     "icon": "🌾",
     "name": "Methicon",
-    "size": "30 capsules / 15-day supply",
-    "badge": null,
+    "size": "100 gm / 30-day supply",
+    "badge": "",
     "color": "#854d0e",
     "price": 999,
-    "dosage": "1 capsule twice daily after meals with water.",
+    "dosage": "1-1-1 gm daily with meals",
     "images": [],
     "rating": 4.5,
     "inStock": true,
@@ -374,7 +389,7 @@
     "category": "Nutrition",
     "description": "Methicon is a purified, standardised extract made from Trigonella foenum-graecum (Methi) designed to effectively lower blood sugar levels, limiting the glucose-rich environment that fuels cancer growth, multiplication, and spread. Standardised to Glucomannan, this bioactive glycoside acts on key metabolic organs to stabilise glucose levels, giving the body a stronger, healthier platform to fight cancer without conventional metabolic side effects.",
     "ingredients": "Purified standardised extract of Trigonella foenum-graecum (Methi) (standardised to Glucomannan).",
-    "originalPrice": 1299
+    "originalPrice": 999
   },
   {
     "id": 14,
@@ -384,7 +399,7 @@
     "badge": "Premium",
     "color": "#0d9488",
     "price": 2699,
-    "dosage": "1-2 capsules daily as strictly directed by your oncology herbal specialist.",
+    "dosage": "0-1-0 capsule daily as strictly directed by your oncology herbal specialist.",
     "images": [
       "/products/product15.jpg",
       "/products/product15.1.jpg",
@@ -403,17 +418,17 @@
     "category": "Anti-Tumor",
     "description": "Cap K27 is a flagship formulation delivering a synergistic blend of anti-tumor botanicals designed to inhibit abnormal angiogenesis, stimulate cellular apoptosis, and support immune cell surveillance. Enhanced with the bio-active CAQO complex.",
     "ingredients": "Proprietary K27 botanical complex (Curcumin, Boswellia, Ashwagandha), CAQO absorption enhancer.",
-    "originalPrice": 3499
+    "originalPrice": 2699
   },
   {
     "id": 15,
     "icon": "🔮",
     "name": "Cap Oxy95 (30Cap)",
-    "size": "30 capsules / 15-day supply",
+    "size": "30 capsules / 30-day supply",
     "badge": "Premium",
     "color": "#6b21a8",
     "price": 3299,
-    "dosage": "1 capsule twice daily after meals.",
+    "dosage": "0-0-1 capsule daily after meals.",
     "images": [
       "/products/product3.1.jpg",
       "/products/product3.2.jpg",
@@ -424,15 +439,15 @@
     "reviews": 52,
     "tagline": "Oxygenation support formula for cellular energy and immune strength.",
     "benefits": [
-      "Supports optimal tissue oxygenation and respiration efficiency",
+      "Supports optimal tissue health and respiration efficiency",
       "Enhances mitochondrial energy production and ATP synthesis",
       "Combats severe chronic treatment fatigue and weakness",
       "Boosts overall immune cellular activity and resistance"
     ],
     "category": "Immunity",
-    "description": "Cap Oxy95 is designed to support healthy cellular respiration and oxygenation. By promoting optimal oxygen delivery at the tissue level, it enhances cellular mitochondrial efficiency, boosts immune response, and fights extreme fatigue.",
-    "ingredients": "Oxygen-coordinating organic herbal extracts, Cordyceps Sinensis extract.",
-    "originalPrice": 4199
+    "description": "Cap Oxy95 is designed to support healthy cellular respiration and oxygenation. By promoting optimal oxygen utilisation at the tissue level, it enhances cellular mitochondrial efficiency, boosts immune response, and fights extreme fatigue. Helps to get rid of free radicals in the body to reduce the inflammation due to damage to healthy cells.",
+    "ingredients": "Free radical scavenging complex of herbal extracts, Sylibum marianum, Green tea extract, spirulina extract.",
+    "originalPrice": 3299
   },
   {
     "id": 16,
@@ -544,24 +559,24 @@
   },
   {
     "id": 20,
-    "name": "TEST PRODUCT",
-    "category": "Immunity",
-    "price": 8999,
-    "originalPrice": 8997,
-    "rating": 5,
-    "reviews": 0,
-    "images": [],
-    "color": "#1a6e52",
     "icon": "🌿",
+    "name": "TEST PRODUCT",
+    "size": "30",
     "badge": "BBEST",
+    "color": "#1a6e52",
+    "price": 8999,
+    "dosage": "",
+    "images": [],
+    "rating": 5,
+    "inStock": true,
+    "reviews": 0,
     "tagline": "",
-    "description": "TEST PRODUCT",
     "benefits": [
       "TEST"
     ],
+    "category": "Immunity",
+    "description": "TEST PRODUCT",
     "ingredients": "",
-    "dosage": "",
-    "size": "30",
-    "inStock": true
+    "originalPrice": 8997
   }
 ]

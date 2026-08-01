@@ -65,6 +65,11 @@ export default function AdminDashboard() {
   const [filterDate, setFilterDate] = useState('today');
   const [selectedAppt, setSelected] = useState(null);
   const [slotViewDate, setSlotViewDate] = useState(null); // date string for the slot grid
+  const [quickBlockDate, setQuickBlockDate] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  });
+  const [quickBlockSlot, setQuickBlockSlot] = useState(ALL_SLOTS[0]);
 
   // Reschedule state
   const [rescheduleDate, setRescheduleDate] = useState('');
@@ -245,7 +250,7 @@ Cancer Herbalist Team`;
     setFetchError('');
     try {
       const params = new URLSearchParams({ key });
-      if (dateFilter && dateFilter !== 'all') {
+      if (dateFilter && dateFilter !== 'all' && dateFilter !== 'blocked') {
         params.append('date', dateFilter === 'today' ? today : dateFilter);
       }
       const res  = await fetch(`${BACKEND_URL}/api/appointments?${params}`);
@@ -1099,6 +1104,13 @@ Cancer Herbalist Team`;
   const slotGridAppts   = appointments.filter(a => a.appointmentDay === slotGridDate);
   const slotGridBooked  = new Set(slotGridAppts.map(a => a.appointmentSlot));
 
+  const displayedAppointments = appointments.filter(a => {
+    if (filterDate === 'blocked') {
+      return a.name === '[BLOCKED]';
+    }
+    return a.name !== '[BLOCKED]';
+  });
+
   /* ═══════════════════════════════════════════════════════════════
      LOGIN SCREEN
   ═══════════════════════════════════════════════════════════════ */
@@ -1593,10 +1605,10 @@ Cancer Herbalist Team`;
             {/* Stats row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px' }}>
           {[
-            { label: "Today's Appointments",  value: todayAppts.length,      icon: '📅', color: PRIMARY },
+            { label: "Today's Appointments",  value: todayAppts.filter(a => a.name !== '[BLOCKED]').length,      icon: '📅', color: PRIMARY },
             { label: 'Slots Booked Today',     value: todayBookedSlots.size,  icon: '🔴', color: '#ef4444' },
             { label: 'Slots Free Today',       value: TIME_SLOTS.length - todayBookedSlots.size, icon: '🟢', color: '#22c55e' },
-            { label: 'Total Appointments',     value: appointments.length,    icon: '📋', color: ACCENT },
+            { label: 'Total Appointments',     value: appointments.filter(a => a.name !== '[BLOCKED]').length,    icon: '📋', color: ACCENT },
           ].map(s => (
             <div key={s.label} style={{
               background: bgCard, borderRadius: '16px', padding: '20px 24px',
@@ -1609,29 +1621,159 @@ Cancer Herbalist Team`;
           ))}
         </div>
 
-        {/* Filter bar */}
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: textPrimary }}>Show:</span>
-          {['today', 'all'].map(f => (
-            <button key={f} onClick={() => setFilterDate(f)} style={{
-              padding: '8px 18px', borderRadius: '8px', fontWeight: 600, fontSize: '13px',
-              border: `2px solid ${filterDate === f ? PRIMARY : '#e2e8f0'}`,
-              background: filterDate === f ? `${PRIMARY}12` : '#fff',
-              color: filterDate === f ? PRIMARY : '#64748b',
-              cursor: 'pointer', fontFamily: 'inherit',
-            }}>
-              {f === 'today' ? "📅 Today" : "📋 All"}
+        {/* Filter bar & Quick Block/Unblock Controls */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '16px',
+          marginBottom: '24px',
+          flexWrap: 'wrap',
+          background: bgCard,
+          padding: '16px 20px',
+          borderRadius: '14px',
+          border: `1px solid ${borderCard}`,
+          boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
+        }}>
+          {/* Filters on Left */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Filter:</span>
+            {['today', 'all', 'blocked'].map(f => (
+              <button key={f} onClick={() => setFilterDate(f)} style={{
+                padding: '8px 16px', borderRadius: '8px', fontWeight: 700, fontSize: '12px',
+                border: `2px solid ${filterDate === f ? PRIMARY : borderCard}`,
+                background: filterDate === f ? `${PRIMARY}12` : darkMode ? '#334155' : '#fff',
+                color: filterDate === f ? PRIMARY : textSecondary,
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
+              }}>
+                {f === 'today' ? "📅 Today" : f === 'all' ? "📋 All" : "🔒 Blocked Slots"}
+              </button>
+            ))}
+            {loading && <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: '8px' }}>Loading…</span>}
+            {fetchError && <span style={{ fontSize: '12px', color: '#ef4444' }}>⚠ {fetchError}</span>}
+          </div>
+
+          {/* Quick Block/Unblock Form on Right */}
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            background: darkMode ? '#1e293b' : '#f8fafc',
+            padding: '8px 12px',
+            borderRadius: '10px',
+            border: `1px solid ${borderCard}`
+          }}>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Quick Block:</span>
+            
+            <input
+              type="date"
+              value={quickBlockDate}
+              onChange={e => setQuickBlockDate(e.target.value)}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: `1px solid ${inputBorder}`,
+                background: inputBg,
+                color: inputText,
+                fontSize: '12px',
+                fontFamily: 'inherit',
+                outline: 'none'
+              }}
+            />
+
+            <select
+              value={quickBlockSlot}
+              onChange={e => setQuickBlockSlot(e.target.value)}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: `1px solid ${inputBorder}`,
+                background: inputBg,
+                color: inputText,
+                fontSize: '12px',
+                fontFamily: 'inherit',
+                outline: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              {ALL_SLOTS.map(slot => (
+                <option key={slot} value={slot}>{slot}</option>
+              ))}
+            </select>
+
+            <button
+              onClick={() => {
+                const formatted = formatRescheduleDate(quickBlockDate);
+                if (!formatted) {
+                  showToast('Please select a valid date.', 'error');
+                  return;
+                }
+                handleBlockSlot(formatted, quickBlockSlot);
+              }}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '6px',
+                background: PRIMARY,
+                color: '#fff',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '12px',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                transition: 'all 0.15s'
+              }}
+            >
+              🔒 Block
             </button>
-          ))}
-          {loading && <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: '8px' }}>Loading…</span>}
-          {fetchError && <span style={{ fontSize: '12px', color: '#ef4444' }}>⚠ {fetchError}</span>}
+
+            <button
+              onClick={() => {
+                const formatted = formatRescheduleDate(quickBlockDate);
+                if (!formatted) {
+                  showToast('Please select a valid date.', 'error');
+                  return;
+                }
+                const apptToUnblock = appointments.find(a =>
+                  a.appointmentDay === formatted &&
+                  a.appointmentSlot === quickBlockSlot &&
+                  a.name === '[BLOCKED]'
+                );
+                if (apptToUnblock) {
+                  handleUnblockSlot(apptToUnblock.apptId);
+                } else {
+                  showToast('This slot is not currently blocked.', 'error');
+                }
+              }}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '6px',
+                background: '#ef4444',
+                color: '#fff',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '12px',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                transition: 'all 0.15s'
+              }}
+            >
+              🔓 Unblock
+            </button>
+          </div>
         </div>
 
         <div className="admin-main-grid">
 
           {/* Appointment list */}
           <div>
-            {appointments.length === 0 && !loading ? (
+            {displayedAppointments.length === 0 && !loading ? (
               <div style={{
                 background: '#fff', borderRadius: '16px', padding: '48px',
                 textAlign: 'center', color: '#94a3b8',
@@ -1642,7 +1784,7 @@ Cancer Herbalist Team`;
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {appointments.map(a => {
+                {displayedAppointments.map(a => {
                   const isEmergency = EMERGENCY_SLOTS.some(s => a.appointmentSlot === s);
                   return (
                   <div
