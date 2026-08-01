@@ -64,8 +64,7 @@ export default function AdminDashboard() {
   const [fetchError, setFetchError] = useState('');
   const [filterDate, setFilterDate] = useState('today');
   const [selectedAppt, setSelected] = useState(null);
-  const [slotViewDate, setSlotViewDate] = useState(null); // date string for the slot grid
-  const [quickBlockDate, setQuickBlockDate] = useState(() => {
+  const [selectedDate, setSelectedDate] = useState(() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   });
@@ -82,15 +81,9 @@ export default function AdminDashboard() {
       setIsEditingReschedule(false);
       setRescheduleSlot(selectedAppt.appointmentSlot);
       try {
-        const d = new Date(selectedAppt.appointmentDay);
-        if (!isNaN(d.getTime())) {
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, '0');
-          const dd = String(d.getDate()).padStart(2, '0');
-          setRescheduleDate(`${yyyy}-${mm}-${dd}`);
-        } else {
-          setRescheduleDate('');
-        }
+        setRescheduleDate(
+          new Date(selectedAppt.appointmentDay).toISOString().split('T')[0]
+        );
       } catch {
         setRescheduleDate('');
       }
@@ -99,8 +92,21 @@ export default function AdminDashboard() {
 
   const formatRescheduleDate = (dateStr) => {
     if (!dateStr) return '';
-    const d = new Date(dateStr);
+    const normalized = dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`;
+    const d = new Date(normalized);
     return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  const parseLocalDateToYmd = (localDateStr) => {
+    if (!localDateStr) return '';
+    try {
+      const clean = String(localDateStr).replace(/^[a-zA-Z]+,\s*/, '').replace(/,/g, '').trim();
+      const parsed = new Date(clean);
+      if (isNaN(parsed.getTime())) return '';
+      return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, '0')}-${String(parsed.getDate()).padStart(2, '0')}`;
+    } catch (e) {
+      return '';
+    }
   };
 
   const getWhatsAppLink = (appt) => {
@@ -141,10 +147,6 @@ Cancer Herbalist Team`;
   const [activeDashboardTab, setActiveDashboardTab] = useState('appointments'); // 'appointments' | 'content'
 
   // Daily Slot Manager state
-  const [slotManagerDate, setSlotManagerDate] = useState(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  });
   const [slotManagerConfig, setSlotManagerConfig] = useState({}); // date -> { regularSlots:[], emergencySlots:[] }
   const [slotManagerLoading, setSlotManagerLoading] = useState(false);
   const [slotManagerSaving, setSlotManagerSaving] = useState(false);
@@ -419,12 +421,20 @@ Cancer Herbalist Team`;
     }
   }, [secret]);
 
+  useEffect(() => {
+    if (authed && selectedDate) {
+      const d = new Date(selectedDate + 'T00:00:00');
+      const formatted = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      fetchSlotConfig(formatted);
+    }
+  }, [authed, selectedDate, fetchSlotConfig]);
+
   /* ── Slot Manager: save config for a date ──────────────── */
   const saveSlotConfig = async () => {
     setSlotManagerSaving(true);
     try {
       // Convert date string YYYY-MM-DD to the full label format used by appointments
-      const d = new Date(slotManagerDate + 'T00:00:00');
+      const d = new Date(selectedDate + 'T00:00:00');
       const dateLabel = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       const res = await fetch(`${BACKEND_URL}/api/admin/slot-config?key=${secret}`, {
         method: 'POST',
@@ -450,7 +460,7 @@ Cancer Herbalist Team`;
   const resetSlotConfig = async () => {
     if (!window.confirm('Reset this date to all slots open?')) return;
     try {
-      const d = new Date(slotManagerDate + 'T00:00:00');
+      const d = new Date(selectedDate + 'T00:00:00');
       const dateLabel = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       const encodedDate = encodeURIComponent(dateLabel);
       const res = await fetch(`${BACKEND_URL}/api/admin/slot-config/${encodedDate}?key=${secret}`, {
@@ -1107,15 +1117,23 @@ Cancer Herbalist Team`;
   );
   const todayBookedSlots = new Set(todayAppts.map(a => a.appointmentSlot));
 
-  // Slot grid shows: selected appointment's date > today > first appointment's date
-  const slotGridDate = slotViewDate
-    || (todayAppts.length > 0 ? today : appointments[0]?.appointmentDay || today);
-  const slotGridAppts = appointments.filter(a => a.appointmentDay === slotGridDate);
+  // Slot grid shows: selected date formatted
+  const slotGridDate = formatRescheduleDate(selectedDate);
+  const slotGridAppts = appointments.filter(a => {
+    const dayA = String(a.appointmentDay || '').replace(/,/g, '').toLowerCase().trim();
+    const dayB = String(slotGridDate || '').replace(/,/g, '').toLowerCase().trim();
+    return dayA === dayB;
+  });
   const slotGridBooked = new Set(slotGridAppts.map(a => a.appointmentSlot));
 
   const displayedAppointments = appointments.filter(a => {
     if (filterDate === 'blocked') {
       return a.name === '[BLOCKED]';
+    }
+    if (filterDate === 'today') {
+      const dayA = String(a.appointmentDay || '').replace(/,/g, '').toLowerCase().trim();
+      const dayToday = String(today || '').replace(/,/g, '').toLowerCase().trim();
+      return dayA === dayToday && a.name !== '[BLOCKED]';
     }
     return a.name !== '[BLOCKED]';
   });
@@ -1677,8 +1695,8 @@ Cancer Herbalist Team`;
 
                 <input
                   type="date"
-                  value={quickBlockDate}
-                  onChange={e => setQuickBlockDate(e.target.value)}
+                  value={selectedDate}
+                  onChange={e => setSelectedDate(e.target.value)}
                   style={{
                     padding: '6px 10px',
                     borderRadius: '6px',
@@ -1713,7 +1731,7 @@ Cancer Herbalist Team`;
 
                 <button
                   onClick={() => {
-                    const formatted = formatRescheduleDate(quickBlockDate);
+                    const formatted = formatRescheduleDate(selectedDate);
                     if (!formatted) {
                       showToast('Please select a valid date.', 'error');
                       return;
@@ -1743,16 +1761,16 @@ Cancer Herbalist Team`;
 
                 <button
                   onClick={() => {
-                    const formatted = formatRescheduleDate(quickBlockDate);
+                    const formatted = formatRescheduleDate(selectedDate);
                     if (!formatted) {
                       showToast('Please select a valid date.', 'error');
                       return;
                     }
-                    const apptToUnblock = appointments.find(a =>
-                      a.appointmentDay === formatted &&
-                      a.appointmentSlot === quickBlockSlot &&
-                      a.name === '[BLOCKED]'
-                    );
+                    const apptToUnblock = appointments.find(a => {
+                      const dayA = String(a.appointmentDay || '').replace(/,/g, '').toLowerCase().trim();
+                      const dayB = String(formatted || '').replace(/,/g, '').toLowerCase().trim();
+                      return dayA === dayB && a.appointmentSlot === quickBlockSlot && a.name === '[BLOCKED]';
+                    });
                     if (apptToUnblock) {
                       handleUnblockSlot(apptToUnblock.apptId);
                     } else {
@@ -1802,7 +1820,13 @@ Cancer Herbalist Team`;
                       return (
                         <div
                           key={a.apptId}
-                          onClick={() => { setSelected(a); setSlotViewDate(a.appointmentDay); }}
+                          onClick={() => {
+                            setSelected(a);
+                            const ymd = parseLocalDateToYmd(a.appointmentDay);
+                            if (ymd) {
+                              setSelectedDate(ymd);
+                            }
+                          }}
                           className="appointment-item"
                           style={{
                             background: '#fff', borderRadius: '14px',
@@ -1908,12 +1932,31 @@ Cancer Herbalist Team`;
                   boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
                   border: `1px solid ${borderCard}`,
                 }}>
-                  <h3 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 700, color: textPrimary, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FaClock style={{ color: PRIMARY }} /> Slot Status
-                  </h3>
-                  <p style={{ margin: '0 0 14px', fontSize: '11px', color: textSecondary, fontWeight: 600 }}>
-                    {slotGridDate === today ? 'Today' : slotGridDate}
-                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+                    <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: textPrimary, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <FaClock style={{ color: PRIMARY }} /> Slot Status
+                    </h3>
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={e => {
+                        if (e.target.value) {
+                          setSelectedDate(e.target.value);
+                        }
+                      }}
+                      style={{
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        border: `1px solid ${inputBorder}`,
+                        background: inputBg,
+                        color: inputText,
+                        fontSize: '11.5px',
+                        fontFamily: 'inherit',
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    />
+                  </div>
                   <div className="slot-grid">
                     {ALL_SLOTS.map(slot => {
                       const booked = slotGridBooked.has(slot);
@@ -1947,7 +1990,7 @@ Cancer Herbalist Team`;
                           {slot}<br />
                           <span style={{ fontSize: '8px', fontWeight: 700, opacity: 0.85 }}>
                             {isEmergencySlot ? '⚡ ' : ''}
-                            {booked ? (isBlocked ? '🔒 BLOCKED' : `🔴 ${appt?.name?.split(' ')[0]}`) : '🟢 FREE'}
+                            {booked ? (isBlocked ? '🔒 BLOCKED' : `🔴 ${appt?.name}`) : '🟢 FREE'}
                           </span>
                         </div>
                       );
@@ -1957,14 +2000,20 @@ Cancer Herbalist Team`;
                     <span>🟢 Free</span>
                     <span>🔴 Booked</span>
                     <span>⚡ Followup Consultation</span>
-                    {slotViewDate && slotViewDate !== today && (
-                      <button
-                        onClick={() => setSlotViewDate(null)}
-                        style={{ background: 'none', border: 'none', color: ACCENT, cursor: 'pointer', fontSize: '11px', fontWeight: 600, padding: 0 }}
-                      >
-                        ↩ Back to today
-                      </button>
-                    )}
+                    {(() => {
+                      const todayYmd = (() => {
+                        const d = new Date();
+                        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                      })();
+                      return selectedDate !== todayYmd && (
+                        <button
+                          onClick={() => setSelectedDate(todayYmd)}
+                          style={{ background: 'none', border: 'none', color: ACCENT, cursor: 'pointer', fontSize: '11px', fontWeight: 600, padding: 0 }}
+                        >
+                          ↩ Back to today
+                        </button>
+                      );
+                    })()}
                   </div>
                   {slotGridAppts.some(a => a.name === '[BLOCKED]') && (
                     <button
@@ -2185,13 +2234,11 @@ Cancer Herbalist Team`;
                     <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: textSecondary, marginBottom: '4px' }}>SELECT DATE</label>
                     <input
                       type="date"
-                      value={slotManagerDate}
+                      value={selectedDate}
                       onChange={e => {
-                        setSlotManagerDate(e.target.value);
-                        fetchSlotConfig((() => {
-                          const d = new Date(e.target.value + 'T00:00:00');
-                          return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-                        })());
+                        if (e.target.value) {
+                          setSelectedDate(e.target.value);
+                        }
                       }}
                       style={{
                         padding: '10px 14px', borderRadius: '10px', border: `1.5px solid ${inputBorder}`,

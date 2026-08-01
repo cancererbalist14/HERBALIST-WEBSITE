@@ -1,0 +1,60 @@
+{
+  "2026-07-23t18:30:00.000z": {
+    "regularSlots": [
+      "11:00 AM - 12:00 PM",
+      "12:00 PM - 01:00 PM",
+      "02:00 PM - 03:00 PM",
+      "03:00 PM - 04:00 PM"
+    ],
+    "emergencySlots": [
+      "11:15 AM - 11:30 AM",
+      "12:00 PM - 12:15 PM",
+      "12:15 PM - 12:30 PM",
+      "02:00 PM - 02:15 PM",
+      "02:15 PM - 02:30 PM",
+      "03:00 PM - 03:15 PM",
+      "03:15 PM - 03:30 PM",
+      "11:00 AM - 11:15 AM"
+    ]
+  },
+  "2026-08-01t18:30:00.000z": {
+    "regularSlots": [],
+    "emergencySlots": []
+  },
+  "2026-08-02t18:30:00.000z": {
+    "regularSlots": [
+      "10:00 AM - 11:00 AM",
+      "11:00 AM - 12:00 PM"
+    ],
+    "emergencySlots": [
+      "03:00 PM - 03:15 PM",
+      "03:15 PM - 03:30 PM",
+      "03:30 PM - 03:45 PM",
+      "03:45 PM - 04:00 PM"
+    ]
+  },
+  "2026-08-03t18:30:00.000z": {
+    "regularSlots": [],
+    "emergencySlots": []
+  },
+  "2026-08-04t18:30:00.000z": {
+    "regularSlots": [],
+    "emergencySlots": []
+  },
+  "2026-08-05t18:30:00.000z": {
+    "regularSlots": [],
+    "emergencySlots": []
+  },
+  "2026-08-06t18:30:00.000z": {
+    "regularSlots": [],
+    "emergencySlots": []
+  },
+  "2026-08-07t18:30:00.000z": {
+    "regularSlots": [],
+    "emergencySlots": []
+  },
+  "2026-07-31t18:30:00.000z": {
+    "regularSlots": [],
+    "emergencySlots": []
+  }
+}

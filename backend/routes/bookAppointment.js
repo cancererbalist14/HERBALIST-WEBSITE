@@ -143,7 +143,7 @@ async function saveSlotConfigToSheetsBackground(date, slots, slotType) {
     delUrl.searchParams.append('action', 'deleteSlotConfig');
     delUrl.searchParams.append('date', date);
     delUrl.searchParams.append('slotType', slotType);
-    await fetch(delUrl.toString()).catch(() => {});
+    await fetch(delUrl.toString()).catch(() => { });
 
     const slotsToInsert = slots.length > 0 ? slots : ['[NONE]'];
     for (const slot of slotsToInsert) {
@@ -153,7 +153,7 @@ async function saveSlotConfigToSheetsBackground(date, slots, slotType) {
       rowUrl.searchParams.append('date', date);
       rowUrl.searchParams.append('slot', slot);
       rowUrl.searchParams.append('slotType', slotType);
-      await fetch(rowUrl.toString()).catch(() => {});
+      await fetch(rowUrl.toString()).catch(() => { });
     }
   } catch (err) {
     console.warn('[slotConfig] Sheets background save error:', err.message);
@@ -184,7 +184,7 @@ async function saveSlotConfigToSheets(date, slots, slotType) {
     await dbWrite('slot_config', serialized);
 
     // 3. Dispatch background Google Sheets write (unawaited)
-    saveSlotConfigToSheetsBackground(date, slots, slotType).catch(() => {});
+    saveSlotConfigToSheetsBackground(date, slots, slotType).catch(() => { });
   } catch (err) {
     console.error('[slotConfig] Failed to save config:', err.message);
   }
@@ -212,7 +212,7 @@ async function deleteSlotConfigFromSheets(date) {
       const delUrl = new URL(url);
       delUrl.searchParams.append('action', 'deleteSlotConfig');
       delUrl.searchParams.append('date', date);
-      fetch(delUrl.toString()).catch(() => {});
+      fetch(delUrl.toString()).catch(() => { });
     }
   } catch (err) {
     console.error('[slotConfig] Reset config error:', err.message);
@@ -793,7 +793,7 @@ async function syncAppointmentsFromSheets(force = false) {
       // Auto-cleanup: filter out any past appointments
       const initialCount = dbAppts.length;
       dbAppts = dbAppts.filter(a => !isDateInPast(a.appointmentDay));
-      
+
       // If any past appointments were removed, write back cleaned list to database
       if (dbAppts.length < initialCount) {
         console.log(`[bookAppointment] Auto-cleaned ${initialCount - dbAppts.length} past appointments.`);
@@ -815,7 +815,7 @@ async function syncAppointmentsFromSheets(force = false) {
     const data = await res.json();
     if (data.success) {
       let validAppts = (data.rows || []).filter(a => a && a.apptId && String(a.apptId).trim());
-      
+
       // Normalize ISO date strings from Google Sheets to local 'en-IN' format in India timezone
       const isoPattern = /^\d{4}-\d{2}-\d{2}/;
       validAppts.forEach(a => {
@@ -1181,7 +1181,7 @@ async function updateRowInSheets(appt) {
     const sheetUrl = new URL(url);
     sheetUrl.searchParams.append('action', 'updateRow');
     sheetUrl.searchParams.append('sheet', 'appointments');
-    
+
     const row = {
       apptId: appt.apptId,
       name: appt.name,
@@ -1196,7 +1196,7 @@ async function updateRowInSheets(appt) {
       status: appt.status || 'Confirmed',
     };
     Object.entries(row).forEach(([k, v]) => sheetUrl.searchParams.append(k, String(v ?? '')));
-    
+
     const res = await fetch(sheetUrl.toString());
     if (!res.ok) console.warn('[bookAppointment] Sheets update returned status:', res.status);
     else console.log('[bookAppointment] Appointment updated in Google Sheets.');
@@ -1213,7 +1213,7 @@ async function deleteRowFromSheets(apptId) {
     sheetUrl.searchParams.append('action', 'deleteRow');
     sheetUrl.searchParams.append('sheet', 'appointments');
     sheetUrl.searchParams.append('apptId', apptId);
-    
+
     const res = await fetch(sheetUrl.toString());
     if (!res.ok) console.warn('[bookAppointment] Sheets delete returned status:', res.status);
     else console.log('[bookAppointment] Appointment deleted from Google Sheets.');
@@ -1267,7 +1267,7 @@ router.delete('/public/appointments/:apptId', async (req, res) => {
     await dbWrite('appointments', appointmentStore);
 
     // Delete from Sheets in background (unawaited)
-    deleteRowFromSheets(apptId).catch(() => {});
+    deleteRowFromSheets(apptId).catch(() => { });
 
     // Send emails
     const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
@@ -1381,7 +1381,7 @@ router.put('/public/appointments/:apptId', async (req, res) => {
     await dbWrite('appointments', appointmentStore);
 
     // Sync to Sheets in background (unawaited)
-    updateRowInSheets(updatedAppt).catch(() => {});
+    updateRowInSheets(updatedAppt).catch(() => { });
 
     // Send emails
     const adminEmail = process.env.ADMIN_EMAIL || 'drherbalistindia@gmail.com';
@@ -1508,7 +1508,7 @@ Cancer Herbalist Team`;
     await dbWrite('appointments', appointmentStore);
 
     // Delete from Sheets in background (unawaited)
-    deleteRowFromSheets(apptId).catch(() => {});
+    deleteRowFromSheets(apptId).catch(() => { });
 
     res.json({ success: true, message: 'Appointment cancelled successfully.' });
   } catch (err) {
@@ -1562,7 +1562,7 @@ router.put('/appointments/:apptId', checkAdmin, async (req, res) => {
     await dbWrite('appointments', appointmentStore);
 
     // Sync to Sheets in background (unawaited)
-    updateRowInSheets(updatedAppt).catch(() => {});
+    updateRowInSheets(updatedAppt).catch(() => { });
 
     // ── Send reschedule email to patient (only if slot actually changed) ──
     if (isActuallyRescheduled && currentAppt.email && currentAppt.email !== '—') {
@@ -1618,7 +1618,7 @@ Cancer Herbalist Team`;
 
 /* ── POST /api/appointments/block (Admin only) ──────────────── */
 router.post('/appointments/block', checkAdmin, async (req, res) => {
-  const { appointmentDay, appointmentSlot } = req.body;
+  const { appointmentDay, appointmentSlot, name: customName } = req.body;
 
   if (!appointmentDay || !appointmentSlot) {
     return res.status(400).json({ success: false, error: 'appointmentDay and appointmentSlot are required.' });
@@ -1627,7 +1627,7 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
   try {
     // Force a fresh sync so the conflict check sees the latest Sheets data
     await syncAppointmentsFromSheets(true);
-    
+
     // Conflict check (case-insensitive trim for robustness)
     const normalize = (s) => String(s || '').trim().toLowerCase();
     const conflict = appointmentStore.find(a =>
@@ -1640,12 +1640,12 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
         error: `The ${appointmentSlot} slot on ${appointmentDay} is already booked/blocked.`,
       });
     }
-    
+
     const apptId = `BLK-${Date.now()}`;
     const bookedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
     const appt = {
       apptId,
-      name: '[BLOCKED]',
+      name: customName || '[BLOCKED]',
       phone: '—',
       email: '—',
       treatment: 'Blocked Slot',
@@ -1656,7 +1656,7 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
       bookedAt,
       status: 'Confirmed'
     };
-    
+
     // Only update the in-memory store
     appointmentStore.push(appt);
     lastApptSyncTime = 0;
@@ -1666,7 +1666,7 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
 
     // Save to Sheets in background (unawaited)
     saveToSheets(appt, false).catch(e => console.warn('[bookAppointment] Background slot block save to sheets failed:', e.message));
-    
+
     res.json({ success: true, appointment: appt });
   } catch (err) {
     console.error('[bookAppointment] block error:', err.message);
@@ -1714,8 +1714,8 @@ router.post('/admin/slot-config', checkAdmin, async (req, res) => {
     lastSlotConfigSyncTime = 0;
 
     // Persist to Sheets asynchronously
-    saveSlotConfigToSheets(date, validRegular, 'regular').catch(() => {});
-    saveSlotConfigToSheets(date, validEmergency, 'emergency').catch(() => {});
+    saveSlotConfigToSheets(date, validRegular, 'regular').catch(() => { });
+    saveSlotConfigToSheets(date, validEmergency, 'emergency').catch(() => { });
 
     res.json({
       success: true,
@@ -1735,7 +1735,7 @@ router.delete('/admin/slot-config/:date', checkAdmin, async (req, res) => {
     const normalizedKey = normalizeDateKey(date);
     delete slotConfigStore[normalizedKey];
     lastSlotConfigSyncTime = 0;
-    deleteSlotConfigFromSheets(date).catch(() => {});
+    deleteSlotConfigFromSheets(date).catch(() => { });
     res.json({ success: true, message: `Slot config for ${date} reset to default (all open).` });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to reset slot config.' });

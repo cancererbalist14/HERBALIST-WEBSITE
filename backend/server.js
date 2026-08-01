@@ -320,9 +320,7 @@ app.listen(PORT, () => {
     console.warn('⚠️   ZOHO_CLIENT_ID / ZOHO_REFRESH_TOKEN not set — Zoho integrations disabled.');
   } else {
     console.log('✅  Zoho CRM / Books / Sign credentials found.');
-    if (!process.env.ZOHO_SIGN_TEMPLATE_ID)      console.warn('⚠️   ZOHO_SIGN_TEMPLATE_ID not set — consent form signing disabled.');
-    if (!process.env.ZOHO_CAMPAIGNS_LIST_KEY)    console.warn('⚠️   ZOHO_CAMPAIGNS_LIST_KEY not set — newsletter subscription disabled.');
-    if (!process.env.ZOHO_DESK_ORG_ID)           console.warn('⚠️   ZOHO_DESK_ORG_ID not set — support ticket creation disabled.');
+    // Optional Zoho configs skipped warning-less if not set
   }
 
   if (process.env.RAZORPAY_KEY_ID?.startsWith('rzp_test_')) {
