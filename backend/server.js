@@ -297,6 +297,7 @@ app.use((err, req, res, next) => {
 });
 
 
+// Server listening port
 app.listen(PORT, () => {
   console.log(`\n✅  Cancer Herbalist API running on port ${PORT}`);
 

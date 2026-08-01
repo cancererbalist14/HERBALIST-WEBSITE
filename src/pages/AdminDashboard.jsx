@@ -248,14 +248,12 @@ Cancer Herbalist Team`;
   }, []);
 
   /* ── Fetch appointments ──────────────────────────────────────── */
-  const fetchAppts = useCallback(async (key, dateFilter) => {
+  const fetchAppts = useCallback(async (key) => {
     setLoading(true);
     setFetchError('');
     try {
+      // Always fetch ALL appointments — frontend handles the display filtering
       const params = new URLSearchParams({ key });
-      if (dateFilter && dateFilter !== 'all' && dateFilter !== 'blocked') {
-        params.append('date', dateFilter === 'today' ? today : dateFilter);
-      }
       const res = await fetch(`${BACKEND_URL}/api/appointments?${params}`);
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to fetch.');
@@ -308,7 +306,7 @@ Cancer Herbalist Team`;
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to cancel.');
       showToast('✅ Appointment cancelled successfully.');
       setSelected(null);
-      fetchAppts(secret, filterDate);
+      fetchAppts(secret);
     } catch (err) {
       showToast(`Error: ${err.message}`, 'error');
     }
@@ -326,7 +324,7 @@ Cancer Herbalist Team`;
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to reschedule.');
       showToast('📅 Appointment rescheduled successfully!');
       setSelected(null);
-      fetchAppts(secret, filterDate);
+      fetchAppts(secret);
     } catch (err) {
       showToast(`Error: ${err.message}`, 'error');
     }
@@ -335,6 +333,19 @@ Cancer Herbalist Team`;
   /* ── Block Slot ────────────────────────────────────────── */
   const handleBlockSlot = async (day, slot, reason) => {
     if (blockingSlot) return;
+
+    // Check if slot is ALREADY blocked
+    const existingAppt = appointments.find(a => {
+      const dayA = String(a.appointmentDay || '').replace(/,/g, '').toLowerCase().trim();
+      const dayB = String(day || '').replace(/,/g, '').toLowerCase().trim();
+      return dayA === dayB && a.appointmentSlot === slot;
+    });
+
+    if (existingAppt && isItemBlocked(existingAppt)) {
+      showToast(`⚠️ Slot (${slot}) on ${day} is ALREADY blocked.`, 'error');
+      return;
+    }
+
     setBlockingSlot(true);
     try {
       const res = await fetch(`${BACKEND_URL}/api/appointments/block?key=${secret}`, {
@@ -345,7 +356,7 @@ Cancer Herbalist Team`;
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to block slot.');
       showToast('🔒 Slot blocked successfully.');
-      fetchAppts(secret, filterDate);
+      fetchAppts(secret);
     } catch (err) {
       showToast(`Error: ${err.message}`, 'error');
     } finally {
@@ -365,7 +376,7 @@ Cancer Herbalist Team`;
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to unblock.');
       showToast('🔓 Slot unblocked successfully.');
       setSelected(null);
-      fetchAppts(secret, filterDate);
+      fetchAppts(secret);
     } catch (err) {
       showToast(`Error: ${err.message}`, 'error');
     } finally {
@@ -388,7 +399,7 @@ Cancer Herbalist Team`;
         fetch(`${BACKEND_URL}/api/appointments/${a.apptId}?key=${secret}`, { method: 'DELETE' })
       ));
       showToast('🔓 All blocked slots cleared successfully.');
-      fetchAppts(secret, filterDate);
+      fetchAppts(secret);
     } catch (err) {
       showToast(`Error clearing blocked slots: ${err.message}`, 'error');
     } finally {
@@ -734,11 +745,11 @@ Cancer Herbalist Team`;
   /* ── Auto-refresh every 60s ──────────────────────────────────── */
   useEffect(() => {
     if (!authed) return;
-    fetchAppts(secret, filterDate);
+    fetchAppts(secret);
     fetchOrders(secret);
     loadDynamicContent();
     const id = setInterval(() => {
-      fetchAppts(secret, filterDate);
+      fetchAppts(secret);
       fetchOrders(secret);
       loadDynamicContent();
     }, 60_000);
@@ -1126,8 +1137,34 @@ Cancer Herbalist Team`;
   });
   const slotGridBooked = new Set(slotGridAppts.map(a => a.appointmentSlot));
 
+  /* ── Toggle Block Slot (TODO Style) ────────────────────── */
+  const handleToggleBlock = async (appt, day, slot) => {
+    if (blockingSlot) return;
+    setBlockingSlot(true);
+    try {
+      const targetApptId = appt?.apptId;
+      const targetDay = day || appt?.appointmentDay;
+      const targetSlot = slot || appt?.appointmentSlot;
+      const res = await fetch(`${BACKEND_URL}/api/appointments/toggle-block?key=${secret}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apptId: targetApptId, appointmentDay: targetDay, appointmentSlot: targetSlot }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to toggle block status.');
+      showToast(data.isBlocked ? '🔒 Slot marked as BLOCKED' : '🟢 Slot RESTORED to default');
+      fetchAppts(secret);
+    } catch (err) {
+      showToast(`Error: ${err.message}`, 'error');
+    } finally {
+      setBlockingSlot(false);
+    }
+  };
+
   const isItemBlocked = (a) => {
-    return a.name === '[BLOCKED]' ||
+    return a.isBlocked === true ||
+           a.status === 'Blocked' ||
+           a.name === '[BLOCKED]' ||
            a.treatment === 'Blocked Slot' ||
            String(a.name || '').includes('BLOCKED') ||
            String(a.name || '').startsWith('🔒');
@@ -1594,7 +1631,7 @@ Cancer Herbalist Team`;
         </div>
         <div className="admin-header-actions">
           <button
-            onClick={() => { fetchAppts(secret, filterDate); fetchOrders(secret); loadDynamicContent(); }}
+            onClick={() => { fetchAppts(secret); fetchOrders(secret); loadDynamicContent(); }}
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
@@ -1863,16 +1900,26 @@ Cancer Herbalist Team`;
                           {/* Details */}
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                              <FaUser style={{ color: '#64748b', fontSize: '11px' }} />
-                              <strong style={{ fontSize: '14px', color: '#0f172a' }}>
-                                {a.name === '[BLOCKED]' ? `🔒 Blocked Slot (${a.appointmentSlot})` : a.name}
+                              <input
+                                type="checkbox"
+                                checked={isItemBlocked(a)}
+                                onChange={e => {
+                                  e.stopPropagation();
+                                  handleToggleBlock(a);
+                                }}
+                                title={isItemBlocked(a) ? "Uncheck to restore to default / unblock" : "Check to mark as blocked"}
+                                style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: '#ef4444' }}
+                              />
+                              <strong style={{ fontSize: '14px', color: isItemBlocked(a) ? '#b91c1c' : '#0f172a' }}>
+                                {isItemBlocked(a) ? (a.name === '[BLOCKED]' ? `🔒 Blocked Slot (${a.appointmentSlot})` : `🔒 ${a.name} (BLOCKED)`) : a.name}
                               </strong>
                               <span style={{
-                                background: isEmergency ? `${EMERGENCY_COLOR}18` : `${ACCENT}18`,
-                                color: isEmergency ? EMERGENCY_COLOR : ACCENT,
+                                background: isItemBlocked(a) ? '#fee2e2' : isEmergency ? `${EMERGENCY_COLOR}18` : `${ACCENT}18`,
+                                color: isItemBlocked(a) ? '#b91c1c' : isEmergency ? EMERGENCY_COLOR : ACCENT,
                                 fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px',
-                              }}>{a.treatment}</span>
-                              {isEmergency && (
+                                border: isItemBlocked(a) ? '1px solid #fca5a5' : 'none'
+                              }}>{isItemBlocked(a) ? '🔒 Blocked' : a.treatment}</span>
+                              {isEmergency && !isItemBlocked(a) && (
                                 <span style={{ background: EMERGENCY_COLOR, color: '#fff', fontSize: '9px', fontWeight: 800, padding: '2px 7px', borderRadius: '20px' }}>
                                   ⚡ 15 min
                                 </span>
@@ -1970,12 +2017,12 @@ Cancer Herbalist Team`;
                     {ALL_SLOTS.map(slot => {
                       const booked = slotGridBooked.has(slot);
                       const appt = slotGridAppts.find(a => a.appointmentSlot === slot);
-                      const isBlocked = booked && appt?.name === '[BLOCKED]';
+                      const isBlocked = booked && (appt?.name === '[BLOCKED]' || appt?.treatment === 'Blocked Slot' || String(appt?.name || '').includes('BLOCKED'));
                       const isEmergencySlot = EMERGENCY_SLOTS.includes(slot);
                       return (
                         <div
                           key={slot}
-                          title={booked ? (isBlocked ? 'Blocked Slot' : `${appt?.name} — ${appt?.treatment}`) : 'Click to Block Slot'}
+                          title={booked ? (isBlocked ? 'Click checkbox to unblock slot' : `${appt?.name} — ${appt?.treatment}`) : 'Click checkbox to block slot'}
                           onClick={() => {
                             if (blockingSlot) return;
                             if (isBlocked) {
@@ -1987,17 +2034,31 @@ Cancer Herbalist Team`;
                             }
                           }}
                           style={{
-                            padding: '8px 10px', borderRadius: '8px', fontSize: '10px', fontWeight: 600,
+                            padding: '8px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
                             textAlign: 'center', cursor: blockingSlot ? 'not-allowed' : 'pointer',
                             opacity: blockingSlot ? 0.65 : 1,
-                            background: isBlocked ? '#e2e8f0' : booked ? (isEmergencySlot ? '#fff3e0' : '#fee2e2') : (isEmergencySlot ? '#fff7ed' : '#f0fdf4'),
-                            color: isBlocked ? '#475569' : booked ? (isEmergencySlot ? '#9a3412' : '#b91c1c') : (isEmergencySlot ? '#c2410c' : '#15803d'),
-                            border: `1.5px solid ${isBlocked ? '#cbd5e1' : booked ? (isEmergencySlot ? '#fed7aa' : '#fca5a5') : (isEmergencySlot ? '#fdba74' : '#86efac')}`,
+                            background: isBlocked ? '#fee2e2' : booked ? (isEmergencySlot ? '#fff3e0' : '#fee2e2') : (isEmergencySlot ? '#fff7ed' : '#f0fdf4'),
+                            color: isBlocked ? '#991b1b' : booked ? (isEmergencySlot ? '#9a3412' : '#b91c1c') : (isEmergencySlot ? '#c2410c' : '#15803d'),
+                            border: `1.5px solid ${isBlocked ? '#fca5a5' : booked ? (isEmergencySlot ? '#fed7aa' : '#fca5a5') : (isEmergencySlot ? '#fdba74' : '#86efac')}`,
                             transition: 'all 0.15s',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px'
                           }}
                         >
-                          {slot}<br />
-                          <span style={{ fontSize: '8px', fontWeight: 700, opacity: 0.85 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <input
+                              type="checkbox"
+                              checked={isBlocked}
+                              readOnly
+                              style={{
+                                cursor: 'pointer',
+                                width: '13px',
+                                height: '13px',
+                                accentColor: '#ef4444'
+                              }}
+                            />
+                            <span>{slot}</span>
+                          </div>
+                          <span style={{ fontSize: '9px', fontWeight: 700, opacity: 0.9 }}>
                             {isEmergencySlot ? '⚡ ' : ''}
                             {booked ? (isBlocked ? '🔒 BLOCKED' : `🔴 ${appt?.name}`) : '🟢 FREE'}
                           </span>
@@ -2693,7 +2754,7 @@ Cancer Herbalist Team`;
                 🔄 Quick Actions
               </h3>
               <button
-                onClick={() => { fetchAppts(secret, filterDate); loadDynamicContent(); }}
+                onClick={() => { fetchAppts(secret); loadDynamicContent(); }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '8px',
                   background: `${PRIMARY}12`, border: `1.5px solid ${PRIMARY}40`,

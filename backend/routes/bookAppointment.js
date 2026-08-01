@@ -1634,16 +1634,23 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
     syncAppointmentsFromSheets(true).catch(() => {});
     
     // Conflict check (case-insensitive trim and comma stripping for robustness)
-    const normalize = (s) => String(s || '').trim().toLowerCase();
-    const conflict = appointmentStore.find(a =>
+    const normalize = (s) => String(s || '').replace(/,/g, '').trim().toLowerCase();
+    const conflictIndex = appointmentStore.findIndex(a =>
       normalize(a.appointmentDay) === normalize(appointmentDay) &&
       normalize(a.appointmentSlot) === normalize(appointmentSlot)
     );
-    if (conflict) {
-      return res.status(409).json({
-        success: false,
-        error: `The ${appointmentSlot} slot on ${appointmentDay} is already booked/blocked.`,
-      });
+
+    if (conflictIndex !== -1) {
+      const conflict = appointmentStore[conflictIndex];
+      const isAlreadyBlocked = conflict.name === '[BLOCKED]' || conflict.treatment === 'Blocked Slot' || String(conflict.name || '').includes('BLOCKED');
+      if (isAlreadyBlocked) {
+        return res.status(409).json({
+          success: false,
+          error: `The ${appointmentSlot} slot on ${appointmentDay} is ALREADY blocked.`,
+        });
+      }
+      // Overwrite patient appointment with admin block
+      appointmentStore.splice(conflictIndex, 1);
     }
 
     const apptId = `BLK-${Date.now()}`;
@@ -1676,6 +1683,69 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
   } catch (err) {
     console.error('[bookAppointment] block error:', err.message);
     res.status(500).json({ success: false, error: `Failed to block slot: ${err.message}` });
+  }
+});
+
+/* ── POST /api/appointments/toggle-block (Admin only) ──────── */
+router.post('/appointments/toggle-block', checkAdmin, async (req, res) => {
+  const { apptId, appointmentDay, appointmentSlot } = req.body;
+  try {
+    await syncAppointmentsFromSheets();
+    const normalize = (s) => String(s || '').replace(/,/g, '').trim().toLowerCase();
+    
+    let idx = -1;
+    if (apptId) {
+      idx = appointmentStore.findIndex(a => String(a.apptId).trim() === String(apptId).trim());
+    }
+    if (idx === -1 && appointmentDay && appointmentSlot) {
+      idx = appointmentStore.findIndex(a =>
+        normalize(a.appointmentDay) === normalize(appointmentDay) &&
+        normalize(a.appointmentSlot) === normalize(appointmentSlot)
+      );
+    }
+
+    if (idx !== -1) {
+      const appt = appointmentStore[idx];
+      const currentlyBlocked = !!(appt.isBlocked || appt.status === 'Blocked' || appt.name === '[BLOCKED]' || appt.treatment === 'Blocked Slot' || String(appt.name || '').includes('BLOCKED'));
+      if (currentlyBlocked) {
+        if (appt.name === '[BLOCKED]' || appt.treatment === 'Blocked Slot') {
+          appointmentStore.splice(idx, 1);
+        } else {
+          appt.isBlocked = false;
+          appt.status = 'Confirmed';
+        }
+      } else {
+        appt.isBlocked = true;
+        appt.status = 'Blocked';
+      }
+      await dbWrite('appointments', appointmentStore);
+      return res.json({ success: true, isBlocked: !currentlyBlocked, appointment: appointmentStore[idx] || null });
+    } else if (appointmentDay && appointmentSlot) {
+      const newApptId = `BLK-${Date.now()}`;
+      const bookedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+      const newAppt = {
+        apptId: newApptId,
+        name: '[BLOCKED]',
+        phone: '—',
+        email: '—',
+        treatment: 'Blocked Slot',
+        stage: 'N/A',
+        message: 'Blocked by Admin',
+        appointmentDay,
+        appointmentSlot,
+        bookedAt,
+        status: 'Confirmed',
+        isBlocked: true
+      };
+      appointmentStore.push(newAppt);
+      await dbWrite('appointments', appointmentStore);
+      return res.json({ success: true, isBlocked: true, appointment: newAppt });
+    }
+
+    return res.status(404).json({ success: false, error: 'Appointment or slot not found.' });
+  } catch (err) {
+    console.error('[bookAppointment] toggle-block error:', err.message);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
