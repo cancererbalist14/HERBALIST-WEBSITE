@@ -37,3 +37,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Backend dynamic data caches
+backend/data/
+backend/data/*.json

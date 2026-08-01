@@ -1118,10 +1118,13 @@ router.get('/available-slots', async (req, res) => {
     return res.status(400).json({ success: false, error: 'date query param required.' });
   }
   try {
-    await syncAppointmentsFromSheets();
-    await syncSlotConfigFromSheets();
+    // Non-blocking background sync
+    syncAppointmentsFromSheets().catch(() => {});
+    syncSlotConfigFromSheets().catch(() => {});
+
+    const normalize = (s) => String(s || '').replace(/,/g, '').trim().toLowerCase();
     const booked = appointmentStore
-      .filter(a => a.appointmentDay.toLowerCase() === date.toLowerCase())
+      .filter(a => normalize(a.appointmentDay) === normalize(date))
       .map(a => a.appointmentSlot);
     const enabledSlots = getEnabledSlotsForDate(date);
     res.json({
@@ -1144,7 +1147,9 @@ router.get('/slot-config', async (req, res) => {
     return res.status(400).json({ success: false, error: 'date query param required.' });
   }
   try {
-    await syncSlotConfigFromSheets();
+    // Non-blocking background sync
+    syncSlotConfigFromSheets().catch(() => {});
+
     const enabledSlots = getEnabledSlotsForDate(date);
     res.json({
       success: true,
@@ -1625,10 +1630,10 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
   }
 
   try {
-    // Force a fresh sync so the conflict check sees the latest Sheets data
-    await syncAppointmentsFromSheets(true);
-
-    // Conflict check (case-insensitive trim for robustness)
+    // Non-blocking background sync
+    syncAppointmentsFromSheets(true).catch(() => {});
+    
+    // Conflict check (case-insensitive trim and comma stripping for robustness)
     const normalize = (s) => String(s || '').trim().toLowerCase();
     const conflict = appointmentStore.find(a =>
       normalize(a.appointmentDay) === normalize(appointmentDay) &&

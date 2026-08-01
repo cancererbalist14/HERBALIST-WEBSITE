@@ -724,8 +724,8 @@ export default function Contact() {
                             const isToday = formData.selectedDay &&
                               new Date(formData.selectedDay.date).toDateString() === new Date().toDateString();
 
-                            // Filter out slots that have already passed so they are not visible
-                            const visibleSlots = slotsToShow.filter(slot => !(isToday && isSlotInPast(slot)));
+                            // Filter out slots that have passed, are already booked, or disabled by admin so they disappear completely
+                            const visibleSlots = slotsToShow.filter(slot => !(isToday && isSlotInPast(slot)) && !bookedSlots.includes(slot) && enabledSlots.includes(slot));
 
                             if (visibleSlots.length === 0) {
                               return (

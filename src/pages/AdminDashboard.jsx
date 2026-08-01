@@ -1126,16 +1126,23 @@ Cancer Herbalist Team`;
   });
   const slotGridBooked = new Set(slotGridAppts.map(a => a.appointmentSlot));
 
+  const isItemBlocked = (a) => {
+    return a.name === '[BLOCKED]' ||
+           a.treatment === 'Blocked Slot' ||
+           String(a.name || '').includes('BLOCKED') ||
+           String(a.name || '').startsWith('🔒');
+  };
+
   const displayedAppointments = appointments.filter(a => {
     if (filterDate === 'blocked') {
-      return a.name === '[BLOCKED]';
+      return isItemBlocked(a);
     }
     if (filterDate === 'today') {
       const dayA = String(a.appointmentDay || '').replace(/,/g, '').toLowerCase().trim();
       const dayToday = String(today || '').replace(/,/g, '').toLowerCase().trim();
-      return dayA === dayToday && a.name !== '[BLOCKED]';
+      return dayA === dayToday && !isItemBlocked(a);
     }
-    return a.name !== '[BLOCKED]';
+    return !isItemBlocked(a);
   });
 
   /* ═══════════════════════════════════════════════════════════════
