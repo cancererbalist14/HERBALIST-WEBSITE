@@ -333,14 +333,14 @@ Cancer Herbalist Team`;
   };
 
   /* ── Block Slot ────────────────────────────────────────── */
-  const handleBlockSlot = async (day, slot) => {
+  const handleBlockSlot = async (day, slot, reason) => {
     if (blockingSlot) return;
     setBlockingSlot(true);
     try {
       const res = await fetch(`${BACKEND_URL}/api/appointments/block?key=${secret}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appointmentDay: day, appointmentSlot: slot }),
+        body: JSON.stringify({ appointmentDay: day, appointmentSlot: slot, name: reason || '[BLOCKED]' }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to block slot.');
@@ -1857,7 +1857,9 @@ Cancer Herbalist Team`;
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                               <FaUser style={{ color: '#64748b', fontSize: '11px' }} />
-                              <strong style={{ fontSize: '14px', color: '#0f172a' }}>{a.name}</strong>
+                              <strong style={{ fontSize: '14px', color: '#0f172a' }}>
+                                {a.name === '[BLOCKED]' ? `🔒 Blocked Slot (${a.appointmentSlot})` : a.name}
+                              </strong>
                               <span style={{
                                 background: isEmergency ? `${EMERGENCY_COLOR}18` : `${ACCENT}18`,
                                 color: isEmergency ? EMERGENCY_COLOR : ACCENT,
