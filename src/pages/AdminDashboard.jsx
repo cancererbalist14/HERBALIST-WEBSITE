@@ -1133,9 +1133,9 @@ Cancer Herbalist Team`;
     if (filterDate === 'today') {
       const dayA = String(a.appointmentDay || '').replace(/,/g, '').toLowerCase().trim();
       const dayToday = String(today || '').replace(/,/g, '').toLowerCase().trim();
-      return dayA === dayToday;
+      return dayA === dayToday && a.name !== '[BLOCKED]';
     }
-    return true;
+    return a.name !== '[BLOCKED]';
   });
 
   /* ═══════════════════════════════════════════════════════════════
