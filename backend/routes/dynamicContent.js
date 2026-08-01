@@ -95,36 +95,15 @@ const seedDatabase = async () => {
     // Products Seed
     let products = await dbRead('products');
     if (!products || !Array.isArray(products)) {
-      products = [];
-    }
-    let updatedProducts = false;
-
-    // IMPORTANT: Sync initialProducts in-memory with DB prices FIRST.
-    // This ensures that if /tmp is wiped (Vercel cold start without Supabase),
-    // the seed data written back carries the latest admin-updated prices.
-    products.forEach(dbProduct => {
-      const ipIdx = initialProducts.findIndex(ip => ip.id === dbProduct.id);
-      if (ipIdx !== -1) {
-        // Update the in-memory seed to match DB (preserves price changes)
-        initialProducts[ipIdx] = { ...initialProducts[ipIdx], ...dbProduct };
-      }
-    });
-
-    initialProducts.forEach(ip => {
-      const existing = products.find(p => p.id === ip.id);
-      if (!existing) {
-        products.push(ip);
-        updatedProducts = true;
-      }
-    });
-    if (updatedProducts || products.length === 0) {
+      // First-time seed: database key 'products' does not exist yet
+      products = [...initialProducts];
       products.sort((a, b) => a.id - b.id);
       await dbWrite('products', products);
     }
 
-    // Load prices into memory — done AFTER reading DB so prices are always current
+    // Load prices into memory — always populated from active DB products
     products.forEach(p => {
-      if (p.id) {
+      if (p && p.id) {
         priceListModule.PRODUCT_PRICES[p.id] = Number(p.price);
       }
     });
@@ -132,16 +111,8 @@ const seedDatabase = async () => {
     // Blogs Seed
     let blogs = await dbRead('blogs');
     if (!blogs || !Array.isArray(blogs)) {
-      blogs = [];
-    }
-    let updatedBlogs = false;
-    initialBlogs.forEach(ib => {
-      if (!blogs.some(b => b.id === ib.id)) {
-        blogs.push(ib);
-        updatedBlogs = true;
-      }
-    });
-    if (updatedBlogs || blogs.length === 0) {
+      // First-time seed
+      blogs = [...initialBlogs];
       blogs.sort((a, b) => a.id - b.id);
       await dbWrite('blogs', blogs);
     }
@@ -149,24 +120,11 @@ const seedDatabase = async () => {
     // Testimonials Seed
     let testimonials = await dbRead('testimonials');
     if (!testimonials || !Array.isArray(testimonials)) {
-      testimonials = [];
-    }
-    let updatedTestimonials = false;
-    initialTestimonials.forEach(it => {
-      if (!testimonials.some(t => t.id === it.id || (t.name === it.name && t.text === it.text))) {
-        testimonials.push(it);
-        updatedTestimonials = true;
-      }
-    });
-    // Ensure all testimonials have an id
-    testimonials = testimonials.map((t, idx) => {
-      if (!t.id) {
-        t.id = 100 + idx;
-        updatedTestimonials = true;
-      }
-      return t;
-    });
-    if (updatedTestimonials || testimonials.length === 0) {
+      // First-time seed
+      testimonials = initialTestimonials.map((t, idx) => ({
+        ...t,
+        id: t.id || (100 + idx),
+      }));
       await dbWrite('testimonials', testimonials);
     }
 
@@ -319,6 +277,10 @@ router.delete('/dynamic-products/:id', checkAdmin, async (req, res) => {
 
     if (await dbWrite('products', filtered)) {
       delete priceListModule.PRODUCT_PRICES[id];
+      const ipIdx = initialProducts.findIndex(ip => ip.id === id);
+      if (ipIdx !== -1) {
+        initialProducts.splice(ipIdx, 1);
+      }
       res.json({ success: true, message: 'Product deleted successfully.' });
     } else {
       res.status(500).json({ success: false, error: 'Failed to write to database.' });
