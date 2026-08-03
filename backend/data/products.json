@@ -6,9 +6,10 @@
     "size": "30 capsules / 15-day supply",
     "badge": "Best Seller",
     "color": "#38bed5",
-    "price": 899,
+    "price": 599,
     "dosage": "1 to 2 capsule twice daily after meals at morning and night , or as advised by your healthcare specialist.",
     "images": [
+      "/products/CH95.png",
       "/products/product0.1.jpeg",
       "/products/product0.2.jpeg",
       "/products/product0.3.jpeg",
@@ -42,6 +43,7 @@
     "price": 2599,
     "dosage": "1 to 2 g mixed into warm milk, or smoothies daily. Upto 3 times a day.",
     "images": [
+      "/products/Curcumin C3M.png",
       "/products/product9.1.jpg",
       "/products/product9.2.jpg",
       "/products/product9.3.jpg"
@@ -130,6 +132,7 @@
     "price": 2999,
     "dosage": "1-0-0 capsule in the morning daily with fat loaded food",
     "images": [
+      "/products/AC95.png",
       "/products/product2.1.png",
       "/products/product2.2.jpg",
       "/products/product2.3.jpg"
@@ -159,6 +162,7 @@
     "price": 2199,
     "dosage": "0-1-0 capsule daily in the afternoon after meals.",
     "images": [
+      "/products/Livocin.png",
       "/products/product14.jpg",
       "/products/product14.1.jpg",
       "/products/product14.2.jpg"
@@ -219,6 +223,7 @@
     "price": 1599,
     "dosage": "Aromatherapy: Add 3–5 drops to a diffuser. Topical: Dilute with a carrier oil (e.g. coconut oil) and massage gently.",
     "images": [
+      "/products/Frankincense oil.png",
       "/products/product8.jpg",
       "/products/product8.1.jpg",
       "/products/product8.4.jpg"
@@ -249,6 +254,7 @@
     "price": 599,
     "dosage": "1-0-1 tablets daily with water",
     "images": [
+      "/products/Cyanolina Bloo.png",
       "/products/product16.1.jpg",
       "/products/product16.jpg",
       "/products/product16.2.jpg"
@@ -281,6 +287,7 @@
     "price": 999,
     "dosage": "2 tablets twice daily after meals with a full glass of water. Exposing to sun give added benefits.",
     "images": [
+      "/products/product7.0.jpg",
       "/products/product7.1.jpg",
       "/products/product7.3.jpg",
       "/products/product7.4.jpg"
@@ -312,6 +319,7 @@
     "price": 1199,
     "dosage": "1 teaspoon (5ml) daily 3 times mixed into food, salad dressings, or smoothies.",
     "images": [
+      "/products/Quinoil.png",
       "/products/product6.1.jpg",
       "/products/product6.2.jpg",
       "/products/product6.3.jpg"
@@ -401,6 +409,7 @@
     "price": 2699,
     "dosage": "0-1-0 capsule daily as strictly directed by your oncology herbal specialist.",
     "images": [
+      "/products/K27.png",
       "/products/product15.jpg",
       "/products/product15.1.jpg",
       "/products/product15.2.jpg"
@@ -430,6 +439,7 @@
     "price": 3299,
     "dosage": "0-0-1 capsule daily after meals.",
     "images": [
+      "/products/Oxy95.png",
       "/products/product3.1.jpg",
       "/products/product3.2.jpg",
       "/products/product3.3.jpg"
@@ -459,6 +469,7 @@
     "price": 3999,
     "dosage": "1 capsule twice daily after meals.",
     "images": [
+      "/products/OxyForte.png",
       "/products/product10.jpg",
       "/products/product10.1.jpg",
       "/products/product10.2.jpg"
@@ -477,6 +488,35 @@
     "description": "Cap OxyForte is our maximum-strength cellular oxygenation formulation. Engineered for patients requiring advanced support, it works synergistically to elevate cellular energy, optimize blood oxygen transport, and defend cells against oxidative stress.",
     "ingredients": "Concentrated organic oxygenators, proprietary botanical cell-defense blend.",
     "originalPrice": 4999
+  },
+  {
+    "id": 19,
+    "icon": "💎",
+    "name": "Tab BLOO",
+    "size": "30 tablets / 30-day supply",
+    "badge": "Premium",
+    "color": "#3b82f6",
+    "price": 3740,
+    "dosage": "0-1-0 tablet daily after lunch or as recommended by your healthcare specialist.",
+    "images": [
+      "/products/Cyanolina Bloo.png"
+    ],
+    "rating": 4.9,
+    "inStock": true,
+    "reviews": 110,
+    "tagline": "Specialized bio-active formulation for comprehensive oncology support.",
+    "benefits": [
+      "Advanced bio-active cellular defense and signaling formula",
+      "Promotes healthy cellular signaling and programmed cell death (apoptosis)",
+      "Encourages deep tissue detoxification and metabolic clearance",
+      "Supports systemic defense",
+      "patient recovery",
+      "and general vitality"
+    ],
+    "category": "Anti-Tumor",
+    "description": "Tab BLOO is a premium, high-potency tablet formulation developed by Cancer Herbalist for advanced complementary support. Combining rare botanical extracts and active phyto-nutrients, it promotes healthy cell signaling, cellular detoxification, and robust immune defenses.",
+    "ingredients": "Proprietary oncology-support phyto-nutrient complex, Phycocyanin the active from sea algae Spirulina, a potent immunomodulator.",
+    "originalPrice": 3740
   },
   {
     "id": 17,
@@ -531,31 +571,6 @@
     "description": "3C is a triple-action formulation combining three of the most researched anti-tumor herbs in integrative herbal medicine. It works synergistically to inhibit abnormal cell signaling, support healthy cell cycle regulation, and reduce chronic inflammation.",
     "ingredients": "Curcuma Longa extract (standardized curcuminoids 95%), Green Tea Extract (EGCG 50%), Boswellia Serrata extract.",
     "originalPrice": 2299
-  },
-  {
-    "id": 19,
-    "icon": "💎",
-    "name": "Tab BLOO",
-    "size": "30 tablets / 30-day supply",
-    "badge": "Premium",
-    "color": "#3b82f6",
-    "price": 3740,
-    "dosage": "1 tablet daily after breakfast, or as recommended by your healthcare specialist.",
-    "images": [],
-    "rating": 4.9,
-    "inStock": true,
-    "reviews": 110,
-    "tagline": "Specialized bio-active formulation for comprehensive oncology support.",
-    "benefits": [
-      "Advanced bio-active cellular defense and signaling formula",
-      "Promotes healthy cellular signaling and programmed cell death (apoptosis)",
-      "Encourages deep tissue detoxification and metabolic clearance",
-      "Supports systemic defense, patient recovery, and general vitality"
-    ],
-    "category": "Anti-Tumor",
-    "description": "Tab BLOO is a premium, high-potency tablet formulation developed by Cancer Herbalist for advanced complementary support. Combining rare botanical extracts and active phyto-nutrients, it promotes healthy cell signaling, cellular detoxification, and robust immune defenses.",
-    "ingredients": "Proprietary oncology-support phyto-nutrient complex, rare organic botanical extracts, bio-enhancers.",
-    "originalPrice": 4690
   },
   {
     "id": 20,

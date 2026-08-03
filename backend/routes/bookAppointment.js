@@ -625,6 +625,82 @@ function buildCancellationEmailHtml({ name, treatment, appointmentDay, appointme
 </html>`;
 }
 
+/* ── Blocked/Cancelled slot email to patient ─────────────────────── */
+function buildBlockedEmailHtml({ name, treatment, appointmentDay, appointmentSlot }) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>Appointment Notice — Cancer Herbalist</title></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#991b1b 0%,#7f1d1d 100%);padding:40px 40px 32px;text-align:center;">
+            <p style="margin:0 0 10px;font-size:36px;">⚠️</p>
+            <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;">Cancer Herbalist</h1>
+            <p style="margin:8px 0 0;color:#fca5a5;font-size:13px;letter-spacing:0.5px;">APPOINTMENT BLOCKED / CANCELLED NOTICE</p>
+          </td>
+        </tr>
+        <!-- Body -->
+        <tr>
+          <td style="padding:36px 40px 0;">
+            <h2 style="margin:0 0 12px;color:#0f172a;font-size:20px;">Dear ${name || 'Patient'},</h2>
+            <p style="margin:0 0 16px;color:#475569;font-size:14px;line-height:1.7;">
+              Please be informed that your upcoming consultation appointment scheduled for <strong>${appointmentDay}</strong> at <strong>${appointmentSlot}</strong> has been <strong style="color:#dc2626;">blocked / cancelled</strong> by our clinic management due to scheduling adjustments or emergency consultation duties.
+            </p>
+          </td>
+        </tr>
+        <!-- Card -->
+        <tr>
+          <td style="padding:20px 40px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:14px;overflow:hidden;">
+              <tr>
+                <td style="padding:16px 20px;border-bottom:1px solid #fee2e2;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#991b1b;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;">Date</p>
+                  <p style="margin:0;font-size:15px;color:#0f172a;font-weight:700;">📅 ${appointmentDay}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px 20px;border-bottom:1px solid #fee2e2;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#991b1b;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;">Time Slot</p>
+                  <p style="margin:0;font-size:15px;color:#0f172a;font-weight:700;">🕐 ${appointmentSlot}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#991b1b;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;">Consultation</p>
+                  <p style="margin:0;font-size:15px;color:#0f172a;font-weight:700;">🩺 ${treatment || 'Consultation'}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Rebook note -->
+        <tr>
+          <td style="padding:10px 40px 32px;">
+            <p style="margin:0;color:#475569;font-size:14px;line-height:1.7;">
+              If you would like to reschedule your consultation for another date, please reply to this email, contact us on WhatsApp at <strong>+91 88845 88835</strong>, or visit our website. We apologize for any inconvenience caused.
+            </p>
+          </td>
+        </tr>
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 40px;text-align:center;">
+            <p style="margin:0;color:#94a3b8;font-size:11.5px;line-height:1.7;">
+              Cancer Herbalist | Kaggalipura, Bangalore 560116<br/>
+              cancerherbalist@gmail.com | +91 88845 88835
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 /* ── Reschedule email to patient ─────────────────────────────────── */
 function buildRescheduleEmailHtml({ apptId, name, treatment, oldDay, oldSlot, newDay, newSlot }, byPatient = false, origin = 'http://localhost:5173') {
   const description = byPatient
@@ -1649,6 +1725,22 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
           error: `The ${appointmentSlot} slot on ${appointmentDay} is ALREADY blocked.`,
         });
       }
+
+      // ── Notify patient via Email & WhatsApp if blocking their appointment ──
+      if (conflict.email && conflict.email !== '—' && conflict.email.includes('@')) {
+        sendMailWrapper({
+          to: conflict.email,
+          subject: `⚠️ Appointment Notice: Slot Blocked — ${conflict.appointmentDay} at ${conflict.appointmentSlot}`,
+          text: `Dear ${conflict.name},\n\nYour consultation appointment scheduled for ${conflict.appointmentDay} at ${conflict.appointmentSlot} has been blocked/cancelled by our clinic due to emergency duties.\n\nTo reschedule, please reply or WhatsApp us at +91 88845 88835.\n\n— Cancer Herbalist Team`,
+          html: buildBlockedEmailHtml(conflict),
+        }).catch(e => console.error('[blockSlot] Patient email error:', e.message));
+        console.log(`[blockSlot] Patient notification email sent to ${conflict.email}`);
+      }
+      if (conflict.phone && conflict.phone !== '—') {
+        const blockWaMsg = `*Appointment Update — Cancer Herbalist* 🌿\n\nDear *${conflict.name}*,\n\nYour consultation appointment scheduled for *${conflict.appointmentDay}* at *${conflict.appointmentSlot}* has been blocked/cancelled by our clinic.\n\nIf you would like to reschedule, please reply to this message.\n\nThank you,\nCancer Herbalist Team`;
+        sendWhatsAppMessage(conflict.phone, blockWaMsg).catch(e => console.error('[blockSlot] WhatsApp error:', e.message));
+      }
+
       // Overwrite patient appointment with admin block
       appointmentStore.splice(conflictIndex, 1);
     }
@@ -1717,6 +1809,21 @@ router.post('/appointments/toggle-block', checkAdmin, async (req, res) => {
       } else {
         appt.isBlocked = true;
         appt.status = 'Blocked';
+
+        // ── Notify patient via Email & WhatsApp when blocking their appointment ──
+        if (appt.email && appt.email !== '—' && appt.email.includes('@')) {
+          sendMailWrapper({
+            to: appt.email,
+            subject: `⚠️ Appointment Notice: Slot Blocked — ${appt.appointmentDay} at ${appt.appointmentSlot}`,
+            text: `Dear ${appt.name},\n\nYour consultation appointment scheduled for ${appt.appointmentDay} at ${appt.appointmentSlot} has been blocked/cancelled by our clinic.\n\nTo reschedule, please reply or WhatsApp us at +91 88845 88835.\n\n— Cancer Herbalist Team`,
+            html: buildBlockedEmailHtml(appt),
+          }).catch(e => console.error('[toggleBlock] Patient email error:', e.message));
+          console.log(`[toggleBlock] Patient notification email sent to ${appt.email}`);
+        }
+        if (appt.phone && appt.phone !== '—') {
+          const blockWaMsg = `*Appointment Update — Cancer Herbalist* 🌿\n\nDear *${appt.name}*,\n\nYour consultation appointment scheduled for *${appt.appointmentDay}* at *${appt.appointmentSlot}* has been blocked/cancelled by our clinic.\n\nIf you would like to reschedule, please reply to this message.\n\nThank you,\nCancer Herbalist Team`;
+          sendWhatsAppMessage(appt.phone, blockWaMsg).catch(e => console.error('[toggleBlock] WhatsApp error:', e.message));
+        }
       }
       await dbWrite('appointments', appointmentStore);
       return res.json({ success: true, isBlocked: !currentlyBlocked, appointment: appointmentStore[idx] || null });
@@ -1792,10 +1899,49 @@ router.post('/admin/slot-config', checkAdmin, async (req, res) => {
     saveSlotConfigToSheets(date, validRegular, 'regular').catch(() => { });
     saveSlotConfigToSheets(date, validEmergency, 'emergency').catch(() => { });
 
+    // ── Check if any existing booked patient appointments on this date were closed ──
+    const allEnabledNow = [...validRegular, ...validEmergency];
+    const normalize = (s) => String(s || '').replace(/,/g, '').trim().toLowerCase();
+    
+    // Find patient appointments on this date whose slot is NOT in allEnabledNow
+    const closedPatientAppts = appointmentStore.filter(a => {
+      const isSameDate = normalize(a.appointmentDay) === normalize(date);
+      const isRealPatient = a.name !== '[BLOCKED]' && a.treatment !== 'Blocked Slot' && !String(a.name || '').includes('BLOCKED');
+      const isSlotNowClosed = !allEnabledNow.includes(a.appointmentSlot);
+      return isSameDate && isRealPatient && isSlotNowClosed;
+    });
+
+    let notifiedCount = 0;
+    for (const appt of closedPatientAppts) {
+      appt.isBlocked = true;
+      appt.status = 'Blocked';
+
+      if (appt.email && appt.email !== '—' && appt.email.includes('@')) {
+        sendMailWrapper({
+          to: appt.email,
+          subject: `⚠️ Important Notice: Appointment Slot Closed — ${appt.appointmentDay} at ${appt.appointmentSlot}`,
+          text: `Dear ${appt.name},\n\nYour consultation appointment scheduled for ${appt.appointmentDay} at ${appt.appointmentSlot} has been cancelled/closed by our clinic due to emergency duties.\n\nTo reschedule for another time, please WhatsApp us at +91 88845 88835.\n\n— Cancer Herbalist Team`,
+          html: buildBlockedEmailHtml(appt),
+        }).catch(e => console.error('[slotConfigNotif] Patient email error:', e.message));
+        console.log(`[slotConfig] Closure notification email sent to ${appt.email}`);
+        notifiedCount++;
+      }
+
+      if (appt.phone && appt.phone !== '—') {
+        const blockWaMsg = `*Appointment Update — Cancer Herbalist* 🌿\n\nDear *${appt.name}*,\n\nYour consultation appointment scheduled for *${appt.appointmentDay}* at *${appt.appointmentSlot}* has been cancelled/closed by our clinic.\n\nIf you would like to reschedule, please reply to this message.\n\nThank you,\nCancer Herbalist Team`;
+        sendWhatsAppMessage(appt.phone, blockWaMsg).catch(e => console.error('[slotConfigNotif] WhatsApp error:', e.message));
+      }
+    }
+
+    if (notifiedCount > 0) {
+      await dbWrite('appointments', appointmentStore);
+    }
+
     res.json({
       success: true,
       date,
       enabledSlots: { regularSlots: validRegular, emergencySlots: validEmergency },
+      notifiedPatientsCount: notifiedCount,
     });
   } catch (err) {
     console.error('[slotConfig] POST error:', err.message);

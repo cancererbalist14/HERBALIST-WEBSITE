@@ -330,5 +330,5 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-// Force redeploy: 2026-07-08-v10
+// Force redeploy: 2026-08-03-product-images-sync
 

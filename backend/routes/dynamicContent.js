@@ -94,11 +94,30 @@ const seedDatabase = async () => {
   try {
     // Products Seed
     let products = await dbRead('products');
-    if (!products || !Array.isArray(products)) {
+    if (!products || !Array.isArray(products) || products.length === 0) {
       // First-time seed: database key 'products' does not exist yet
       products = [...initialProducts];
       products.sort((a, b) => a.id - b.id);
       await dbWrite('products', products);
+    } else {
+      // Sync image updates and product data from initialProducts into stored products
+      let updated = false;
+      initialProducts.forEach(initP => {
+        const existing = products.find(p => p.id === initP.id);
+        if (existing) {
+          if (JSON.stringify(existing.images || []) !== JSON.stringify(initP.images || [])) {
+            existing.images = initP.images;
+            updated = true;
+          }
+        } else {
+          products.push(initP);
+          updated = true;
+        }
+      });
+      if (updated) {
+        await dbWrite('products', products);
+        console.log('[dynamicContent] Synced latest product images from products.json to DB');
+      }
     }
 
     // Load prices into memory — always populated from active DB products
