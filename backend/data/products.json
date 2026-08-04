@@ -353,6 +353,7 @@
     "price": 1599,
     "dosage": "Half spoon (1g) mixed in warm water twice daily before meals.",
     "images": [
+      "/products/anacos.jpeg",
       "/products/product12.0.jpg",
       "/products/product12.1.jpg",
       "/products/product12.2.jpg"
@@ -383,7 +384,9 @@
     "color": "#854d0e",
     "price": 999,
     "dosage": "1-1-1 gm daily with meals",
-    "images": [],
+    "images": [
+      "/products/methicon.jpeg"
+    ],
     "rating": 4.5,
     "inStock": true,
     "reviews": 38,
