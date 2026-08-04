@@ -5,4 +5,4 @@ const src = 'C:\\Users\\jain7\\.gemini\\antigravity-ide\\brain\\efe56089-f062-49
 const dest = path.join(__dirname, '..', 'public', 'products', 'psp.png');
 
 fs.copyFileSync(src, dest);
-console.log('Successfully copied image to:', dest);
+console.log('Successfully copied generated PSP image to:', dest);

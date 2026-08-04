@@ -109,9 +109,6 @@ const seedDatabase = async () => {
             existing.images = initP.images;
             updated = true;
           }
-        } else {
-          products.push(initP);
-          updated = true;
         }
       });
       if (updated) {
@@ -299,6 +296,14 @@ router.delete('/dynamic-products/:id', checkAdmin, async (req, res) => {
       const ipIdx = initialProducts.findIndex(ip => ip.id === id);
       if (ipIdx !== -1) {
         initialProducts.splice(ipIdx, 1);
+      }
+      try {
+        const staticFile = path.join(__dirname, '..', 'data', 'products.json');
+        if (fs.existsSync(staticFile)) {
+          fs.writeFileSync(staticFile, JSON.stringify(filtered, null, 2), 'utf8');
+        }
+      } catch (e) {
+        console.error('[products DELETE] Could not sync static products.json:', e.message);
       }
       res.json({ success: true, message: 'Product deleted successfully.' });
     } else {
