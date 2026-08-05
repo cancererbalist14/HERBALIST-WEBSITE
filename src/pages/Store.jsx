@@ -310,7 +310,33 @@ export default function Store() {
                 ) : (
                   <ProductPlaceholder color={product.color} icon={product.icon} />
                 )}
-                {product.badge && (
+
+                {/* Out of Stock Overlay */}
+                {product.inStock === false && (
+                  <div style={{
+                    position: 'absolute', inset: 0, zIndex: 6,
+                    background: 'rgba(0,0,0,0.45)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(1px)',
+                  }}>
+                    <span style={{
+                      background: '#ef4444',
+                      color: '#fff',
+                      fontWeight: 800,
+                      fontSize: '11px',
+                      letterSpacing: '0.5px',
+                      padding: '6px 14px',
+                      borderRadius: '20px',
+                      border: '2px solid #fff',
+                      textTransform: 'uppercase',
+                      boxShadow: '0 2px 8px rgba(239,68,68,0.5)',
+                    }}>
+                      🚫 Out of Stock
+                    </span>
+                  </div>
+                )}
+
+                {product.badge && product.inStock !== false && (
                   <span style={{
                     position: 'absolute', top: '8px', left: '8px',
                     background: product.badge === 'Premium'
@@ -378,11 +404,37 @@ export default function Store() {
                     Details
                   </button>
                   <button
-                    className="store-card-btn"
-                    style={{ flex: 1 }}
-                    onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
+                    className={product.inStock === false ? '' : 'store-card-btn'}
+                    style={{
+                      flex: 1,
+                      ...(product.inStock === false ? {
+                        padding: '8px',
+                        background: '#f1f5f9',
+                        color: '#94a3b8',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        cursor: 'not-allowed',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
+                        fontFamily: 'inherit',
+                        opacity: 0.7,
+                      } : {})
+                    }}
+                    disabled={product.inStock === false}
+                    onClick={e => {
+                      e.stopPropagation();
+                      if (product.inStock !== false) addToCart(product, 1);
+                    }}
                   >
-                    <FaShoppingCart style={{ fontSize: '11px' }} /> Add
+                    {product.inStock === false ? (
+                      <span style={{ fontSize: '10px' }}>Sold Out</span>
+                    ) : (
+                      <><FaShoppingCart style={{ fontSize: '11px' }} /> Add</>
+                    )}
                   </button>
                 </div>
               </div>

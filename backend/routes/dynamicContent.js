@@ -169,8 +169,71 @@ const seedDatabase = async () => {
 // Execute seeding asynchronously
 seedDatabase();
 
+/* ── IMAGE UPLOAD API ────────────────────────────────────────── */
+// Accepts raw binary data. Client should set Content-Type to the image mime type.
+// Query params: filename (string), contentType (string, e.g. image/jpeg)
+router.post('/admin/upload-image', checkAdmin, (req, res, next) => {
+  // Use express.raw() inline to parse the body as a Buffer
+  express.raw({ type: '*/*', limit: '10mb' })(req, res, (err) => {
+    if (err) return res.status(400).json({ success: false, error: 'File too large or invalid body.' });
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const { createClient } = require('@supabase/supabase-js');
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return res.status(503).json({ success: false, error: 'Supabase not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY.' });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+
+    const fileBuffer = req.body;
+    if (!fileBuffer || !Buffer.isBuffer(fileBuffer) || fileBuffer.length === 0) {
+      return res.status(400).json({ success: false, error: 'No file data received.' });
+    }
+
+    const originalName = (req.query.filename || 'product-image').replace(/[^a-zA-Z0-9._-]/g, '_');
+    const ext = originalName.split('.').pop().toLowerCase() || 'jpg';
+    const timestamp = Date.now();
+    const filePath = `products/${timestamp}_${originalName}`;
+    const contentType = req.query.contentType || req.headers['content-type'] || 'image/jpeg';
+
+    // Upload to Supabase Storage bucket 'product-images'
+    const { data, error } = await supabase.storage
+      .from('product-images')
+      .upload(filePath, fileBuffer, {
+        contentType,
+        upsert: false,
+      });
+
+    if (error) {
+      console.error('[upload-image] Supabase storage error:', error.message);
+      return res.status(500).json({ success: false, error: `Upload failed: ${error.message}` });
+    }
+
+    // Get the public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(filePath);
+
+    const publicUrl = publicUrlData?.publicUrl;
+    if (!publicUrl) {
+      return res.status(500).json({ success: false, error: 'Uploaded but could not retrieve public URL.' });
+    }
+
+    res.json({ success: true, url: publicUrl, path: filePath });
+  } catch (err) {
+    console.error('[upload-image] Error:', err.message);
+    res.status(500).json({ success: false, error: `Server error: ${err.message}` });
+  }
+});
+
 /* ── PRODUCTS API ──────────────────────────────────────────────── */
 router.get('/dynamic-products', async (req, res) => {
+
   try {
     const dynamic = await dbRead('products') || [];
     res.json({ success: true, products: dynamic, isUsingCloudStorage });
@@ -279,6 +342,39 @@ router.put('/dynamic-products/:id', checkAdmin, async (req, res) => {
   } catch (err) {
     console.error('[products PUT] Error:', err.message);
     res.status(500).json({ success: false, error: 'Failed to update product.' });
+  }
+});
+
+router.patch('/dynamic-products/:id/stock', checkAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  const { inStock } = req.body;
+
+  if (typeof inStock !== 'boolean') {
+    return res.status(400).json({ success: false, error: 'inStock must be a boolean.' });
+  }
+
+  try {
+    const list = await dbRead('products') || [];
+    const idx = list.findIndex(p => p.id === id);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Product not found.' });
+    }
+
+    list[idx] = { ...list[idx], inStock };
+
+    if (await dbWrite('products', list)) {
+      // Keep initialProducts in sync so next seed reflects the stock state
+      const ipIdx = initialProducts.findIndex(ip => ip.id === id);
+      if (ipIdx !== -1) {
+        initialProducts[ipIdx] = { ...initialProducts[ipIdx], inStock };
+      }
+      res.json({ success: true, product: list[idx] });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[products PATCH stock] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to update stock status.' });
   }
 });
 

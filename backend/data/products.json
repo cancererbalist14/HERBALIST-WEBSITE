@@ -64,34 +64,6 @@
     "originalPrice": 2599
   },
   {
-    "id": 3,
-    "icon": "🍃",
-    "name": "CUP Powder",
-    "size": "100g jar / 30-day supply",
-    "badge": "",
-    "color": "#10b981",
-    "price": 2299,
-    "dosage": "½ teaspoon or 1g dissolved in a glass of warm milk daily 3 times on an empty stomach, or as directed by your doctor.",
-    "images": [
-      "/products/product11.0.jpg",
-      "/products/product11.jpg",
-      "/products/product11.1.jpg"
-    ],
-    "rating": 4.6,
-    "inStock": true,
-    "reviews": 76,
-    "tagline": "Advanced alkalizing blend to support healthy metabolic pH balance.",
-    "benefits": [
-      "Supports optimal metabolic conditions for the cellular microenvironment naturally",
-      "Aids kidney function and metabolic detoxification",
-      "Pharmaceutical-grade purity for maximum safety and absorption"
-    ],
-    "category": "Stress & Recovery",
-    "description": "CUP Powder is a pharmaceutical-grade Curcumin C3 complex designed to restore an optimal environment and helps normalize cellular metabolism and supports overall recovery.",
-    "ingredients": "Purified Curcumin Complex",
-    "originalPrice": 2999
-  },
-  {
     "id": 4,
     "icon": "🌱",
     "name": "Cap Withangen (30Cap)",
@@ -520,5 +492,25 @@
     "description": "Tab BLOO is a premium, high-potency tablet formulation developed by Cancer Herbalist for advanced complementary support. Combining rare botanical extracts and active phyto-nutrients, it promotes healthy cell signaling, cellular detoxification, and robust immune defenses.",
     "ingredients": "Proprietary oncology-support phyto-nutrient complex, Phycocyanin the active from sea algae Spirulina, a potent immunomodulator.",
     "originalPrice": 3740
+  },
+  {
+    "id": 20,
+    "icon": "🌿",
+    "name": "Test",
+    "size": "30",
+    "badge": "Best",
+    "color": "#1a6e52",
+    "price": 10,
+    "dosage": "1",
+    "images": [],
+    "rating": 5,
+    "inStock": true,
+    "reviews": 0,
+    "tagline": "",
+    "benefits": [],
+    "category": "Immunity",
+    "description": "Test",
+    "ingredients": "Test",
+    "originalPrice": 10
   }
 ]

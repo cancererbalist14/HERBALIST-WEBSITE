@@ -173,8 +173,9 @@ Cancer Herbalist Team`;
   const [productForm, setProductForm] = useState({
     name: '', category: 'Immunity', price: '', originalPrice: '',
     description: '', benefits: '', ingredients: '', dosage: '',
-    size: '', badge: '', icon: '🌿', color: '#1a6e52'
+    size: '', badge: '', icon: '🌿', color: '#1a6e52', images: []
   });
+  const [imageUploadStatus, setImageUploadStatus] = useState({}); // { [tempId]: 'uploading' | 'done' | 'error' }
   const [testimonialForm, setTestimonialForm] = useState({
     name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
   });
@@ -809,6 +810,37 @@ Cancer Herbalist Team`;
   }, [authed, filterDate, secret, fetchAppts, fetchOrders, loadDynamicContent]);
 
   /* ── Content Submission Handlers ─────────────────────────────── */
+  /* ── Product Image Upload ─────────────────────────────────────── */
+  const handleUploadProductImage = async (file) => {
+    if (!file) return;
+    const tempId = `${Date.now()}_${file.name}`;
+    setImageUploadStatus(prev => ({ ...prev, [tempId]: 'uploading' }));
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/api/admin/upload-image?key=${secret}&filename=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': file.type },
+          body: file,
+        }
+      );
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Upload failed');
+      setProductForm(prev => ({ ...prev, images: [...(prev.images || []), data.url] }));
+      setImageUploadStatus(prev => ({ ...prev, [tempId]: 'done' }));
+      showToast('🖼️ Image uploaded successfully!');
+    } catch (err) {
+      setImageUploadStatus(prev => ({ ...prev, [tempId]: 'error' }));
+      showToast(`Image upload failed: ${err.message}`, 'error');
+    } finally {
+      setTimeout(() => setImageUploadStatus(prev => {
+        const next = { ...prev };
+        delete next[tempId];
+        return next;
+      }), 3000);
+    }
+  };
+
   const handleAddProduct = async (e) => {
     e.preventDefault();
     setFormStatus('sending');
@@ -819,7 +851,8 @@ Cancer Herbalist Team`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...productForm,
-          benefits: productForm.benefits ? productForm.benefits.split(',').map(b => b.trim()) : []
+          benefits: productForm.benefits ? productForm.benefits.split(',').map(b => b.trim()) : [],
+          images: productForm.images || [],
         }),
       });
       const data = await res.json();
@@ -830,8 +863,9 @@ Cancer Herbalist Team`;
       setProductForm({
         name: '', category: 'Immunity', price: '', originalPrice: '',
         description: '', benefits: '', ingredients: '', dosage: '',
-        size: '', badge: '', icon: '🌿', color: '#1a6e52'
+        size: '', badge: '', icon: '🌿', color: '#1a6e52', images: []
       });
+      setImageUploadStatus({});
       loadDynamicContent();
       setTimeout(() => setFormStatus(''), 3000);
     } catch (err) {
@@ -875,7 +909,8 @@ Cancer Herbalist Team`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...productForm,
-          benefits: productForm.benefits ? productForm.benefits.split(',').map(b => b.trim()) : []
+          benefits: productForm.benefits ? productForm.benefits.split(',').map(b => b.trim()) : [],
+          images: productForm.images || [],
         }),
       });
       const data = await res.json();
@@ -887,8 +922,9 @@ Cancer Herbalist Team`;
       setProductForm({
         name: '', category: 'Immunity', price: '', originalPrice: '',
         description: '', benefits: '', ingredients: '', dosage: '',
-        size: '', badge: '', icon: '🌿', color: '#1a6e52'
+        size: '', badge: '', icon: '🌿', color: '#1a6e52', images: []
       });
+      setImageUploadStatus({});
       loadDynamicContent();
       setTimeout(() => setFormStatus(''), 3000);
     } catch (err) {
@@ -920,6 +956,29 @@ Cancer Herbalist Team`;
       showToast(`Error deleting product: ${err.message}`, 'error');
     }
   };
+
+  /* ── Toggle Out of Stock ──────────────────────────────────────── */
+  const handleToggleOutOfStock = async (product) => {
+    const newInStock = !product.inStock;
+    // Optimistic UI: update locally first for instant feedback
+    setDynProducts(prev => prev.map(p => p.id === product.id ? { ...p, inStock: newInStock } : p));
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/dynamic-products/${product.id}/stock?key=${secret}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inStock: newInStock }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update stock status.');
+      showToast(newInStock ? '✅ Product marked as In Stock.' : '🚫 Product marked as Out of Stock.');
+    } catch (err) {
+      // Rollback optimistic update on failure
+      setDynProducts(prev => prev.map(p => p.id === product.id ? { ...p, inStock: product.inStock } : p));
+      showToast(`Error updating stock: ${err.message}`, 'error');
+    }
+  };
+
+
 
   const handleAddTestimonial = async (e) => {
     e.preventDefault();
@@ -1378,6 +1437,10 @@ Cancer Herbalist Team`;
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
           gap: 8px;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
         .admin-item-row {
           display: flex;
@@ -2852,6 +2915,77 @@ Cancer Herbalist Team`;
                       </div>
                     </div>
 
+                    {/* ── Product Image Manager ─────────────────── */}
+                    <div style={{ marginBottom: '24px', border: '1.5px solid var(--border-color)', borderRadius: '14px', overflow: 'hidden' }}>
+                      <div style={{ padding: '12px 16px', background: 'var(--bg-main)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '16px' }}>🖼️</span>
+                          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>Product Images</span>
+                          {(productForm.images || []).length > 0 && (
+                            <span style={{ background: PRIMARY, color: '#fff', borderRadius: '50px', fontSize: '10px', fontWeight: 700, padding: '2px 8px' }}>
+                              {productForm.images.length} photo{productForm.images.length !== 1 ? 's' : ''}
+                            </span>
+                          )}
+                        </div>
+                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>First image = Main photo shown in store</span>
+                      </div>
+                      <div style={{ padding: '16px', background: 'var(--bg-card)' }}>
+                        {/* Upload Drop Zone */}
+                        <label htmlFor="product-image-upload" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '20px', border: `2px dashed ${PRIMARY}`, borderRadius: '12px', cursor: 'pointer', background: `${PRIMARY}06`, transition: 'background 0.2s', marginBottom: '14px' }}
+                          onDragOver={e => { e.preventDefault(); e.currentTarget.style.background = `${PRIMARY}15`; }}
+                          onDragLeave={e => { e.currentTarget.style.background = `${PRIMARY}06`; }}
+                          onDrop={e => { e.preventDefault(); e.currentTarget.style.background = `${PRIMARY}06`; Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')).forEach(f => handleUploadProductImage(f)); }}
+                        >
+                          <input id="product-image-upload" type="file" accept="image/*" multiple style={{ display: 'none' }}
+                            onChange={e => { Array.from(e.target.files).forEach(f => handleUploadProductImage(f)); e.target.value = ''; }}
+                          />
+                          {Object.values(imageUploadStatus).some(s => s === 'uploading') ? (
+                            <><div style={{ width: '32px', height: '32px', borderRadius: '50%', border: `3px solid ${PRIMARY}33`, borderTop: `3px solid ${PRIMARY}`, animation: 'spin 0.8s linear infinite' }} /><span style={{ fontSize: '13px', fontWeight: 600, color: PRIMARY }}>Uploading…</span></>
+                          ) : (
+                            <><div style={{ width: '44px', height: '44px', borderRadius: '50%', background: `${PRIMARY}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>📤</div>
+                            <div style={{ textAlign: 'center' }}>
+                              <span style={{ fontSize: '13px', fontWeight: 700, color: PRIMARY, display: 'block' }}>Click to upload or drag &amp; drop</span>
+                              <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>PNG, JPG, WEBP — max 10 MB each • Multiple files allowed</span>
+                            </div></>
+                          )}
+                        </label>
+
+                        {/* URL paste fallback */}
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+                          <input type="url" id="product-image-url-input" placeholder="Or paste an image URL here and press +"
+                            style={{ ...inputStyle, flex: 1, marginBottom: 0 }}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); const url = e.target.value.trim(); if (url) { setProductForm(prev => ({ ...prev, images: [...(prev.images || []), url] })); e.target.value = ''; } } }}
+                          />
+                          <button type="button"
+                            onClick={() => { const inp = document.getElementById('product-image-url-input'); const url = inp?.value?.trim(); if (url) { setProductForm(prev => ({ ...prev, images: [...(prev.images || []), url] })); inp.value = ''; } }}
+                            style={{ padding: '0 18px', background: PRIMARY, color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 800, fontSize: '20px', cursor: 'pointer', flexShrink: 0, height: '44px' }}
+                          >+</button>
+                        </div>
+
+                        {/* Preview grid */}
+                        {(productForm.images || []).length > 0 ? (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '10px' }}>
+                            {(productForm.images || []).map((url, idx) => (
+                              <div key={`img_${idx}`} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', aspectRatio: '1', border: idx === 0 ? `2.5px solid ${PRIMARY}` : '1.5px solid var(--border-color)', boxShadow: idx === 0 ? `0 2px 10px ${PRIMARY}33` : 'none', background: '#f8fafc' }}>
+                                <img src={url} alt={`Product ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { e.target.style.display = 'none'; }} />
+                                {idx === 0 && <span style={{ position: 'absolute', bottom: '4px', left: '4px', background: PRIMARY, color: '#fff', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px' }}>MAIN</span>}
+                                {idx > 0 && (
+                                  <button type="button" title="Move left / set as main"
+                                    onClick={() => { const imgs = [...(productForm.images || [])]; [imgs[idx-1], imgs[idx]] = [imgs[idx], imgs[idx-1]]; setProductForm(prev => ({ ...prev, images: imgs })); }}
+                                    style={{ position: 'absolute', top: '4px', left: '4px', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700 }}>◀</button>
+                                )}
+                                <button type="button" title="Remove"
+                                  onClick={() => setProductForm(prev => ({ ...prev, images: (prev.images || []).filter((_, i) => i !== idx) }))}
+                                  style={{ position: 'absolute', top: '4px', right: '4px', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(239,68,68,0.9)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#fff', fontWeight: 700 }}>×</button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p style={{ color: 'var(--text-secondary)', fontSize: '12px', textAlign: 'center', margin: '4px 0 0' }}>No images yet — upload files above or paste a URL.</p>
+                        )}
+                      </div>
+                    </div>
+
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                       <button type="submit" disabled={formStatus === 'sending'} style={submitBtnStyle}>
                         {formStatus === 'sending' ? 'Saving...' : (editingProduct ? 'Save Product Changes' : '🌿 Add Product to Store')}
@@ -2864,8 +2998,9 @@ Cancer Herbalist Team`;
                             setProductForm({
                               name: '', category: 'Immunity', price: '', originalPrice: '',
                               description: '', benefits: '', ingredients: '', dosage: '',
-                              size: '', badge: '', icon: '🌿', color: '#1a6e52'
+                              size: '', badge: '', icon: '🌿', color: '#1a6e52', images: []
                             });
+                            setImageUploadStatus({});
                           }}
                           style={{ ...submitBtnStyle, background: '#cbd5e1', color: '#1e293b', boxShadow: 'none' }}
                         >
@@ -4264,47 +4399,130 @@ Cancer Herbalist Team`;
                       <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No products found.</p>
                     ) : (
                       dynProducts.map(p => (
-                        <div key={p.id} className="admin-item-row">
-                          <div style={{ flex: 1, minWidth: 0, marginRight: '8px' }}>
-                            <strong style={{ fontSize: '13.5px', color: 'var(--text-primary)', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{p.name}</strong>
-                            <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block' }}>Category: {p.category} • Price: ₹{p.price}</span>
+                        <div key={p.id} className="admin-item-row" style={{
+                            flexDirection: 'column',
+                            alignItems: 'stretch',
+                            gap: '10px',
+                            padding: '14px',
+                            border: `1.5px solid ${p.inStock === false ? '#fca5a5' : 'var(--border-color)'}`,
+                            background: p.inStock === false ? '#fff8f8' : 'var(--bg-card)',
+                            borderRadius: '12px',
+                          }}>
+                            {/* Top row: name + actions */}
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <strong style={{ fontSize: '13.5px', color: 'var(--text-primary)', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{p.name}</strong>
+                                <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block' }}>Category: {p.category} • Price: ₹{p.price}</span>
+                              </div>
+                              <div className="admin-item-row-actions" style={{ flexShrink: 0 }}>
+                                <button
+                                  onClick={() => {
+                                    setEditingProduct(p);
+                                    setProductForm({
+                                      name: p.name,
+                                      category: p.category,
+                                      price: p.price,
+                                      originalPrice: p.originalPrice || '',
+                                      description: p.description || '',
+                                      benefits: Array.isArray(p.benefits) ? p.benefits.join(', ') : '',
+                                      ingredients: p.ingredients || '',
+                                      dosage: p.dosage || '',
+                                      size: p.size || '',
+                                      badge: p.badge || '',
+                                      icon: p.icon || '🌿',
+                                      color: p.color || '#1a6e52',
+                                      images: Array.isArray(p.images) ? [...p.images] : [],
+                                    });
+                                    setImageUploadStatus({});
+                                    setFormError('');
+                                    setFormStatus('');
+                                  }}
+                                  className="btn-edit"
+                                >
+                                  <FaEdit /> Edit
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProduct(p.id)}
+                                  className="btn-delete"
+                                >
+                                  <FaTrash /> Delete
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Bottom row: Out of Stock toggle */}
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '10px 12px',
+                              background: p.inStock === false ? '#fef2f2' : '#f0fdf4',
+                              borderRadius: '8px',
+                              border: `1px solid ${p.inStock === false ? '#fecaca' : '#bbf7d0'}`,
+                              gap: '12px',
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{
+                                  width: '8px', height: '8px', borderRadius: '50%',
+                                  background: p.inStock === false ? '#ef4444' : '#22c55e',
+                                  display: 'inline-block',
+                                  boxShadow: p.inStock === false ? '0 0 5px #ef444466' : '0 0 5px #22c55e66',
+                                  flexShrink: 0,
+                                }} />
+                                <span style={{
+                                  fontSize: '12px', fontWeight: 700,
+                                  color: p.inStock === false ? '#b91c1c' : '#166534',
+                                }}>
+                                  {p.inStock === false ? '🚫 Out of Stock' : '✅ In Stock'}
+                                </span>
+                                <span style={{ fontSize: '11px', color: p.inStock === false ? '#b91c1c' : '#4ade80', fontWeight: 500 }}>
+                                  {p.inStock === false ? '— Buy Now disabled on website' : '— Buy Now enabled'}
+                                </span>
+                              </div>
+
+                              {/* iOS-style toggle switch */}
+                              <button
+                                id={`stock-toggle-${p.id}`}
+                                onClick={() => handleToggleOutOfStock(p)}
+                                title={p.inStock === false ? 'Click to mark In Stock' : 'Click to mark Out of Stock'}
+                                style={{
+                                  position: 'relative',
+                                  width: '48px',
+                                  height: '26px',
+                                  borderRadius: '99px',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  background: p.inStock === false ? '#ef4444' : '#22c55e',
+                                  transition: 'background 0.25s ease',
+                                  flexShrink: 0,
+                                  outline: 'none',
+                                  boxShadow: p.inStock === false
+                                    ? '0 2px 8px rgba(239,68,68,0.4)'
+                                    : '0 2px 8px rgba(34,197,94,0.4)',
+                                }}
+                                aria-label={p.inStock === false ? 'Mark as In Stock' : 'Mark as Out of Stock'}
+                                aria-checked={p.inStock !== false}
+                                role="switch"
+                              >
+                                <span style={{
+                                  position: 'absolute',
+                                  top: '3px',
+                                  left: p.inStock === false ? '3px' : '23px',
+                                  width: '20px',
+                                  height: '20px',
+                                  borderRadius: '50%',
+                                  background: '#fff',
+                                  boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+                                  transition: 'left 0.25s ease',
+                                  display: 'block',
+                                }} />
+                              </button>
+                            </div>
                           </div>
-                          <div className="admin-item-row-actions">
-                            <button
-                              onClick={() => {
-                                setEditingProduct(p);
-                                setProductForm({
-                                  name: p.name,
-                                  category: p.category,
-                                  price: p.price,
-                                  originalPrice: p.originalPrice || '',
-                                  description: p.description || '',
-                                  benefits: Array.isArray(p.benefits) ? p.benefits.join(', ') : '',
-                                  ingredients: p.ingredients || '',
-                                  dosage: p.dosage || '',
-                                  size: p.size || '',
-                                  badge: p.badge || '',
-                                  icon: p.icon || '🌿',
-                                  color: p.color || '#1a6e52'
-                                });
-                                setFormError('');
-                                setFormStatus('');
-                              }}
-                              className="btn-edit"
-                            >
-                              <FaEdit /> Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProduct(p.id)}
-                              className="btn-delete"
-                            >
-                              <FaTrash /> Delete
-                            </button>
-                          </div>
-                        </div>
                       ))
                     )
                   )}
+
 
                   {contentTab === 'testimonials' && (
                     dynTestimonials.length === 0 ? (

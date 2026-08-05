@@ -983,42 +983,61 @@ export default function ProductDetail() {
               ))}
             </div>
 
-            {/* In Stock */}
+            {/* In Stock / Out of Stock Badge */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px',
             }}>
-              <span style={{
-                width: '8px', height: '8px', borderRadius: '50%',
-                background: '#22c55e', display: 'inline-block',
-                boxShadow: '0 0 6px #22c55e88',
-              }} />
-              <span style={{ color: '#16a34a', fontWeight: 600, fontSize: '14px' }}>In Stock — Ready to Ship</span>
+              {product.inStock === false ? (
+                <>
+                  <span style={{
+                    width: '8px', height: '8px', borderRadius: '50%',
+                    background: '#ef4444', display: 'inline-block',
+                    boxShadow: '0 0 6px #ef444488',
+                  }} />
+                  <span style={{
+                    color: '#b91c1c', fontWeight: 700, fontSize: '14px',
+                    background: '#fef2f2', padding: '3px 12px', borderRadius: '20px',
+                    border: '1px solid #fecaca',
+                  }}>🚫 Out of Stock — Currently Unavailable</span>
+                </>
+              ) : (
+                <>
+                  <span style={{
+                    width: '8px', height: '8px', borderRadius: '50%',
+                    background: '#22c55e', display: 'inline-block',
+                    boxShadow: '0 0 6px #22c55e88',
+                  }} />
+                  <span style={{ color: '#16a34a', fontWeight: 600, fontSize: '14px' }}>In Stock — Ready to Ship</span>
+                </>
+              )}
             </div>
 
-            {/* Real-time Shipping Estimate Banner */}
-            <div style={{
-              background: '#f0fdf4',
-              border: '1px solid #bbf7d0',
-              borderRadius: '12px',
-              padding: '14px 16px',
-              marginBottom: '20px',
-              boxShadow: '0 2px 8px rgba(34, 197, 94, 0.05)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '18px' }}>⚡</span>
-                <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#166534' }}>
-                  {timeLeft.shipToday ? (
-                    <>Order within <strong style={{ color: '#15803d' }}>{timeLeft.hours}h {timeLeft.minutes}m</strong> to ship <strong style={{ textTransform: 'uppercase' }}>Today!</strong></>
-                  ) : (
-                    <>Order within <strong style={{ color: '#15803d' }}>{timeLeft.hours}h {timeLeft.minutes}m</strong> to ship <strong style={{ textTransform: 'uppercase' }}>Tomorrow Morning!</strong></>
-                  )}
-                </span>
+            {/* Real-time Shipping Estimate Banner — only show when in stock */}
+            {product.inStock !== false && (
+              <div style={{
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: '12px',
+                padding: '14px 16px',
+                marginBottom: '20px',
+                boxShadow: '0 2px 8px rgba(34, 197, 94, 0.05)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '18px' }}>⚡</span>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#166534' }}>
+                    {timeLeft.shipToday ? (
+                      <>Order within <strong style={{ color: '#15803d' }}>{timeLeft.hours}h {timeLeft.minutes}m</strong> to ship <strong style={{ textTransform: 'uppercase' }}>Today!</strong></>
+                    ) : (
+                      <>Order within <strong style={{ color: '#15803d' }}>{timeLeft.hours}h {timeLeft.minutes}m</strong> to ship <strong style={{ textTransform: 'uppercase' }}>Tomorrow Morning!</strong></>
+                    )}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#374151', fontSize: '13px', paddingLeft: '28px' }}>
+                  <span style={{ color: PRIMARY }}>📦</span>
+                  <span>Estimated delivery: <strong>{deliveryDates.start}</strong> – <strong>{deliveryDates.end}</strong> (via Shiprocket Express)</span>
+                </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#374151', fontSize: '13px', paddingLeft: '28px' }}>
-                <span style={{ color: PRIMARY }}>📦</span>
-                <span>Estimated delivery: <strong>{deliveryDates.start}</strong> – <strong>{deliveryDates.end}</strong> (via Shiprocket Express)</span>
-              </div>
-            </div>
+            )}
 
             {/* CTAs */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
@@ -1026,42 +1045,73 @@ export default function ProductDetail() {
               {/* Row 1: Add to Cart + Buy Now (50% / 50%) */}
               <div className="pd-btn-row">
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => addToCart(product, 1)}
+                  whileHover={product.inStock !== false ? { scale: 1.02 } : {}}
+                  whileTap={product.inStock !== false ? { scale: 0.98 } : {}}
+                  onClick={() => product.inStock !== false && addToCart(product, 1)}
+                  disabled={product.inStock === false}
                   style={{
                     flex: 1, height: '54px',
-                    background: '#f8fafc',
-                    color: PRIMARY, border: `2px solid ${PRIMARY}`, borderRadius: '12px',
-                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                    background: product.inStock === false ? '#f1f5f9' : '#f8fafc',
+                    color: product.inStock === false ? '#94a3b8' : PRIMARY,
+                    border: product.inStock === false ? '2px solid #e2e8f0' : `2px solid ${PRIMARY}`,
+                    borderRadius: '12px',
+                    fontWeight: 700, fontSize: '15px',
+                    cursor: product.inStock === false ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     gap: '8px', fontFamily: 'inherit',
                     transition: 'all 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
                     boxSizing: 'border-box',
+                    opacity: product.inStock === false ? 0.55 : 1,
                   }}
                 >
-                  <FaShoppingCart style={{ fontSize: '16px', flexShrink: 0 }} /> Add to Cart
+                  <FaShoppingCart style={{ fontSize: '16px', flexShrink: 0 }} />
+                  {product.inStock === false ? 'Unavailable' : 'Add to Cart'}
                 </motion.button>
 
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate('/checkout', { state: { product, qty: 1 } })}
+                  whileHover={product.inStock !== false ? { scale: 1.02 } : {}}
+                  whileTap={product.inStock !== false ? { scale: 0.98 } : {}}
+                  onClick={() => product.inStock !== false && navigate('/checkout', { state: { product, qty: 1 } })}
+                  disabled={product.inStock === false}
                   style={{
                     flex: 1, height: '54px',
-                    background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
-                    color: '#fff', border: 'none', borderRadius: '12px',
-                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                    background: product.inStock === false
+                      ? '#e2e8f0'
+                      : `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
+                    color: product.inStock === false ? '#94a3b8' : '#fff',
+                    border: 'none', borderRadius: '12px',
+                    fontWeight: 700, fontSize: '15px',
+                    cursor: product.inStock === false ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     gap: '8px', fontFamily: 'inherit',
-                    boxShadow: `0 8px 20px ${ACCENT}40`,
+                    boxShadow: product.inStock === false ? 'none' : `0 8px 20px ${ACCENT}40`,
                     transition: 'all 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
                     boxSizing: 'border-box',
+                    opacity: product.inStock === false ? 0.55 : 1,
                   }}
                 >
-                  <FaShoppingBag style={{ fontSize: '16px', flexShrink: 0 }} /> Buy Now
+                  <FaShoppingBag style={{ fontSize: '16px', flexShrink: 0 }} />
+                  {product.inStock === false ? 'Out of Stock' : 'Buy Now'}
                 </motion.button>
               </div>
+
+              {/* Out of Stock notice */}
+              {product.inStock === false && (
+                <div style={{
+                  background: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  borderRadius: '10px',
+                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}>
+                  <span style={{ fontSize: '18px', flexShrink: 0 }}>🚫</span>
+                  <p style={{ margin: 0, fontSize: '13px', color: '#b91c1c', lineHeight: '1.6', fontWeight: 500 }}>
+                    This product is currently <strong>Out of Stock</strong>. You can still enquire below or add it to your wishlist to get notified when it&apos;s back.
+                  </p>
+                </div>
+              )}
 
               {/* Row 2: Enquire + Wishlist (50% / 50%) */}
               <div className="pd-btn-row">
@@ -1089,16 +1139,16 @@ export default function ProductDetail() {
                   onClick={() => toggleWishlist(product.id)}
                   style={{
                     flex: 1, height: '54px',
-                    background: '#fff', 
+                    background: '#fff',
                     border: isInWishlist(product.id) ? '2px solid #f43f5e' : '2px solid #cbd5e1',
                     borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: '8px', cursor: 'pointer', 
+                    gap: '8px', cursor: 'pointer',
                     color: isInWishlist(product.id) ? '#f43f5e' : '#64748b',
                     fontSize: '15px', fontWeight: 700, fontFamily: 'inherit',
                     boxSizing: 'border-box',
                     transition: 'all 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
                   }}
-                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                  title={isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
                 >
                   {isInWishlist(product.id) ? (
                     <><FaHeart style={{ fontSize: '16px', flexShrink: 0 }} /> Wishlisted</>
