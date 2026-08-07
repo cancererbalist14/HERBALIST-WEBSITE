@@ -357,7 +357,9 @@ export default function ManageAppointment() {
                     if (visibleSlots.length === 0) {
                       return (
                         <div style={{ padding: '20px 16px', background: '#fff7ed', border: '1.5px dashed #fed7aa', borderRadius: '12px', textAlign: 'center', color: '#c2410c', fontSize: '13px', fontWeight: 500, marginBottom: '24px' }}>
-                          ⚡ All slots for today have already passed. Please select another date above.
+                          {isToday 
+                            ? '⚡ All slots for today have already passed or are fully booked. Please select another date above.' 
+                            : `⚡ All slots for ${selectedDay?.label || 'this date'} are fully booked or unavailable. Please select another date above.`}
                         </div>
                       );
                     }

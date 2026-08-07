@@ -4404,14 +4404,16 @@ Cancer Herbalist Team`;
                             alignItems: 'stretch',
                             gap: '10px',
                             padding: '14px',
-                            border: `1.5px solid ${p.inStock === false ? '#fca5a5' : 'var(--border-color)'}`,
-                            background: p.inStock === false ? '#fff8f8' : 'var(--bg-card)',
+                            border: `1.5px solid ${p.inStock === false ? '#ef444499' : 'var(--border-color)'}`,
+                            background: p.inStock === false ? 'rgba(239, 68, 68, 0.08)' : 'var(--bg-card)',
                             borderRadius: '12px',
                           }}>
                             {/* Top row: name + actions */}
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                               <div style={{ flex: 1, minWidth: 0 }}>
-                                <strong style={{ fontSize: '13.5px', color: 'var(--text-primary)', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{p.name}</strong>
+                                <strong style={{ fontSize: '13.5px', color: 'var(--text-primary)', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                                  {p.name} {p.inStock === false && <span style={{ fontSize: '11px', color: '#ef4444', fontWeight: 700, marginLeft: '6px' }}>(Out of Stock)</span>}
+                                </strong>
                                 <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block' }}>Category: {p.category} • Price: ₹{p.price}</span>
                               </div>
                               <div className="admin-item-row-actions" style={{ flexShrink: 0 }}>
@@ -4456,9 +4458,9 @@ Cancer Herbalist Team`;
                               alignItems: 'center',
                               justifyContent: 'space-between',
                               padding: '10px 12px',
-                              background: p.inStock === false ? '#fef2f2' : '#f0fdf4',
+                              background: p.inStock === false ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.12)',
                               borderRadius: '8px',
-                              border: `1px solid ${p.inStock === false ? '#fecaca' : '#bbf7d0'}`,
+                              border: `1px solid ${p.inStock === false ? '#ef444455' : '#22c55e55'}`,
                               gap: '12px',
                             }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -4471,11 +4473,11 @@ Cancer Herbalist Team`;
                                 }} />
                                 <span style={{
                                   fontSize: '12px', fontWeight: 700,
-                                  color: p.inStock === false ? '#b91c1c' : '#166534',
+                                  color: p.inStock === false ? '#f87171' : '#4ade80',
                                 }}>
                                   {p.inStock === false ? '🚫 Out of Stock' : '✅ In Stock'}
                                 </span>
-                                <span style={{ fontSize: '11px', color: p.inStock === false ? '#b91c1c' : '#4ade80', fontWeight: 500 }}>
+                                <span style={{ fontSize: '11px', color: p.inStock === false ? '#fca5a5' : '#86efac', fontWeight: 500 }}>
                                   {p.inStock === false ? '— Buy Now disabled on website' : '— Buy Now enabled'}
                                 </span>
                               </div>

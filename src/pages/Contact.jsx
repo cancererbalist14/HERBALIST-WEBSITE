@@ -727,24 +727,26 @@ export default function Contact() {
                             // Filter out slots that have passed, are already booked, or disabled by admin so they disappear completely
                             const visibleSlots = slotsToShow.filter(slot => !(isToday && isSlotInPast(slot)) && !bookedSlots.includes(slot) && enabledSlots.includes(slot));
 
-                            if (visibleSlots.length === 0) {
-                              return (
-                                <div style={{
-                                  padding: '24px 16px',
-                                  background: '#fff7ed',
-                                  border: '1.5px dashed #fed7aa',
-                                  borderRadius: '12px',
-                                  textAlign: 'center',
-                                  color: '#c2410c',
-                                  fontSize: '13.5px',
-                                  fontWeight: 500,
-                                  lineHeight: '1.6',
-                                  marginBottom: '24px'
-                                }}>
-                                  ⚡ All slots for today have already passed. Please select another date above or connect with us on WhatsApp.
-                                </div>
-                              );
-                            }
+                              if (visibleSlots.length === 0) {
+                                return (
+                                  <div style={{
+                                    padding: '24px 16px',
+                                    background: '#fff7ed',
+                                    border: '1.5px dashed #fed7aa',
+                                    borderRadius: '12px',
+                                    textAlign: 'center',
+                                    color: '#c2410c',
+                                    fontSize: '13.5px',
+                                    fontWeight: 500,
+                                    lineHeight: '1.6',
+                                    marginBottom: '24px'
+                                  }}>
+                                    {isToday 
+                                      ? '⚡ All slots for today have already passed or are fully booked. Please select another date above or connect with us on WhatsApp.' 
+                                      : `⚡ All slots for ${formData.selectedDay?.label || 'this date'} are fully booked or unavailable. Please select another date above or connect with us on WhatsApp.`}
+                                  </div>
+                                );
+                              }
 
                             return (
                               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
