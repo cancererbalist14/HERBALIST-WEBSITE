@@ -50,10 +50,21 @@ const slotConfigStore = {};
 let lastSlotConfigSyncTime = 0;
 const SLOT_CONFIG_SYNC_COOLDOWN_MS = 60000; // 60 seconds cache
 
-// Replaces commas, trims whitespace, and converts to lowercase to make date lookups robust
+// Replaces commas, trims whitespace, and converts any date format to canonical YYYY-MM-DD or standard normalized string
 function normalizeDateKey(dateStr) {
   if (!dateStr) return '';
-  return String(dateStr).trim().toLowerCase().replace(/,/g, '');
+  const str = String(dateStr).trim();
+  const cleanDay = str.replace(/^[a-zA-Z]+,\s*/, '').replace(/,/g, '').trim();
+  try {
+    const d = new Date(cleanDay);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  } catch (e) {}
+  return cleanDay.toLowerCase().replace(/\s+/g, ' ');
 }
 
 // Helper to check if a day (e.g. "Saturday, 1 August, 2026") is yesterday or earlier in India Standard Time (IST)
@@ -84,10 +95,18 @@ async function syncSlotConfigFromSheets(force = false) {
       // Clear and rebuild from database
       Object.keys(slotConfigStore).forEach(k => delete slotConfigStore[k]);
       Object.keys(dbConfig).forEach(date => {
-        slotConfigStore[date] = {
+        const canonicalKey = normalizeDateKey(date);
+        const rawKey = String(date).trim();
+        const legacyKey = rawKey.toLowerCase().replace(/,/g, '');
+
+        const cfgObj = {
           regularSlots: new Set(dbConfig[date].regularSlots || []),
           emergencySlots: new Set(dbConfig[date].emergencySlots || [])
         };
+
+        [rawKey, canonicalKey, legacyKey].filter(Boolean).forEach(k => {
+          slotConfigStore[k] = cfgObj;
+        });
       });
       lastSlotConfigSyncTime = now;
       return true;
@@ -103,16 +122,21 @@ async function syncSlotConfigFromSheets(force = false) {
       Object.keys(slotConfigStore).forEach(k => delete slotConfigStore[k]);
       (data.rows || []).forEach(row => {
         if (!row || !row.date) return;
-        const normalizedKey = normalizeDateKey(row.date);
-        if (!slotConfigStore[normalizedKey]) {
-          slotConfigStore[normalizedKey] = { regularSlots: new Set(), emergencySlots: new Set() };
-        }
-        if (row.slot === '[NONE]') return;
-        if (row.slotType === 'emergency') {
-          slotConfigStore[normalizedKey].emergencySlots.add(row.slot);
-        } else {
-          slotConfigStore[normalizedKey].regularSlots.add(row.slot);
-        }
+        const canonicalKey = normalizeDateKey(row.date);
+        const rawKey = String(row.date).trim();
+        const legacyKey = rawKey.toLowerCase().replace(/,/g, '');
+
+        [rawKey, canonicalKey, legacyKey].filter(Boolean).forEach(k => {
+          if (!slotConfigStore[k]) {
+            slotConfigStore[k] = { regularSlots: new Set(), emergencySlots: new Set() };
+          }
+          if (row.slot === '[NONE]') return;
+          if (row.slotType === 'emergency') {
+            slotConfigStore[k].emergencySlots.add(row.slot);
+          } else {
+            slotConfigStore[k].regularSlots.add(row.slot);
+          }
+        });
       });
 
       // Save to database immediately
@@ -162,16 +186,21 @@ async function saveSlotConfigToSheetsBackground(date, slots, slotType) {
 
 async function saveSlotConfigToSheets(date, slots, slotType) {
   try {
-    // 1. Update local in-memory config store
-    const normalizedKey = normalizeDateKey(date);
-    if (!slotConfigStore[normalizedKey]) {
-      slotConfigStore[normalizedKey] = { regularSlots: new Set(), emergencySlots: new Set() };
-    }
-    if (slotType === 'emergency') {
-      slotConfigStore[normalizedKey].emergencySlots = new Set(slots);
-    } else {
-      slotConfigStore[normalizedKey].regularSlots = new Set(slots);
-    }
+    // 1. Update local in-memory config store across all date key representations
+    const canonicalKey = normalizeDateKey(date);
+    const rawKey = String(date || '').trim();
+    const legacyKey = rawKey.toLowerCase().replace(/,/g, '');
+
+    [rawKey, canonicalKey, legacyKey].filter(Boolean).forEach(k => {
+      if (!slotConfigStore[k]) {
+        slotConfigStore[k] = { regularSlots: new Set(), emergencySlots: new Set() };
+      }
+      if (slotType === 'emergency') {
+        slotConfigStore[k].emergencySlots = new Set(slots);
+      } else {
+        slotConfigStore[k].regularSlots = new Set(slots);
+      }
+    });
 
     // 2. Persist to Supabase/Local JSON database immediately
     const serialized = {};
@@ -193,8 +222,13 @@ async function saveSlotConfigToSheets(date, slots, slotType) {
 async function deleteSlotConfigFromSheets(date) {
   try {
     // 1. Update local store
-    const normalizedKey = normalizeDateKey(date);
-    delete slotConfigStore[normalizedKey];
+    const canonicalKey = normalizeDateKey(date);
+    const rawKey = String(date || '').trim();
+    const legacyKey = rawKey.toLowerCase().replace(/,/g, '');
+
+    [rawKey, canonicalKey, legacyKey].filter(Boolean).forEach(k => {
+      delete slotConfigStore[k];
+    });
 
     // 2. Write updated state to database
     const serialized = {};
@@ -220,8 +254,17 @@ async function deleteSlotConfigFromSheets(date) {
 }
 
 function getEnabledSlotsForDate(date) {
-  const normalizedKey = normalizeDateKey(date);
-  const config = slotConfigStore[normalizedKey];
+  if (!date) {
+    return {
+      regularSlots: [...DEFAULT_OPEN_REGULAR_SLOTS],
+      emergencySlots: [...DEFAULT_OPEN_EMERGENCY_SLOTS],
+    };
+  }
+  const rawKey = String(date).trim();
+  const canonicalKey = normalizeDateKey(date);
+  const legacyKey = rawKey.toLowerCase().replace(/,/g, '');
+
+  const config = slotConfigStore[rawKey] || slotConfigStore[canonicalKey] || slotConfigStore[legacyKey];
   if (!config) {
     // Default open slots
     return {

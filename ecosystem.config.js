@@ -26,6 +26,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: 5001,
+        FRONTEND_URL: "https://cancerherbalist.com",
       },
       autorestart: true,
       watch: false,

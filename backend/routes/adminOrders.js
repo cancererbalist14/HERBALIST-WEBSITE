@@ -487,7 +487,7 @@ router.post('/admin/orders/:orderId/ship', async (req, res) => {
 
   } catch (err) {
     console.error('[admin/ship] Shipping processing failed:', err.message);
-    res.status(500).json({ success: false, error: `Shipping processing failed: ${err.message}` });
+    res.status(400).json({ success: false, error: `Shipping processing failed: ${err.message}` });
   }
 });
 

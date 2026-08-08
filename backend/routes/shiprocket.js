@@ -77,22 +77,36 @@ async function createShiprocketOrder(orderRow) {
     tax:          0,
   }));
 
+  // Sanitize customer details
+  const cleanPhone = String(orderRow.phone || '').replace(/\D/g, '').slice(-10) || '9999999999';
+  const cleanPincode = String(orderRow.pincode || '').replace(/\D/g, '').slice(0, 6) || '560001';
+  
+  const rawName = (orderRow.customerName || 'Customer').trim();
+  const nameParts = rawName.split(' ');
+  const firstName = nameParts[0] || 'Customer';
+  const lastName  = nameParts.slice(1).join(' ') || 'User';
+
+  const cleanAddress = (orderRow.address || 'Address Not Provided').trim();
+  const cleanCity    = (orderRow.city || 'Bangalore').trim();
+  const cleanState   = (orderRow.state || 'Karnataka').trim();
+  const cleanEmail   = (orderRow.email || 'customer@cancerherbalist.com').trim();
+
   const payload = {
     order_id:            orderRow.orderId,
     order_date:          new Date().toISOString().replace('T', ' ').slice(0, 19), // "YYYY-MM-DD HH:MM:SS"
     pickup_location:     'THE CANCERHERBALIST', // Address Nickname from Shiprocket → Settings → Pick Up Address
 
     /* ── Billing / Shipping address ─── */
-    billing_customer_name:  orderRow.customerName || '',
-    billing_last_name:      '',
-    billing_address:        orderRow.address       || '',
+    billing_customer_name:  firstName,
+    billing_last_name:      lastName,
+    billing_address:        cleanAddress.length >= 8 ? cleanAddress : `${cleanAddress}, Main Street`,
     billing_address_2:      '',
-    billing_city:           orderRow.city          || '',
-    billing_pincode:        String(orderRow.pincode || ''),
-    billing_state:          orderRow.state         || '',
+    billing_city:           cleanCity,
+    billing_pincode:        cleanPincode,
+    billing_state:          cleanState,
     billing_country:        'India',
-    billing_email:          orderRow.email         || '',
-    billing_phone:          String(orderRow.phone  || ''),
+    billing_email:          cleanEmail,
+    billing_phone:          cleanPhone,
     billing_alternate_phone: '',
 
     shipping_is_billing:    true,   // same address for shipping
@@ -101,7 +115,7 @@ async function createShiprocketOrder(orderRow) {
     order_items,
 
     /* ── Payment ─── */
-    payment_method: orderRow.paymentMethod?.toLowerCase().includes('online') ? 'Prepaid' : 'COD',
+    payment_method: String(orderRow.paymentMethod || '').toLowerCase().includes('online') ? 'Prepaid' : 'COD',
     sub_total:      Number(orderRow.orderAmount) || 0,
     length:         10,    // cm — update if you have per-product dims
     breadth:        10,
@@ -121,15 +135,12 @@ async function createShiprocketOrder(orderRow) {
   const data = await res.json();
 
   if (!res.ok) {
-    // Shiprocket can return 401 when the token is revoked mid-session
     if (res.status === 401) {
-      // Invalidate cache and let the caller retry once
       _cachedToken    = null;
       _tokenExpiresAt = 0;
     }
-    throw new Error(
-      `Shiprocket order creation failed (${res.status}): ${JSON.stringify(data)}`
-    );
+    const detailMsg = data.message || (data.errors ? JSON.stringify(data.errors) : JSON.stringify(data));
+    throw new Error(`Shiprocket API error (${res.status}): ${detailMsg}`);
   }
 
   return data; // { order_id, shipment_id, status, ... }
