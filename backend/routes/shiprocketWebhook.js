@@ -47,7 +47,8 @@ router.post('/tracking-webhook', async (req, res) => {
     const activityList  = payload.scans || [];
 
     if (!shipmentId && !awb) {
-      return res.status(400).json({ success: false, error: 'Missing shipment_id or awb identifier.' });
+      console.warn('[shiprocket-webhook] Received payload without shipment_id or awb. Might be a test ping.');
+      return res.status(200).json({ success: true, message: 'Test ping received' });
     }
 
     // 1. Find corresponding order in DB
