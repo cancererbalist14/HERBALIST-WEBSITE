@@ -20,13 +20,23 @@ const { getShiprocketTrackingByShipment } = require('./shiprocket');
 const { sendStatusNotificationEmail } = require('./emailService');
 
 /**
- * POST /api/shiprocket/webhook
+ * POST /api/tracking-webhook
  * Receives real-time tracking webhook updates from Shiprocket.
  */
-router.post('/shiprocket/webhook', async (req, res) => {
+router.post('/tracking-webhook', async (req, res) => {
   try {
     const payload = req.body;
     console.log('[shiprocket-webhook] Received payload:', JSON.stringify(payload));
+
+    // Optional but recommended security check
+    const expectedToken = process.env.SHIPROCKET_WEBHOOK_TOKEN;
+    if (expectedToken) {
+      const providedToken = req.headers['x-api-key'] || req.query.token;
+      if (providedToken !== expectedToken) {
+        console.warn('[shiprocket-webhook] Unauthorized webhook attempt. Token mismatch.');
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+      }
+    }
 
     const shipmentId    = payload.shipment_id;
     const awb           = payload.awb;

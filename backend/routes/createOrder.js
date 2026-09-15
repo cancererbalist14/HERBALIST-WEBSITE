@@ -38,6 +38,7 @@ router.post('/create-order', async (req, res) => {
       amount:   Math.round(Number(amount) * 100), // paise
       currency: 'INR',
       receipt:  `ch_${Date.now()}`,
+      payment_capture: 1, // Automatically capture the payment
       notes: { productName, productId, customerName, phone, email },
     };
 

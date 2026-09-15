@@ -16,6 +16,7 @@ const dynamicContentRoute  = require('./routes/dynamicContent');
 const orderActionsRoute    = require('./routes/orderActions');
 const adminOrdersRoute     = require('./routes/adminOrders');
 const shiprocketWebhookRoute = require('./routes/shiprocketWebhook');
+const razorpayWebhookRoute   = require('./routes/razorpayWebhook');
 const zohoSignRoute          = require('./routes/zohoSign');
 const zohoCampaignsRoute     = require('./routes/zohoCampaigns');
 const zohoDeskRoute          = require('./routes/zohoDesk');
@@ -147,8 +148,12 @@ const adminLimiter = rateLimit({
 });
 
 /* ── Body parser ────────────────────────────────────────────── */
-app.use(express.json({ limit: '10mb' })); // Support Base64 image uploads in admin copy editor
-
+app.use(express.json({ 
+  limit: '10mb',
+  verify: (req, res, buf) => {
+    req.rawBody = buf.toString(); // Support raw body for webhook signature verification
+  }
+}));
 /* ── Serve React static files (EARLY — before API routes) ───── */
 // Must be placed here so /assets/*.css and /assets/*.js are served
 // directly without going through any API middleware.
@@ -267,6 +272,7 @@ app.use('/api', bookAppointmentRoute);
 app.use('/api', dynamicContentRoute);
 app.use('/api', orderActionsRoute);
 app.use('/api', shiprocketWebhookRoute);
+app.use('/api', razorpayWebhookRoute);
 app.use('/api', zohoSignRoute);
 app.use('/api', zohoCampaignsRoute);
 app.use('/api', zohoDeskRoute);
