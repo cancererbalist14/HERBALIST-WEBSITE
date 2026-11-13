@@ -70,10 +70,10 @@ export default function TreatmentMethods() {
         <section style={{ marginBottom: '70px' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{ color: '#0f172a', fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontFamily: 'Playfair Display, serif', marginBottom: '12px' }}>
-              Our Treatment <span style={{ color: ACCENT }}>Philosophy</span>
+              Our Information <span style={{ color: ACCENT }}>Approach</span>
             </h2>
             <p style={{ color: '#64748b', maxWidth: '680px', margin: '0 auto', lineHeight: '1.8' }}>
-              We believe healing is multidimensional. Our six core pillars guide every decision we make for every patient we serve.
+              We aim to explain product information clearly and encourage questions about evidence, limitations, safety and individual circumstances.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
