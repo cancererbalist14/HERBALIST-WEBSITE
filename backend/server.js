@@ -178,7 +178,8 @@ const parseCookies = (cookieHeader) => {
 };
 
 const generateAdminToken = () => {
-  const secret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+  const secret = process.env.ADMIN_SECRET;
+  if (!secret) throw new Error('ADMIN_SECRET is not configured.');
   const expiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
   const payload = expiry.toString();
   const signature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
@@ -193,7 +194,8 @@ const verifyAdminToken = (token) => {
   const expiry = parseInt(payload, 10);
   if (isNaN(expiry) || expiry < Date.now()) return false;
   
-  const secret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+  const secret = process.env.ADMIN_SECRET;
+  if (!secret) return false;
   const expectedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
   return signature === expectedSignature;
 };
@@ -229,7 +231,11 @@ app.get('/admin', (req, res) => {
 
 app.post('/api/admin/login', loginLimiter, (req, res) => {
   const { password } = req.body;
-  const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+  const adminSecret = process.env.ADMIN_SECRET;
+  if (!adminSecret) {
+    console.error('[security] ADMIN_SECRET is not configured; admin login is disabled.');
+    return res.status(503).json({ success: false, error: 'Admin login is temporarily unavailable. Server configuration is incomplete.' });
+  }
 
   if (password !== adminSecret) {
     return res.status(401).json({ success: false, error: 'Incorrect password' });
