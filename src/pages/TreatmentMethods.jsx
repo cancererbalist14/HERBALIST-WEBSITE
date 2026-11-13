@@ -11,26 +11,11 @@ import { useContent } from '../context/ContentContext';
 const ACCENT = '#38bed5';
 
 const hctFaqs = [
-  {
-    q: 'Is everyone eligible for Herbal Chemotherapy?',
-    a: 'Yes, everyone is eligible for Herbal Chemotherapy. Since it utilizes safe, non-toxic, and premium standardized botanical extracts tailored to each patient’s specific pathology and organ filtration capacity, it is suitable for individuals of all ages and health conditions.'
-  },
-  {
-    q: 'Is there a recovery time required for Herbal Chemotherapy?',
-    a: 'No recovery time is required as there are no serious side effects from Herbal Chemotherapy. Unlike conventional cytotoxic chemotherapy, HCT is gentle on the body and does not cause systemic toxicity, hair loss, or organ strain, allowing patients to maintain their daily routine.'
-  },
-  {
-    q: 'Is preparation required before starting Herbal Chemotherapy?',
-    a: 'No preparation is required. You can start Herbal Chemotherapy at the earliest. Our medical and pharmacological team only requires a review of your recent blood panels, diagnostic scans, and current conventional medication list to screen for drug-herb interactions and personalize your formula.'
-  },
-  {
-    q: 'Are all types of cancers eligible for Herbal Chemotherapy?',
-    a: 'Yes, all types of cancers are eligible for Herbal Chemotherapy. Our protocols are customized to address various malignancies, including breast, lung, colon, prostate, liver, blood, and rare or advanced stage cancers, supporting the body’s healing response.'
-  },
-  {
-    q: 'What are the key differences between HCT and conventional therapies (Ocean of differences)?',
-    a: 'There is an ocean of differences. Few key comparisons:\na. HCT works on non-dividing cancer cells.\nb. HCT works on metastasized cancer cells too.\nc. HCT works on CCC (Circulating Cancer Cells) too.\nd. HCT works on CSC (Cancer Stem Cells) too.\nFor complete differences, please visit the last page of our English yellow brochure.'
-  }
+  { q: 'Are herbal or nutraceutical products suitable for everyone?', a: 'No. Suitability depends on ingredients, health conditions, allergies, age, current medicines and cancer treatment. Do not assume a product is safe for everyone. Discuss it with your treating oncologist or pharmacist before use.' },
+  { q: 'Can herbal products replace chemotherapy, radiotherapy or other cancer treatment?', a: 'No. Cancer Herbalist products are not substitutes for cancer diagnosis or treatment. Do not stop, delay or change prescribed cancer treatment because of a supplement or product.' },
+  { q: 'Can herbal products interact with cancer medicines?', a: 'Yes. Some herbs and supplements can change how medicines work or increase side effects. Share the complete ingredient list with your oncologist and pharmacist before using a product, including during chemotherapy, radiotherapy, immunotherapy, targeted therapy or surgery.' },
+  { q: 'What evidence supports a botanical product?', a: 'Evidence varies by ingredient and product. Traditional use, laboratory research, animal studies and human clinical trials are not interchangeable. Ask what product-specific human evidence and quality documentation are available. We do not promise a cancer treatment outcome.' },
+  { q: 'How can I understand a product before deciding?', a: 'Contact Cancer Herbalist for an in-person or telephone discussion. Ask about ingredients, intended use, directions, available documentation, limitations, contraindications and potential risks. You can then discuss the information with your treating healthcare team before deciding.' }
 ];
 
 export default function TreatmentMethods() {
@@ -110,10 +95,10 @@ export default function TreatmentMethods() {
         <section style={{ marginBottom: '70px' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{ color: '#0f172a', fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontFamily: 'Playfair Display, serif', marginBottom: '12px' }}>
-              Your Step-by-Step <span style={{ color: ACCENT }}>Treatment Journey</span>
+              Your Step-by-Step <span style={{ color: ACCENT }}>Information Journey</span>
             </h2>
             <p style={{ color: '#64748b', maxWidth: '640px', margin: '0 auto', lineHeight: '1.8' }}>
-              A structured, professional five-step methodology to ensure personalized, safe, and effective herbal cancer support.
+              A transparent process to help patients and caregivers understand products, limitations and possible risks.
             </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -150,7 +135,7 @@ export default function TreatmentMethods() {
           </div>
 
           <div style={{ background: '#fff', borderRadius: '24px', padding: '36px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', border: `1px solid ${ACCENT}22` }}>
-            <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', marginBottom: '24px', fontSize: '1.4rem' }}>Side Effects We Address</h2>
+            <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', marginBottom: '24px', fontSize: '1.4rem' }}>Topics to Discuss With Your Care Team</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {treatmentMethodsSideEffects.map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#334155', fontSize: '0.95rem' }}>
@@ -168,7 +153,7 @@ export default function TreatmentMethods() {
               Frequently Asked <span style={{ color: ACCENT }}>Questions</span>
             </h2>
             <p style={{ color: '#64748b', maxWidth: '640px', margin: '0 auto', lineHeight: '1.8', fontSize: '0.98rem' }}>
-              Common questions about eligibility, recovery, and the unique mechanisms of Herbal Chemotherapy (HCT).
+              Common questions about product information, evidence, suitability and possible interactions.
             </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '800px', margin: '0 auto' }}>
@@ -246,7 +231,7 @@ export default function TreatmentMethods() {
         {/* Disclaimer */}
         <div style={{ background: '#fffbeb', border: '1px solid #fbbf24', borderRadius: '16px', padding: '20px 24px', marginBottom: '50px' }}>
           <p style={{ color: '#92400e', fontSize: '0.9rem', lineHeight: '1.7' }}>
-            ⚠️ <strong>Important Disclaimer:</strong> Our herbal support programs are complementary therapies designed to work alongside, not replace, conventional oncology treatment. All herbal protocols are reviewed for safety and drug-herb interactions. Always consult your oncologist before starting any complementary treatment program.
+            ⚠️ <strong>Important Disclaimer:</strong> Our botanical and nutraceutical products are not cancer treatments and must not replace or delay conventional oncology care. Herbal products can interact with medicines and may be unsuitable for some people. Always consult your oncologist before starting any complementary treatment program.
           </p>
         </div>
 
