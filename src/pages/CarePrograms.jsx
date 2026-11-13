@@ -187,7 +187,7 @@ export default function CarePrograms(){
           <motion.div initial="hidden" whileInView="show" variants={stg} viewport={{once:true}} style={{textAlign:'center',marginBottom:40}}>
             <motion.div variants={up}>
               <span style={{display:'inline-flex',alignItems:'center',gap:7,background:`${A}15`,border:`1px solid ${A}33`,color:A,padding:'6px 16px',borderRadius:50,fontSize:12,fontWeight:700,marginBottom:14}}><FaFileMedical/> How We Support You</span>
-              <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.6rem,4vw,2.4rem)',color:'#0f172a',fontWeight:900,marginBottom:12}}>Your Healing <span style={{color:A}}>Journey</span></h2>
+              <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.6rem,4vw,2.4rem)',color:'#0f172a',fontWeight:900,marginBottom:12}}>Your Information <span style={{color:A}}>Journey</span></h2>
               <p style={{color:'#64748b',fontSize:'0.97rem',lineHeight:1.8,maxWidth:460,margin:'0 auto'}}>A structured process to help you understand product information, limitations and potential risks before deciding. Tap each step to learn more.</p>
             </motion.div>
           </motion.div>
@@ -249,7 +249,7 @@ export default function CarePrograms(){
             </div>
 
             <h2 style={{ fontFamily: 'Playfair Display, serif', color: '#fff', fontSize: 'clamp(1.6rem, 4vw, 2.3rem)', fontWeight: 900, marginBottom: '14px', lineHeight: 1.25 }}>
-              Ready to Begin Your <span style={{ color: A }}>Healing Journey?</span>
+              Would You Like to <span style={{ color: A }}>Ask Questions?</span>
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, fontSize: 'clamp(14px, 1.8vw, 15px)', maxWidth: '520px', margin: '0 auto 36px' }}>
               Speak with Prof. Ramesh Babu or one of our senior practitioners today. We can explain our institute, available product information, limitations and potential risks.
