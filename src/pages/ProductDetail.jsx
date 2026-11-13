@@ -626,7 +626,7 @@ export default function ProductDetail() {
     if (!product) return;
 
     // 1. Update Title
-    const pageTitle = `${product.name} | Integrative Cancer Support | Cancer Herbalist Store`;
+    const pageTitle = `${product.name} | Product Information | Cancer Herbalist Store`;
     document.title = pageTitle;
 
     // 2. Update Meta Description
@@ -1195,7 +1195,7 @@ export default function ProductDetail() {
           <AccordionItem title="Product Description">
             <p>{product.description}</p>
           </AccordionItem>
-          <AccordionItem title="Key Benefits">
+          <AccordionItem title="Key Product Information">
             <ul style={{ paddingLeft: '0', listStyle: 'none', margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {product.benefits.map((b, i) => (
                 <li key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
