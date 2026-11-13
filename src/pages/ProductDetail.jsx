@@ -428,36 +428,7 @@ function EnquiryModal({ product, onClose }) {
   );
 }
 
-const getMockReviewsForProduct = (productId) => {
-  const defaults = [
-    { name: "Rajesh Kumar", rating: 5, date: "2 days ago", title: "Highly recommend", text: "Very effective and high-quality formulation. It was packaged well and delivered quickly.", verified: true },
-    { name: "Simran S.", rating: 5, date: "1 week ago", title: "Very clean ingredients", text: "I have been using this supplement alongside my standard therapy and my vitality levels are back to normal.", verified: true },
-    { name: "Dr. A. Verma", rating: 4, date: "3 weeks ago", title: "Great complementary aid", text: "Highly standardized botanical extract. Clean, pure, and works well for cellular defense support.", verified: true }
-  ];
-
-  const productSpecifics = {
-    1: [
-      { name: "Suresh K.", rating: 5, date: "3 days ago", title: "Excellent immune booster", text: "My energy levels recovered very well after starting CH95 capsules. Highly recommended for oncology support.", verified: true },
-      { name: "Anita Rao", rating: 5, date: "1 week ago", title: "Helped with post-treatment fatigue", text: "This has been a game-changer. I was feeling extremely weak after my sessions, but this helped stabilize my WBC count and stamina.", verified: true },
-      { name: "David M.", rating: 4, date: "3 weeks ago", title: "Good quality, fast delivery", text: "Standardized capsules, very easy to swallow. The shipping was incredibly fast, arrived in 2 days in Delhi.", verified: true }
-    ],
-    2: [
-      { name: "Dr. Sandeep", rating: 5, date: "2 days ago", title: "Highly bioavailable MCT blend", text: "Recommended this Curcumin MCT blend to my patients. Excellent absorption and helps maintain weight without blood sugar spikes.", verified: true },
-      { name: "Meena Patel", rating: 5, date: "2 weeks ago", title: "Tastes good in warm water", text: "Very premium packaging. Has helped control inflammation and feels very light on the stomach.", verified: true },
-      { name: "Amit B.", rating: 4, date: "1 month ago", title: "Effective formulation", text: "Good calorie source. Has helped preserve muscle mass during chemotherapy. A bit expensive but worth it.", verified: true }
-    ],
-    3: [
-      { name: "Pooja Hegde", rating: 5, date: "4 days ago", title: "Great alkaline support", text: "Helps buffer acidity immediately. Take it on an empty stomach in the morning for best results.", verified: true },
-      { name: "Ramesh G.", rating: 4, date: "2 weeks ago", title: "Pure and effective", text: "Standardized minerals, high solubility. Appreciate the detailed guidance on the jar.", verified: true }
-    ],
-    5: [
-      { name: "Vikram Sen", rating: 5, date: "1 day ago", title: "Premium Curcumin extract", text: "This is high potency. The addition of BioPerine makes a visible difference in absorption. Very happy with it.", verified: true },
-      { name: "Sita Nair", rating: 5, date: "10 days ago", title: "Excellent anti-inflammatory support", text: "Joint comfort and energy are much better. Highly recommend AC95 to anyone searching for high quality curcumin.", verified: true }
-    ]
-  };
-
-  return productSpecifics[productId] || defaults;
-};
+const getMockReviewsForProduct = () => [];
 
 export default function ProductDetail() {
   const { id } = useParams();
