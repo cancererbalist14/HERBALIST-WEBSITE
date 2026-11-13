@@ -120,7 +120,7 @@ export default function CarePrograms(){
             <motion.div variants={up}>
               <span style={{display:'inline-flex',alignItems:'center',gap:7,background:`${A}15`,border:`1px solid ${A}33`,color:A,padding:'6px 16px',borderRadius:50,fontSize:12,fontWeight:700,marginBottom:14}}><FaHeartbeat/> Condition-Specific Support</span>
               <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.6rem,4vw,2.4rem)',color:'#0f172a',fontWeight:900,marginBottom:12}}>Featured <span style={{color:A}}>Care Programs</span></h2>
-              <p style={{color:'#64748b',fontSize:'0.97rem',lineHeight:1.8,maxWidth:520,margin:'0 auto'}}>Highlighted programs from our practice — our support extends to <strong style={{color:'#0f172a'}}>every known cancer type</strong>.</p>
+              <p style={{color:'#64748b',fontSize:'0.97rem',lineHeight:1.8,maxWidth:520,margin:'0 auto'}}>Explore product information and general education. Product suitability and safety must be discussed with your healthcare professionals.</p>
             </motion.div>
           </motion.div>
 
@@ -133,11 +133,11 @@ export default function CarePrograms(){
               <div style={{position:'relative',zIndex:1}}>
                 <div style={{fontSize:60,fontFamily:'Georgia,serif',color:A,opacity:0.25,lineHeight:1,marginBottom:16,userSelect:'none'}}>Rx</div>
                 <h3 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.4rem,3vw,2rem)',color:'#fff',fontWeight:900,lineHeight:1.3,marginBottom:16}}>
-                  Personalised herbal care for <span style={{color:A}}>every cancer</span>
+                  Botanical product <span style={{color:A}}>information</span>
                 </h3>
-                <p style={{color:'rgba(255,255,255,0.7)',fontSize:14,lineHeight:1.8,marginBottom:28}}>Each program is tailored by Prof. Ramesh to your specific cancer type, stage, and medical history.</p>
+                <p style={{color:'rgba(255,255,255,0.7)',fontSize:14,lineHeight:1.8,marginBottom:28}}>We explain available product information and encourage questions about intended use, limitations and possible risks.</p>
                 <div style={{display:'flex',flexDirection:'column',gap:10}}>
-                  {['Evidence-based protocols','No drug-herb conflicts','Complementary to chemo','Weekly follow-up included'].map(f=>(
+                  {['Product ingredient information','Available quality documents','Discuss possible interactions','No guaranteed outcomes'].map(f=>(
                     <div key={f} style={{display:'flex',alignItems:'center',gap:10,color:'rgba(255,255,255,0.85)',fontSize:13}}>
                       <FaCheckCircle style={{color:A,fontSize:12,flexShrink:0}}/>{f}
                     </div>
@@ -170,11 +170,11 @@ export default function CarePrograms(){
       <section style={{background:'#f8fafc',borderTop:'1px solid #e2e8f0',borderBottom:'1px solid #e2e8f0'}}>
         <motion.div initial="hidden" whileInView="show" variants={stg} viewport={{once:true}} style={{textAlign:'center',padding:'clamp(52px,8vw,80px) 20px 36px'}}>
           <motion.div variants={up}>
-            <span style={{display:'inline-flex',alignItems:'center',gap:7,background:`${A}15`,border:`1px solid ${A}33`,color:A,padding:'6px 16px',borderRadius:50,fontSize:12,fontWeight:700,marginBottom:16}}><FaLeaf/> Complete Cancer Coverage</span>
+            <span style={{display:'inline-flex',alignItems:'center',gap:7,background:`${A}15`,border:`1px solid ${A}33`,color:A,padding:'6px 16px',borderRadius:50,fontSize:12,fontWeight:700,marginBottom:16}}><FaLeaf/> Information for Patients & Caregivers</span>
             <motion.div animate={{opacity:[0.2,1,0.2],scale:[1,1.05,1]}} transition={{duration:2.5,repeat:Infinity,ease:'easeInOut'}} style={{fontSize:'clamp(64px,14vw,96px)',lineHeight:0.85,color:A,fontFamily:'Georgia,serif',marginBottom:16,userSelect:'none'}}>&#8734;</motion.div>
-            <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.6rem,4vw,2.4rem)',color:'#0f172a',fontWeight:900,marginBottom:14}}>We treat <span style={{color:A}}>every</span> type of cancer</h2>
+            <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.6rem,4vw,2.4rem)',color:'#0f172a',fontWeight:900,marginBottom:14}}>Learn about <span style={{color:A}}>our institute</span></h2>
             <p style={{color:'#64748b',fontSize:'0.97rem',lineHeight:1.8,maxWidth:560,margin:'0 auto'}}>
-              Whether common or rare, Prof. Ramesh&apos;s team creates a personalised herbal pathway for <strong style={{color:'#0f172a'}}>every known cancer type</strong> — no case is ever turned away.
+              We welcome enquiries from patients and caregivers who want to understand our botanical products, information and the limitations of complementary products.
             </p>
           </motion.div>
         </motion.div>
@@ -188,7 +188,7 @@ export default function CarePrograms(){
             <motion.div variants={up}>
               <span style={{display:'inline-flex',alignItems:'center',gap:7,background:`${A}15`,border:`1px solid ${A}33`,color:A,padding:'6px 16px',borderRadius:50,fontSize:12,fontWeight:700,marginBottom:14}}><FaFileMedical/> How We Support You</span>
               <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.6rem,4vw,2.4rem)',color:'#0f172a',fontWeight:900,marginBottom:12}}>Your Healing <span style={{color:A}}>Journey</span></h2>
-              <p style={{color:'#64748b',fontSize:'0.97rem',lineHeight:1.8,maxWidth:460,margin:'0 auto'}}>A structured 5-step process from first contact to full recovery. Tap each step to learn more.</p>
+              <p style={{color:'#64748b',fontSize:'0.97rem',lineHeight:1.8,maxWidth:460,margin:'0 auto'}}>A structured process to help you understand product information, limitations and potential risks before deciding. Tap each step to learn more.</p>
             </motion.div>
           </motion.div>
           <motion.div initial="hidden" whileInView="show" variants={stg} viewport={{once:true,amount:0.05}} style={{display:'flex',flexDirection:'column',gap:10}}>
@@ -252,7 +252,7 @@ export default function CarePrograms(){
               Ready to Begin Your <span style={{ color: A }}>Healing Journey?</span>
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, fontSize: 'clamp(14px, 1.8vw, 15px)', maxWidth: '520px', margin: '0 auto 36px' }}>
-              Speak with Prof. Ramesh Babu or one of our senior practitioners today. Let us guide you through a personalized, integrative pathway to recovery.
+              Speak with Prof. Ramesh Babu or one of our senior practitioners today. We can explain our institute, available product information, limitations and potential risks.
             </p>
 
             {/* CTAs */}
