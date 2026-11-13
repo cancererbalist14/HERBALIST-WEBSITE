@@ -6,29 +6,10 @@ const BASE_URL = 'https://www.cancerherbalist.com';
 
 const seoData = {
   '/': {
-    title: 'Cancer Herbalist | Natural & Holistic Cancer Support & Care',
-    description: 'Evidence-based herbal cancer treatment and personalized care support. Discover holistic therapies, certified practitioners, and life-changing success stories.',
+    title: 'Cancer Herbalist | Herbal Nutrition & Complementary Cancer Support in Bengaluru',
+    description: 'Cancer Herbalist in Bengaluru offers herbal nutrition and complementary wellness support for people affected by cancer. Explore our approach, educational resources and contact information. Supportive care is not a substitute for oncology treatment.',
     keywords: 'cancer herbalist, herbal cancer support, natural cancer care, holistic cancer therapy, integrative oncology, herbal medicine, cancer nutrition',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'MedicalBusiness',
-      'name': 'Cancer Herbalist',
-      'image': 'https://www.cancerherbalist.com/logo.png',
-      'url': 'https://www.cancerherbalist.com',
-      'telephone': '+91 88845 88835',
-      'priceRange': '$$',
-      'address': {
-        '@type': 'PostalAddress',
-        'addressLocality': 'Bangalore',
-        'addressRegion': 'Karnataka',
-        'addressCountry': 'IN'
-      },
-      'founder': {
-        '@type': 'Person',
-        'name': 'Prof. Ramesh Babu'
-      },
-      'description': 'Evidence-based herbal cancer treatment and personalized care support. Discover holistic therapies, certified practitioners, and life-changing success stories.'
-    }
+    schema: null
   },
   '/about': {
     title: 'About Prof. Ramesh Babu & Our Team | Cancer Herbalist',
@@ -229,6 +210,15 @@ export default function SEO() {
     }
     metaKeywords.setAttribute('content', data.keywords);
 
+    // Keep the canonical URL in sync with the active route.
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', `${BASE_URL}${pathname === '/' ? '/' : pathname}`);
+
     // 4. Update Open Graph tags
     const updateOGTag = (property, content) => {
       let tag = document.querySelector(`meta[property="${property}"]`);
@@ -244,6 +234,17 @@ export default function SEO() {
     updateOGTag('og:description', data.description);
     updateOGTag('og:url', `${BASE_URL}${pathname}`);
     updateOGTag('og:type', 'website');
+    const updateMetaName = (name, content) => {
+      let tag = document.querySelector(`meta[name="${name}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('name', name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+    updateMetaName('twitter:title', data.title);
+    updateMetaName('twitter:description', data.description);
 
     // 5. Inject/Update Schema Markup (Structured Data)
     const existingScript = document.getElementById('seo-schema-markup');
