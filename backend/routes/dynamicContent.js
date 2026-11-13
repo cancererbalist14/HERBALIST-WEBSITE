@@ -62,6 +62,11 @@ const checkAdmin = (req, res, next) => {
     const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
     const ip = req.ip || req.connection?.remoteAddress || 'unknown';
 
+    if (!adminSecret) {
+      console.error('[security] ADMIN_SECRET is not configured; admin API access is disabled.');
+      return res.status(503).json({ success: false, error: 'Admin service is not configured.' });
+    }
+
     if (key !== adminSecret) {
       recordAuthFailure(ip);
       return res.status(401).json({ success: false, error: 'Unauthorized.' });
