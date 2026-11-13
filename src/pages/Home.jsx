@@ -41,9 +41,9 @@ const whyChooseUs = [
 
 /* ─── Healing Pillars – unique to Home ─── */
 const healingPillars = [
-  { icon: <FaLeaf />, title: 'Herbal Formulation', stat: '20+', statLabel: 'Custom Blends', desc: 'Precision-crafted tinctures combining ancient wisdom with modern pharmacognosy research.' },
-  { icon: <FaHeartbeat />, title: 'Lifestyle Integration', stat: '95%', statLabel: 'Patient Compliance', desc: 'Anti-cancer nutrition plans, breathing protocols, and stress-reduction frameworks.' },
-  { icon: <FaShieldAlt />, title: 'Product Safety & Interactions', stat: '87%', statLabel: 'Improved Markers', desc: 'Targeted adaptogens and immunomodulators to strengthen your bodys natural defenses.' },
+  { icon: <FaLeaf />, title: 'Botanical Products', stat: '', statLabel: '', desc: 'Learn about ingredients, formulation details, intended use and available product documentation.' },
+  { icon: <FaHeartbeat />, title: 'Nutrition Education', stat: '', statLabel: '', desc: 'Explore general nutrition information and questions to discuss with your oncology care team.' },
+  { icon: <FaShieldAlt />, title: 'Product Safety & Interactions', stat: '', statLabel: '', desc: 'Understand possible interactions, contraindications and precautions before considering a product.' },
 ];
 
 export default function Home() {
@@ -113,7 +113,7 @@ export default function Home() {
               { step: '01', title: 'Listen & Understand', desc: 'We begin by deeply understanding your diagnosis, medical history, current treatment, and personal goals — before prescribing anything.' },
               { step: '02', title: 'Personalise', desc: 'No two patients are the same. Every formula, dietary plan, and follow-up schedule is crafted specifically for you.' },
               { step: '03', title: 'Collaborate', desc: 'We work alongside your oncology team — sharing protocols, respecting boundaries, and ensuring complete safety.' },
-              { step: '04', title: 'Support Continuously', desc: 'Healing is a journey. Monthly check-ins, WhatsApp support, and protocol adjustments ensure you are never alone.' }
+              { step: '04', title: 'Support Continuously', desc: 'We welcome questions about the institute and available product information.' }
             ]).map((item, i) => (
               <motion.div
                 key={item.title}
@@ -193,7 +193,7 @@ export default function Home() {
             {(content?.careProgramsList || [
               { title: 'Breast Cancer', slug: 'breast-cancer', desc: 'Targeted herbal formulas to regulate hormone levels, support cell health and minimise treatment side effects.' },
               { title: 'Lung Cancer', slug: 'lung-cancer', desc: 'Respiratory herbs that improve lung capacity, reduce coughing and support pulmonary tissue resilience.' },
-              { title: 'Colon Cancer', slug: 'colon-cancer', desc: 'Gut-healing botanicals that optimise digestion, restore intestinal flora and soothe abdominal inflammation.' },
+              { title: 'Colon Cancer', slug: 'colon-cancer', desc: 'Learn about relevant product ingredients, intended use and available documentation.' },
               { title: 'Prostate Cancer', slug: 'prostate-cancer', desc: 'Herbs targeting endocrine health, reducing pelvic inflammation and supporting urinary tract function.' },
               { title: 'Liver Cancer', slug: 'liver-cancer', desc: 'Hepatoprotective herbs that boost liver detoxification, aid cell regeneration and improve metabolic strength.' },
               { title: 'Blood Cancer', slug: 'blood-cancer', desc: 'Immune tonics and blood-purifying botanicals supporting marrow health and optimising energy levels.' }
@@ -533,7 +533,7 @@ export default function Home() {
         <div className="container">
           <div data-aos="fade-up" style={{ textAlign: 'center', marginBottom: '48px' }}>
             <span className="section-badge">
-              <FaLeaf /> Our Healing Framework
+              <FaLeaf /> Our Information Framework
             </span>
             <h2 className="section-title">
               {healingPillarsTitle}
@@ -646,7 +646,7 @@ export default function Home() {
                 boxShadow: `0 8px 32px ${ACCENT}44`,
               }}
             >
-              Start Your Healing Journey <FaArrowRight style={{ fontSize: '14px' }} />
+              Start an Information Discussion <FaArrowRight style={{ fontSize: '14px' }} />
             </Link>
           </div>
         </div>
