@@ -59,7 +59,7 @@ const { checkAuthLockout, recordAuthFailure, recordAuthSuccess } = require('../m
 const checkAdmin = (req, res, next) => {
   checkAuthLockout(req, res, () => {
     const key = req.query.key || req.headers['x-admin-key'];
-    const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+    const adminSecret = process.env.ADMIN_SECRET;
     const ip = req.ip || req.connection?.remoteAddress || 'unknown';
 
     if (!adminSecret) {
