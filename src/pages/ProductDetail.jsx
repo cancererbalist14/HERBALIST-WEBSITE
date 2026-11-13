@@ -35,7 +35,7 @@ function StarRating({ rating, count }) {
         ))}
       </div>
       <span style={{ fontWeight: 700, color: '#f59e0b', fontSize: '14px' }}>{rating}</span>
-      <span style={{ color: '#94a3b8', fontSize: '13px' }}>({count} verified reviews)</span>
+      <span style={{ color: '#94a3b8', fontSize: '13px' }}>{count > 0 ? `(${count} customer reviews)` : '(No customer reviews yet)'}</span>
     </div>
   );
 }
