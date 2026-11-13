@@ -210,6 +210,15 @@ export default function SEO() {
     }
     metaKeywords.setAttribute('content', data.keywords);
 
+    // Keep the canonical URL in sync with the active route.
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', `${BASE_URL}${pathname === '/' ? '/' : pathname}`);
+
     // 4. Update Open Graph tags
     const updateOGTag = (property, content) => {
       let tag = document.querySelector(`meta[property="${property}"]`);
@@ -225,6 +234,17 @@ export default function SEO() {
     updateOGTag('og:description', data.description);
     updateOGTag('og:url', `${BASE_URL}${pathname}`);
     updateOGTag('og:type', 'website');
+    const updateMetaName = (name, content) => {
+      let tag = document.querySelector(`meta[name="${name}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('name', name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+    updateMetaName('twitter:title', data.title);
+    updateMetaName('twitter:description', data.description);
 
     // 5. Inject/Update Schema Markup (Structured Data)
     const existingScript = document.getElementById('seo-schema-markup');
