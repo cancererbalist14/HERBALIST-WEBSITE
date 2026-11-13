@@ -10,7 +10,6 @@ import {
 import Hero from '../components/Hero';
 import Stats from '../components/Stats';
 import TrustBadges from '../components/TrustBadges';
-import TreatmentProcess from '../components/TreatmentProcess';
 import { useContent } from '../context/ContentContext';
 
 const ACCENT = '#38bed5';
@@ -110,9 +109,9 @@ export default function Home() {
             }}
           >
             {(content?.aboutApproach?.items || [
-              { step: '01', title: 'Listen & Understand', desc: 'We begin by deeply understanding your diagnosis, medical history, current treatment, and personal goals — before prescribing anything.' },
-              { step: '02', title: 'Personalise', desc: 'No two patients are the same. Every formula, dietary plan, and follow-up schedule is crafted specifically for you.' },
-              { step: '03', title: 'Collaborate', desc: 'We work alongside your oncology team — sharing protocols, respecting boundaries, and ensuring complete safety.' },
+              { step: '01', title: 'Listen & Understand', desc: 'We listen to the questions patients and caregivers want to discuss about the institute and products.' },
+              { step: '02', title: 'Personalise', desc: 'Ask about product ingredients, intended use, directions and available documentation.' },
+              { step: '03', title: 'Collaborate', desc: 'Our products are not cancer treatments. Discuss any product with your treating oncologist or pharmacist before use.' },
               { step: '04', title: 'Support Continuously', desc: 'We welcome questions about the institute and available product information.' }
             ]).map((item, i) => (
               <motion.div
@@ -179,7 +178,7 @@ export default function Home() {
               Conditions We <span>Support</span>
             </h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              We build specialized herbal protocols tailored to a wide range of diagnoses, helping optimize body resilience.
+              Explore information about our institute, botanical products and general nutrition education.
             </p>
           </div>
 
@@ -191,12 +190,12 @@ export default function Home() {
             }}
           >
             {(content?.careProgramsList || [
-              { title: 'Breast Cancer', slug: 'breast-cancer', desc: 'Targeted herbal formulas to regulate hormone levels, support cell health and minimise treatment side effects.' },
-              { title: 'Lung Cancer', slug: 'lung-cancer', desc: 'Respiratory herbs that improve lung capacity, reduce coughing and support pulmonary tissue resilience.' },
+              { title: 'Breast Cancer', slug: 'breast-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' },
+              { title: 'Lung Cancer', slug: 'lung-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' },
               { title: 'Colon Cancer', slug: 'colon-cancer', desc: 'Learn about relevant product ingredients, intended use and available documentation.' },
-              { title: 'Prostate Cancer', slug: 'prostate-cancer', desc: 'Herbs targeting endocrine health, reducing pelvic inflammation and supporting urinary tract function.' },
-              { title: 'Liver Cancer', slug: 'liver-cancer', desc: 'Hepatoprotective herbs that boost liver detoxification, aid cell regeneration and improve metabolic strength.' },
-              { title: 'Blood Cancer', slug: 'blood-cancer', desc: 'Immune tonics and blood-purifying botanicals supporting marrow health and optimising energy levels.' }
+              { title: 'Prostate Cancer', slug: 'prostate-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' },
+              { title: 'Liver Cancer', slug: 'liver-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' },
+              { title: 'Blood Cancer', slug: 'blood-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' }
             ]).slice(0, 6).map((svc, i) => {
               const icons = [<FaRibbon key={0} />, <FaLungs key={1} />, <FaAppleAlt key={2} />, <FaHeartbeat key={3} />, <FaRegHospital key={4} />, <FaTint key={5} />];
               return (
@@ -355,7 +354,7 @@ export default function Home() {
                 desc: 'Explore general nutrition information and questions to discuss with your oncology team or registered dietitian.',
               },
               {
-                title: 'Immune Optimization',
+                title: 'Botanical Product Information',
                 icon: <FaHeartbeat />,
                 color: '#e056fd',
                 desc: 'Herbal ingredients may interact with medicines or be unsuitable for some people. Ask your oncologist or pharmacist before use.',
@@ -425,7 +424,6 @@ export default function Home() {
         </div>
       </section>
 
-      <TreatmentProcess />
 
       {/* ═══ Why Choose Us – unique to Home page ═══ */}
       <section
