@@ -165,7 +165,7 @@ const seedDatabase = async () => {
       // Approved evidence-led public content refresh. Override legacy database
       // values for these sections so the refreshed copy is actually served.
       const publicContentRefreshKeys = [
-        'stats', 'heroSlides', 'whyChooseUs', 'healingPillars',
+        'stats', 'heroSlides', 'whyChooseUs', 'healingPillars', 'testimonials',
         'aboutHero', 'aboutStory', 'aboutMission', 'aboutCaseStudies',
         'careProgramsHero', 'careProgramsList', 'careProgramsSteps',
         'treatmentMethodsHero', 'treatmentMethodsPhilosophy',
