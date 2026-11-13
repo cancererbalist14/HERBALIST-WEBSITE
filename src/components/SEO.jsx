@@ -6,29 +6,10 @@ const BASE_URL = 'https://www.cancerherbalist.com';
 
 const seoData = {
   '/': {
-    title: 'Cancer Herbalist | Natural & Holistic Cancer Support & Care',
-    description: 'Evidence-based herbal cancer treatment and personalized care support. Discover holistic therapies, certified practitioners, and life-changing success stories.',
+    title: 'Cancer Herbalist | Herbal Nutrition & Complementary Cancer Support in Bengaluru',
+    description: 'Cancer Herbalist in Bengaluru offers herbal nutrition and complementary wellness support for people affected by cancer. Explore our approach, educational resources and contact information. Supportive care is not a substitute for oncology treatment.',
     keywords: 'cancer herbalist, herbal cancer support, natural cancer care, holistic cancer therapy, integrative oncology, herbal medicine, cancer nutrition',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'MedicalBusiness',
-      'name': 'Cancer Herbalist',
-      'image': 'https://www.cancerherbalist.com/logo.png',
-      'url': 'https://www.cancerherbalist.com',
-      'telephone': '+91 88845 88835',
-      'priceRange': '$$',
-      'address': {
-        '@type': 'PostalAddress',
-        'addressLocality': 'Bangalore',
-        'addressRegion': 'Karnataka',
-        'addressCountry': 'IN'
-      },
-      'founder': {
-        '@type': 'Person',
-        'name': 'Prof. Ramesh Babu'
-      },
-      'description': 'Evidence-based herbal cancer treatment and personalized care support. Discover holistic therapies, certified practitioners, and life-changing success stories.'
-    }
+    schema: null
   },
   '/about': {
     title: 'About Prof. Ramesh Babu & Our Team | Cancer Herbalist',
