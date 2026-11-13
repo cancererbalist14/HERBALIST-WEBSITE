@@ -31,19 +31,19 @@ export default function About() {
     {
       id: 1,
       name: 'Prof. Ramesh Babu',
-      role: 'Pharmacologist — M.Pharm, PhD',
-      experience: '22 Years Clinical Experience',
-      specialty: 'Integrative Pharmacology & Herbal Oncology',
-      bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with over two decades of dedicated practice in natural products, herbal extraction, and integrative cancer care.',
+      role: 'Founder',
+      experience: '',
+      specialty: 'Botanical Product Information',
+      bio: 'Founder of Cancer Herbalist. Contact the institute for information about its botanical and nutraceutical products.'
       image: '/images/doctor1.png',
     },
     {
       id: 2,
       name: 'Nutraceutical Research Team',
-      role: 'Multidisciplinary Research & Clinical Care Team',
-      experience: '15+ Specialists',
-      specialty: 'Clinical Nutrition, Botanical Research & Patient Support',
-      bio: 'Comprised of dedicated professionals from medical, research, and pharmacology backgrounds working collaboratively to deliver personalized care.',
+      role: 'Nutraceutical Research Team',
+      experience: '',
+      specialty: 'Product Information & Patient Enquiries',
+      bio: 'Contact Cancer Herbalist for information about the team and the services available.'
       image: '/images/doctor33.png',
     },
   ];
@@ -128,11 +128,11 @@ export default function About() {
               {aboutStory.badge || 'Our Story'}
             </span>
             <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', color: DARK, marginTop: '12px', marginBottom: '24px', lineHeight: 1.25 }}>
-              A Mission Born from <span style={{ color: ACCENT }}>Compassion</span>
+              Our Purpose: <span style={{ color: ACCENT }}>Informed Choice</span>
             </h2>
             {(aboutStory.paragraphs || [
-              'Founded with a mission to bridge natural botanical therapies and modern oncology science, Cancer Herbalist provides personalized care for patients across the globe.',
-              'Our formulations are compounded based on published cellular research, ensuring maximum bio-availability and safety alongside standard oncology treatments.'
+              'Cancer Herbalist shares information about its botanical and nutraceutical products and welcomes questions from patients and caregivers.',
+              'We encourage people to understand ingredients, intended use, available documentation, limitations and potential risks before deciding whether to use a product.'
             ]).map((p, i) => (
               <p key={i} style={{ color: '#475569', lineHeight: '1.9', fontSize: '1rem', marginBottom: '18px' }}>
                 {p}
@@ -141,9 +141,9 @@ export default function About() {
 
             {/* Key differentiators */}
             {(aboutStory.highlights || [
-              'Standardized bio-active phytotherapy compounds',
-              'Collaborative care alongside primary oncology',
-              'Comprehensive organ safety and laboratory audits'
+              'Information about product ingredients and intended use',
+              'Encouragement to discuss products with the treating oncology team',
+              'Available product-specific quality documentation'
             ]).map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
                 <FaCheckCircle style={{ color: ACCENT, flexShrink: 0, marginTop: '3px', fontSize: '16px' }} />
