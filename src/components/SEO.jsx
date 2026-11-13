@@ -104,14 +104,14 @@ const seoData = {
     }
   },
   '/store': {
-    title: 'Shop Integrative Herbal Formulations | Cancer Herbalist',
+    title: 'Botanical & Nutraceutical Products | Cancer Herbalist',
     description: 'Browse botanical and nutraceutical products. Review the product label, ingredients, intended use, warnings and available quality documents before purchase.',
     keywords: 'Cancer Herbalist store, botanical products, herbal nutraceuticals, product labels, ingredient information',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Store',
       'name': 'Cancer Herbalist Store',
-      'description': 'Browse our collection of premium, organic, heavy-metal-tested herbal formulas designed to support vitality, immunity, and overall wellbeing.'
+      'description': 'Browse botanical and nutraceutical products. Review the product label, ingredients, intended use, warnings and available quality documents before purchase.'
     }
   },
   '/wishlist': {
