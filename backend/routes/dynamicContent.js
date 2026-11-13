@@ -171,6 +171,25 @@ const seedDatabase = async () => {
         'treatmentMethodsHero', 'treatmentMethodsPhilosophy',
         'treatmentMethodsJourney', 'patientEducationHero', 'patientEducationArticles'
       ];
+      // Apply the reviewed product descriptions once to existing database records.
+      if (Number(merged._productCopyRevision || 0) < 1) {
+        const storedProducts = await dbRead('products') || [];
+        const safeProductCopy = new Map(initialProducts.map((product) => [product.id, product]));
+        const refreshedProducts = storedProducts.map((product) => {
+          const reviewed = safeProductCopy.get(product.id);
+          return reviewed ? {
+            ...product,
+            category: reviewed.category,
+            tagline: reviewed.tagline,
+            description: reviewed.description,
+            benefits: reviewed.benefits,
+            rating: 0,
+            reviews: 0
+          } : product;
+        });
+        await dbWrite('products', refreshedProducts);
+        merged._productCopyRevision = 1;
+      }
       publicContentRefreshKeys.forEach((key) => {
         if (Object.prototype.hasOwnProperty.call(defaultWebsiteContent, key)) {
           merged[key] = defaultWebsiteContent[key];
