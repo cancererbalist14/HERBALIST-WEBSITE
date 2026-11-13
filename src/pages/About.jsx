@@ -205,7 +205,7 @@ export default function About() {
               Our <span style={{ color: PRIMARY }}>Philosophy</span>
             </h2>
             <p style={{ color: '#64748b', maxWidth: '620px', margin: '0 auto', lineHeight: '1.8', fontSize: '1rem' }}>
-              We believe in combining ancient botanical wisdom with modern evidence-based pharmacological research.
+              We believe people should have clear product information and the opportunity to ask questions about ingredients, intended use, limitations and potential risks.
             </p>
           </div>
 
@@ -213,23 +213,23 @@ export default function About() {
             {[
               {
                 icon: <FaSeedling />,
-                title: 'Evidence-Based Phytotherapy',
-                desc: 'Every herb and botanical compound we use is backed by cellular research, pharmacological studies, and standardized active ingredients.'
+                title: 'Product Information',
+                desc: 'Ask us about the ingredients, intended use, available product-specific evidence and supporting documentation.'
               },
               {
                 icon: <FaShieldAlt />,
-                title: 'Synergy with Modern Care',
-                desc: 'We do not replace conventional treatments; our integrative protocols work alongside chemotherapy, radiation, and surgery to support organ resilience.'
+                title: 'Respect for Conventional Care',
+                desc: 'Our products are not cancer treatments and must not replace or delay care recommended by an oncology team.'
               },
               {
                 icon: <FaHandHoldingHeart />,
-                title: 'Holistic Patient-Centricity',
-                desc: 'Cancer care extends beyond tumor targeted care — we focus on appetite support, vitality, cellular detox, and total quality of life.'
+                title: 'Informed Patient Decisions',
+                desc: 'We encourage patients and caregivers to discuss product ingredients, medicines, allergies, health conditions and possible risks before deciding.'
               },
               {
                 icon: <FaFlask />,
-                title: 'Safety & Quality Audits',
-                desc: 'Strict quality control, heavy metal screening, and purity testing ensure zero contamination across all our herbal formulations.'
+                title: 'Product Quality Information',
+                desc: 'Ask us which quality documents and product-specific test reports are available. Do not assume testing or certification beyond the documents provided.'
               }
             ].map((item, idx) => (
               <motion.div
@@ -277,10 +277,10 @@ export default function About() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '64px' }}>
             <span style={{ color: PRIMARY, fontWeight: 700, fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              Clinical Expertise
+              Our Team
             </span>
             <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', color: DARK, marginTop: '12px', marginBottom: '16px' }}>
-              Meet Our Expert <span style={{ color: PRIMARY }}>Clinical Team</span>
+              Meet the <span style={{ color: PRIMARY }}>Cancer Herbalist Team</span>
             </h2>
             <p style={{ color: '#64748b', maxWidth: '620px', margin: '0 auto', lineHeight: '1.8', fontSize: '1rem' }}>
               Our multidisciplinary team of pharmacologists, medical practitioners, and research specialists is dedicated to personalized cancer support.
