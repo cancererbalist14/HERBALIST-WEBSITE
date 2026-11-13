@@ -160,125 +160,75 @@
     "visionText": "To be a transparent and accessible source of information about botanical products and complementary wellness, encouraging informed conversations and coordination with qualified healthcare professionals."
   },
   "aboutValues": {
-    "title": "Our Core Values",
-    "subtitle": "These principles are not aspirational — they are the living standards by which every practitioner at Cancer Herbalist operates, every day.",
+    "title": "Our Commitments",
+    "subtitle": "Principles that guide our public information and patient conversations.",
     "items": [
       {
-        "title": "Compassionate Care",
-        "desc": "Every patient is treated like family. We listen deeply, respond with empathy, and walk beside you through every step of your healing journey.",
-        "color": "#ef4444"
-      },
-      {
-        "title": "Evidence-Based Science",
-        "desc": "Our herbal protocols are grounded in peer-reviewed research, clinical studies, and decades of integrative oncology practice — not guesswork.",
-        "color": "#8b5cf6"
-      },
-      {
-        "title": "Safety First, Always",
-        "desc": "Every formula is screened for drug-herb interactions and contraindications. Transparency with your oncology team is non-negotiable.",
+        "title": "Transparency",
+        "desc": "We aim to explain product ingredients, intended use, available documentation and evidence limitations.",
         "color": "#38bed5"
       },
       {
-        "title": "Continuous Innovation",
-        "desc": "Our research team continuously reviews the latest phytotherapy literature so your protocol reflects the most current science available.",
-        "color": "#f59e0b"
+        "title": "Informed Decisions",
+        "desc": "Patients and caregivers are encouraged to ask questions and take time to understand potential risks before deciding.",
+        "color": "#8b5cf6"
       },
       {
-        "title": "Holistic Wellness",
-        "desc": "We treat the whole person — body, mind, and spirit — through herbal medicine, nutrition coaching, and emotional wellbeing support.",
+        "title": "Respect for Oncology Care",
+        "desc": "Products are not cancer treatments and must not replace or delay care recommended by a qualified oncology team.",
         "color": "#10b981"
       },
       {
-        "title": "Accessible to All",
-        "desc": "Whether you are in Bangalore or abroad, our teleconsultation platform brings world-class integrative oncology support to your home.",
-        "color": "#3b82f6"
+        "title": "Honest Communication",
+        "desc": "We do not promise cancer cure, tumour response, improved survival or freedom from side effects.",
+        "color": "#f59e0b"
       }
     ]
   },
   "aboutMilestones": {
-    "title": "Two Decades of Milestones",
+    "title": "Our Institute",
     "items": [
       {
-        "year": "2012",
-        "title": "Clinic Founded",
-        "desc": "Following a remarkable recovery in one of our early brain cancer patients, we expanded our mission by opening our first integrative herbal oncology clinic in Bangalore."
-      },
-      {
-        "year": "2014",
-        "title": "Clinical Recognition",
-        "desc": "Recognized by integrative medicine bodies for developing standardized, evidence-informed herbal support protocols for cancer patients."
-      },
-      {
-        "year": "2016",
-        "title": "Research Wing Opens",
-        "desc": "Established a dedicated botanical research laboratory to study herbal formulations, bioavailability, and drug-herb interactions."
-      },
-      {
-        "year": "2016",
-        "title": "Global Teleconsultation",
-        "desc": "Launched our digital consultation platform, enabling patients across India and internationally to access our specialized care remotely."
-      },
-      {
-        "year": "2020",
-        "title": "Integrative Team Grows",
-        "desc": "Expanded our multidisciplinary team of herbalists, nutritionists, and integrative oncologists to serve a wider range of cancer types."
-      },
-      {
-        "year": "2024",
-        "title": "Two Decades of Healing",
-        "desc": "Celebrating 20 years of service — continuing to refine our protocols, train new practitioners, and deepen our commitment to patient wellbeing."
-      },
-      {
-        "year": "2026",
-        "title": "Continuing Our Mission",
-        "desc": "Building on years of experience by supporting patients at every stage of their cancer journey with compassionate integrative care."
+        "year": "",
+        "title": "Based in Bengaluru, India",
+        "desc": "Cancer Herbalist welcomes enquiries from patients and caregivers seeking information about the institute and its botanical and nutraceutical products."
       }
     ]
   },
   "aboutApproach": {
-    "title": "Our Care Approach",
-    "subtitle": "A four-principle framework that guides how we engage with every patient, every time.",
+    "title": "Our Discussion Approach",
+    "subtitle": "A clear conversation about the institute, product information, limitations and potential risks.",
     "items": [
       {
         "step": "01",
         "title": "Listen & Understand",
-        "desc": "We begin by deeply understanding your diagnosis, medical history, current treatment, and personal goals — before prescribing anything."
+        "desc": "We listen to the questions patients and caregivers want to discuss."
       },
       {
         "step": "02",
-        "title": "Personalise",
-        "desc": "No two patients are the same. Every formula, dietary plan, and follow-up schedule is crafted specifically for you."
+        "title": "Explain Product Information",
+        "desc": "We discuss ingredients, intended use, directions and available documentation."
       },
       {
         "step": "03",
-        "title": "Collaborate",
-        "desc": "We work alongside your oncology team — sharing protocols, respecting boundaries, and ensuring complete safety."
+        "title": "Discuss Limitations & Risks",
+        "desc": "We encourage questions about evidence gaps, possible interactions and precautions."
       },
       {
         "step": "04",
-        "title": "Support Continuously",
-        "desc": "Healing is a journey. Monthly check-ins, WhatsApp support, and protocol adjustments ensure you are never alone."
+        "title": "Support Informed Choice",
+        "desc": "Patients are encouraged to discuss products with their treating oncology team before use."
       }
     ]
   },
   "aboutFounderProfile": {
     "title": "Meet the Founder",
-    "subtitle": "The Person Behind the Practice",
+    "subtitle": "The Person Behind the Institute",
     "name": "Prof. Ramesh Babu",
-    "role": "Founder & Chief Herbalist",
-    "paragraphs": [
-      "He spends one to two hours with every patient — compared to the industry average of 5 minutes. Not because he has to. Because he believes that no meaningful healing conversation can happen in a fraction of that time.",
-      "Prof. Ramesh Babu uses conventional treatment every day. He is not against it. He has seen it save lives. But he also sees what it leaves behind — fatigue, fear, and a body that needs more than a prescription to recover.",
-      "That conviction is why Cancer Herbalist was built the way it was — unhurried, deeply personal, and rooted in the belief that the body's own intelligence, properly supported, is one of the most powerful healing forces in medicine."
-    ],
-    "quote": "Your immune system deserves a real conversation — not a footnote in a 15-minute appointment.",
+    "role": "Founder",
+    "quote": "An informed decision begins with an honest conversation.",
     "quoteAuthor": "Prof. Ramesh Babu",
-    "image": "/images/doctor1.2.png",
-    "credentials": [
-      "University Trained Integrative Pharmacologist",
-      "Member — Karnataka State Pharmacy Council",
-      "Board-Registered Practitioner"
-    ]
+    "image": "/images/doctor1.2.png"
   },
   "careProgramsHero": {
     "badge": "Information & Discussion",
