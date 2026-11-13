@@ -161,6 +161,21 @@ const seedDatabase = async () => {
 
       // Merge structure in case we add fields later
       const merged = { ...defaultWebsiteContent, ...webContent };
+
+      // Approved evidence-led public content refresh. Override legacy database
+      // values for these sections so the refreshed copy is actually served.
+      const publicContentRefreshKeys = [
+        'stats', 'heroSlides', 'whyChooseUs', 'healingPillars',
+        'aboutHero', 'aboutStory', 'aboutMission', 'aboutCaseStudies',
+        'careProgramsHero', 'careProgramsList', 'careProgramsSteps',
+        'treatmentMethodsHero', 'treatmentMethodsPhilosophy',
+        'treatmentMethodsJourney', 'patientEducationHero', 'patientEducationArticles'
+      ];
+      publicContentRefreshKeys.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(defaultWebsiteContent, key)) {
+          merged[key] = defaultWebsiteContent[key];
+        }
+      });
       merged.contact.whatsapp = '918884588835';
       merged.contact.phone = '+91 88845 88835';
 
