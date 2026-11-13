@@ -12,7 +12,7 @@ const seoData = {
     schema: null
   },
   '/about': {
-    title: 'About Prof. Ramesh Babu & Our Team | Cancer Herbalist',
+    title: 'About Prof. Ramesh Babu & Cancer Herbalist Team | Bengaluru',
     description: 'Learn about Cancer Herbalist in Bengaluru, its purpose, botanical and nutraceutical product information, and commitment to transparent conversations about limitations and risks.',
     keywords: 'about cancer herbalist, prof ramesh babu, herbal medicine team, cancer care team, natural oncology research',
     schema: {
@@ -43,7 +43,7 @@ const seoData = {
     }
   },
   '/treatment-methods': {
-    title: 'Holistic & Integrative Treatment Methods | Cancer Herbalist',
+    title: 'Botanical Product Information & Safety | Cancer Herbalist',
     description: 'Understand Cancer Herbalist's approach to sharing botanical product information, general nutrition education, evidence limitations and product safety considerations.',
     keywords: 'herbal product information, botanical ingredients, nutraceutical safety, herbal supplement interactions, nutrition education',
     schema: {
@@ -54,8 +54,8 @@ const seoData = {
   },
   '/doctors': {
     title: 'Our Team | Cancer Herbalist',
-    description: 'Meet our team of experienced practitioners and researchers led by Prof. Ramesh Babu, dedicated to safe, integrative cancer support.',
-    keywords: 'cancer herbalist consultants, medical team, herbal specialists, prof ramesh babu team',
+    description: 'Learn about the Cancer Herbalist team and contact the institute in Bengaluru for information about botanical and nutraceutical products.',
+    keywords: 'Cancer Herbalist team, Bengaluru, botanical product information, nutraceutical enquiries',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
