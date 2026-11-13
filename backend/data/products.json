@@ -18,18 +18,16 @@
       "/products/product1.2.png",
       "/products/product1.3.png"
     ],
-    "rating": 4.8,
+    "rating": 0,
     "inStock": true,
-    "reviews": 124,
-    "tagline": "Premium immunity support capsule for cellular defense and resilience.",
+    "reviews": 0,
+    "tagline": "Botanical capsule · 30 capsules",
     "benefits": [
-      "Boosts natural killer (NK) cell activity",
-      "Protects cells from oxidative damage",
-      "Helps reduce post-treatment fatigue",
-      "Supports white blood cell count restoration"
+      "Ingredient listed on label: Curcumin C3 complex",
+      "Pack size: 30 capsules"
     ],
     "category": "Immunity",
-    "description": "Cap CH95 is a specialized herbal formulation designed to bolster the body's immune system, enhance cellular resilience, and combat chronic fatigue during intensive clinical treatments. Rich in natural immunomodulators and antioxidants, it supports general vitality and wellness.",
+    "description": "Botanical capsule containing the ingredient listed on the product label. Please review the full ingredient list, directions and warnings before use.",
     "ingredients": "Curcumin C3 complex 100% natural",
     "originalPrice": 599
   },
@@ -48,18 +46,17 @@
       "/products/product9.2.jpg",
       "/products/product9.3.jpg"
     ],
-    "rating": 4.9,
+    "rating": 0,
     "inStock": true,
-    "reviews": 98,
-    "tagline": "High-absorption Curcumin & MCT blend for advanced nutritional therapy.",
+    "reviews": 0,
+    "tagline": "Curcumin & piperine powder · 100 g",
     "benefits": [
-      "High-bioavailability Curcumin (95% curcuminoids)",
-      "Rapid energy source via MCTs without glucose spikes",
-      "Supports healthy anti-inflammatory pathways",
-      "Preserves lean muscle mass and combats weight loss"
+      "Curcuma longa extract (95% curcuminoids)",
+      "Piperine 5%",
+      "Pack size: 100 g"
     ],
     "category": "Nutrition",
-    "description": "C3M Powder contains premium highly bioavailable Curcumin (standardized to 95% curcuminoids) and Srilankan Piperine. This synergistic formulation provides readily absorbable status while delivering powerful anti-inflammatory and cellular protection support.",
+    "description": "Powder formulation containing Curcuma longa extract standardized to 95% curcuminoids and piperine, as stated in the product ingredient information.",
     "ingredients": "Curcuma Longa extract (95% curcuminoids) 95%, Piperine 5%.",
     "originalPrice": 2599
   },
@@ -77,20 +74,16 @@
       "/products/product4.2.jpg",
       "/products/product4.3.jpg"
     ],
-    "rating": 4.7,
+    "rating": 0,
     "inStock": true,
-    "reviews": 89,
-    "tagline": "Standardized Ashwagandha adaptogen for stress defense and sleep support.",
+    "reviews": 0,
+    "tagline": "Ashwagandha extract capsule · 30 capsules",
     "benefits": [
-      "Modulates cortisol levels to combat stress",
-      "Improves sleep latency and overall sleep quality",
-      "Enhances stamina and reduces physical fatigue",
-      "Supports cognitive function",
-      "memory",
-      "and focus"
+      "Withania somnifera (KSM-66) extract 400 mg",
+      "Standardized to 5% withanolides"
     ],
     "category": "Stress & Recovery",
-    "description": "Cap Withangen features high-potency Withania Somnifera (Ashwagandha) extract standardized for maximum withanolide content. It targets the HPA axis to normalize cortisol levels, reduce anxiety, and improve sleep quality during recovery.",
+    "description": "Capsule formulation containing Withania somnifera (Ashwagandha KSM-66) extract standardized to 5% withanolides, as stated in the product ingredient information.",
     "ingredients": "Withania Somnifera (Ashwagandha KSM-66®) extract standardized to 5% withanolides 400mg.",
     "originalPrice": 799
   },
@@ -109,18 +102,15 @@
       "/products/product2.2.jpg",
       "/products/product2.3.jpg"
     ],
-    "rating": 4.9,
+    "rating": 0,
     "inStock": true,
-    "reviews": 142,
-    "tagline": "Ultra-pure Active Curcumin 95% for targeted anti-inflammatory defense.",
+    "reviews": 0,
+    "tagline": "Botanical capsule · 30 capsules",
     "benefits": [
-      "Targets NF-kB and critical inflammatory pathways",
-      "Provides powerful cellular antioxidant defense",
-      "Supports healthy tissue regeneration and recovery",
-      "BioPerine-enhanced for 2000% higher cellular absorption"
+      "Ingredients listed: withanolides, piperine extract, ursolic acid, EGCG, catechins and Echinacia constituents"
     ],
-    "category": "Anti-Tumor",
-    "description": "Cap AC95 delivers pharmaceutical-grade Active molecules of Ashwagandha, Tulsi, Echinacia, green tea standardised extracts enhanced with black pepper extract to maximize cellular absorption. It acts as a powerful anti-inflammatory and supports healthy cell proliferation pathways. It boosts T-cells to remove the damaged cells including cancer cells.",
+    "category": "Botanical Formulations",
+    "description": "Botanical capsule formulation. Refer to the product label for the complete ingredient list, quantities, directions and warnings.",
     "ingredients": "Withanolides, Srilanka piperine (Piper Nigrum extract) 5mg, Ursolic acid, EGCG, catechins, Echinocides",
     "originalPrice": 2999
   },
@@ -139,20 +129,17 @@
       "/products/product14.1.jpg",
       "/products/product14.2.jpg"
     ],
-    "rating": 4.7,
+    "rating": 0,
     "inStock": true,
-    "reviews": 58,
-    "tagline": "Potent hepatoprotective formula for liver detox and digestive care.",
+    "reviews": 0,
+    "tagline": "Botanical capsule · 30 capsules",
     "benefits": [
-      "Supports liver enzyme (ALT/AST) normalization",
-      "Aids clearance of clinical chemical residues and toxins",
-      "Promotes healthy digestion",
-      "appetite",
-      "and gut lining",
-      "Protects liver cells from oxidative stress and free radicals"
+      "Andrographis paniculata extract 350 mg",
+      "Tribulus terrestris extract 50 mg",
+      "CAQO bio-enhancer (as listed)"
     ],
     "category": "Detox",
-    "description": "Cap Livocin is formulated with hepatoprotective botanicals like Andrographis Paniculata and Tribulus Terrestris. It aids in clearing toxic metabolites, supporting liver enzyme normalization, and promoting healthy digestion during therapy.",
+    "description": "Botanical capsule formulation containing Andrographis paniculata extract and Tribulus terrestris extract, as stated in the product ingredient information.",
     "ingredients": "Andrographis Paniculata extract 350mg, Tribulus Terrestris extract 50mg, CAQO bio-enhancer.",
     "originalPrice": 2799
   },
@@ -170,18 +157,16 @@
       "/products/product13.1.jpg",
       "/products/product13.2.jpg"
     ],
-    "rating": 4.8,
+    "rating": 0,
     "inStock": true,
-    "reviews": 65,
-    "tagline": "Premium purified Shilajit extract rich in Fulvic Acid for cellular energy.",
+    "reviews": 0,
+    "tagline": "Shilajit extract capsule · 30 capsules",
     "benefits": [
-      "Boosts mitochondrial ATP energy production",
-      "Rich source of fulvic acid and over 80 trace minerals",
-      "Improves overall cellular nutrient and mineral absorption",
-      "Alleviates deep exhaustion and promotes physical recovery"
+      "Purified Asphaltum punjabianum extract 400 mg",
+      "Fulvic acid content: refer to product label"
     ],
     "category": "Stress & Recovery",
-    "description": "Cap Fulvican features purified Asphaltum Punjabianum (Shilajit) extract rich in fulvic acid and essential trace minerals. It works at the mitochondrial level to rejuvenate energy production, enhance nutrient uptake, and speed up tissue recovery.",
+    "description": "Capsule formulation containing purified Asphaltum punjabianum (Shilajit) extract. Refer to the product label for full specifications and warnings.",
     "ingredients": "Purified Asphaltum Punjabianum (Shilajit) extract 400mg (high fulvic acid content).",
     "originalPrice": 799
   },
@@ -200,19 +185,17 @@
       "/products/product8.1.jpg",
       "/products/product8.4.jpg"
     ],
-    "rating": 4.8,
+    "rating": 0,
     "inStock": true,
-    "reviews": 74,
-    "tagline": "100% pure Boswellia Frerana oil for therapeutic aromatherapy and massage.",
+    "reviews": 0,
+    "tagline": "Frankincense essential oil · 100 ml",
     "benefits": [
-      "Rich in active anti-inflammatory boswellic acids",
-      "Promotes relaxation and reduces nervous tension or anxiety",
-      "Soothes skin and supports tissue repair when diluted topically",
-      "100% pure steam-distilled essential oil",
-      "free of synthetic additives"
+      "Botanical ingredient listed: Boswellia serrata essential oil",
+      "Pack size: 100 ml",
+      "Use only as directed on the product label"
     ],
     "category": "Essential Oils",
-    "description": "Frank Oil is a premium, therapeutic-grade Frankincense (Boswellia serrata) essential oil. High in natural boswellic acids, it is ideal for soothing aromatherapy, stress relief, and topical application (diluted) to ease discomfort and inflammation.",
+    "description": "Frankincense essential oil product. Review the label for botanical identity, intended application, dilution instructions and safety precautions. Do not ingest unless the product label specifically permits it.",
     "ingredients": "100% Pure Boswellia serrata (Frankincense) essential oil. FSSAI certified.",
     "originalPrice": 1599
   },
@@ -231,21 +214,16 @@
       "/products/product16.jpg",
       "/products/product16.2.jpg"
     ],
-    "rating": 4.6,
+    "rating": 0,
     "inStock": true,
-    "reviews": 47,
-    "tagline": "Blue Spirulina extract rich in Phycocyanin for antioxidant support.",
+    "reviews": 0,
+    "tagline": "Spirulina tablet · 60 tablets",
     "benefits": [
-      "Rich in Phycocyanin",
-      "a powerful blue antioxidant compound",
-      "Supports red blood cell production and oxygen transport",
-      "Supplies essential plant-based proteins",
-      "amino acids",
-      "and B-vitamins",
-      "Promotes natural cellular detoxification and immune defense"
+      "Spirulina platensis extract 500 mg",
+      "Pack size: 60 tablets"
     ],
     "category": "Nutrition",
-    "description": "Tab Cyanolina provides premium Spirulina tablets standardized for high Phycocyanin content. This green superfood offers exceptional antioxidant defense, aids cell renewal, and supplies essential amino acids and trace minerals.",
+    "description": "Tablet product containing Spirulina platensis extract, as stated in the product ingredient information. Review the label for complete composition and directions.",
     "ingredients": "Purified Spirulina Platensis extract 500mg. FSSAI certified.",
     "originalPrice": 599
   },
@@ -264,20 +242,16 @@
       "/products/product7.3.jpg",
       "/products/product7.4.jpg"
     ],
-    "rating": 4.7,
+    "rating": 0,
     "inStock": true,
-    "reviews": 87,
-    "tagline": "Broken cell-wall Chlorella for heavy metal chelation & deep detox.",
+    "reviews": 0,
+    "tagline": "Chlorella tablet · 60 tablets",
     "benefits": [
-      "Binds heavy metals and environmental toxins for safe excretion",
-      "Supports natural liver and kidney detoxification pathways",
-      "Rich in natural chlorophyll",
-      "beta-glucans",
-      "and protein",
-      "Provides comprehensive cellular nutrient replenishment and energy"
+      "Chlorella pyrenoidosa (broken cell wall) 400 mg",
+      "Chlorophyll buffers (as listed)"
     ],
     "category": "Detox",
-    "description": "Tab Phytox features organic broken cell-wall Chlorella Pyrenoidosa. It is engineered to naturally bind and safely eliminate heavy metals, toxins, and drug metabolites from the body while restoring essential trace nutrition. Hemoglobin is very similar to Chlorophyll, just iron is replaced by magnesium.",
+    "description": "Tablet product containing broken-cell-wall Chlorella pyrenoidosa. Review the product label for full composition, directions and warnings.",
     "ingredients": "Chlorella Pyrenoidosa (broken cell wall) 400mg, chlorophyll buffers.",
     "originalPrice": 999
   },
@@ -296,22 +270,16 @@
       "/products/product6.2.jpg",
       "/products/product6.3.jpg"
     ],
-    "rating": 4.5,
+    "rating": 0,
     "inStock": true,
-    "reviews": 63,
-    "tagline": "Premium bioactive lipid complex for cellular energy and weight support.",
+    "reviews": 0,
+    "tagline": "Nigella sativa oil · 100 ml",
     "benefits": [
-      "Provides clean",
-      "rapid cellular energy bypassing glucose pathway",
-      "Supports ketogenic metabolism during intensive clinical recovery",
-      "Helps prevent muscle wasting and treatment-related cachexia",
-      "Mild",
-      "neutral taste—easy to mix with food",
-      "salads",
-      "or smoothies"
+      "Nigella sativa extract oil",
+      "Pack size: 100 ml"
     ],
     "category": "Nutrition",
-    "description": "Quinoil is a premium formulation to provide a concentrated, native extract of Nigella sativa rich in thymoquinone. Helps the body fight cancer effectively.",
+    "description": "Oil formulation containing Nigella sativa extract oil without diluents or colouring agents, as stated in the product ingredient information. Review the label for directions and precautions.",
     "ingredients": "Nigella sativa extract oil without diluents or coloring agents",
     "originalPrice": 1199
   },
@@ -330,20 +298,16 @@
       "/products/product12.1.jpg",
       "/products/product12.2.jpg"
     ],
-    "rating": 4.5,
+    "rating": 0,
     "inStock": true,
-    "reviews": 41,
-    "tagline": "Nutrient-dense herbal powder for digestive and appetite restoration.",
+    "reviews": 0,
+    "tagline": "Botanical powder · 150 g",
     "benefits": [
-      "Restores appetite and reduces treatment-induced nausea",
-      "Improves overall gastrointestinal health and gut lining stability",
-      "Supports nutrient absorption and systemic energy balance",
-      "Rich in natural fibers",
-      "minerals",
-      "and digestive enzymes"
+      "Anacosus cosmosus extract (standardized to enzyme, as listed)",
+      "Pack size: 150 g"
     ],
     "category": "Nutrition",
-    "description": "Anacose Powder is a proprietary dietary supplement designed to stimulate appetite, improve digestion, and reduce treatment-related nausea. Its blend of traditional herbs helps the body absorb vital nutrients efficiently during recovery. Help fight inflammation, wound healing quicker.",
+    "description": "Powder formulation containing Anacosus cosmosus extract standardized to enzyme, as stated in the product ingredient information. Review the label for complete composition and directions.",
     "ingredients": "Anacosus cosmosus extract standardised to enzyme",
     "originalPrice": 1599
   },
@@ -359,18 +323,16 @@
     "images": [
       "/products/methicon.jpeg"
     ],
-    "rating": 4.5,
+    "rating": 0,
     "inStock": true,
-    "reviews": 38,
-    "tagline": "Purified Methi extract for glycemic regulation and cellular defense.",
+    "reviews": 0,
+    "tagline": "Methi extract · 100 g",
     "benefits": [
-      "Lowers blood sugar levels to restrict abnormal cellular growth and replication",
-      "Inhibits glucose pathways that fuel cancer cell multiplication and spread",
-      "Standardised to Glucomannan for organ-level glycemic and metabolic stability",
-      "Supports healthy insulin sensitivity and immune health without side effects"
+      "Trigonella foenum-graecum extract",
+      "Standardization details: refer to product label"
     ],
     "category": "Nutrition",
-    "description": "Methicon is a purified, standardised extract made from Trigonella foenum-graecum (Methi) designed to effectively lower blood sugar levels, limiting the glucose-rich environment that fuels cancer growth, multiplication, and spread. Standardised to Glucomannan, this bioactive glycoside acts on key metabolic organs to stabilise glucose levels, giving the body a stronger, healthier platform to fight cancer without conventional metabolic side effects.",
+    "description": "Product containing purified, standardized Trigonella foenum-graecum (methi) extract. Review the label for the complete composition, directions and precautions, particularly if you use glucose-lowering medicines.",
     "ingredients": "Purified standardised extract of Trigonella foenum-graecum (Methi) (standardised to Glucomannan).",
     "originalPrice": 999
   },
@@ -389,18 +351,16 @@
       "/products/product15.1.jpg",
       "/products/product15.2.jpg"
     ],
-    "rating": 4.9,
+    "rating": 0,
     "inStock": true,
-    "reviews": 82,
-    "tagline": "Flagship multi-pathway botanical defense capsule.",
+    "reviews": 0,
+    "tagline": "Botanical formulation capsule · 30 capsules",
     "benefits": [
-      "Comprehensive multi-pathway tumor defense and cellular protection",
-      "Inhibits angiogenesis (blood supply formation to abnormal cells)",
-      "Promotes normal healthy cell apoptosis and cycle regulation",
-      "Enhanced with CAQO complex for maximum cellular bioavailability"
+      "Proprietary K27 botanical complex (ingredients as listed on label)",
+      "CAQO absorption enhancer (as listed)"
     ],
-    "category": "Anti-Tumor",
-    "description": "Cap K27 is a flagship formulation delivering a synergistic blend of anti-tumor botanicals designed to inhibit abnormal angiogenesis, stimulate cellular apoptosis, and support immune cell surveillance. Enhanced with the bio-active CAQO complex.",
+    "category": "Botanical Formulations",
+    "description": "Botanical capsule formulation with a proprietary K27 botanical complex. Refer to the product label for complete ingredient details, directions and warnings.",
     "ingredients": "Proprietary K27 botanical complex (Curcumin, Boswellia, Ashwagandha), CAQO absorption enhancer.",
     "originalPrice": 2699
   },
@@ -419,18 +379,15 @@
       "/products/product3.2.jpg",
       "/products/product3.3.jpg"
     ],
-    "rating": 4.6,
+    "rating": 0,
     "inStock": true,
-    "reviews": 52,
-    "tagline": "Oxygenation support formula for cellular energy and immune strength.",
+    "reviews": 0,
+    "tagline": "Botanical capsule · 30 capsules",
     "benefits": [
-      "Supports optimal tissue health and respiration efficiency",
-      "Enhances mitochondrial energy production and ATP synthesis",
-      "Combats severe chronic treatment fatigue and weakness",
-      "Boosts overall immune cellular activity and resistance"
+      "Ingredients listed: Silybum marianum, green tea extract and Spirulina extract"
     ],
     "category": "Immunity",
-    "description": "Cap Oxy95 is designed to support healthy cellular respiration and oxygenation. By promoting optimal oxygen utilisation at the tissue level, it enhances cellular mitochondrial efficiency, boosts immune response, and fights extreme fatigue. Helps to get rid of free radicals in the body to reduce the inflammation due to damage to healthy cells.",
+    "description": "Capsule formulation containing the botanical ingredients listed on the product label. Review complete composition, directions and warnings before use.",
     "ingredients": "Free radical scavenging complex of herbal extracts, Sylibum marianum, Green tea extract, spirulina extract.",
     "originalPrice": 3299
   },
@@ -449,18 +406,15 @@
       "/products/product10.1.jpg",
       "/products/product10.2.jpg"
     ],
-    "rating": 4.6,
+    "rating": 0,
     "inStock": true,
-    "reviews": 54,
-    "tagline": "Maximum strength cellular oxygenation and defense formula.",
+    "reviews": 0,
+    "tagline": "Botanical capsule · 30 capsules",
     "benefits": [
-      "Advanced cellular oxygenation and tissue perfusion support",
-      "Protects cells from intensive therapeutic oxidative stress",
-      "Supports red blood cell function and systemic oxygen delivery",
-      "Strengthens immune cell modulation and defense mechanisms"
+      "Proprietary botanical blend; request full ingredient details before use"
     ],
     "category": "Immunity",
-    "description": "Cap OxyForte is our maximum-strength cellular oxygenation formulation. Engineered for patients requiring advanced support, it works synergistically to elevate cellular energy, optimize blood oxygen transport, and defend cells against oxidative stress.",
+    "description": "Capsule formulation described as containing a proprietary botanical blend. Ask for the complete ingredient list and product-specific quality documentation before purchase or use.",
     "ingredients": "Concentrated organic oxygenators, proprietary botanical cell-defense blend.",
     "originalPrice": 4999
   },
@@ -476,20 +430,16 @@
     "images": [
       "/products/Cyanolina Bloo.png"
     ],
-    "rating": 4.9,
+    "rating": 0,
     "inStock": true,
-    "reviews": 110,
-    "tagline": "Specialized bio-active formulation for comprehensive oncology support.",
+    "reviews": 0,
+    "tagline": "Phytonutrient tablet · 30 tablets",
     "benefits": [
-      "Advanced bio-active cellular defense and signaling formula",
-      "Promotes healthy cellular signaling and programmed cell death (apoptosis)",
-      "Encourages deep tissue detoxification and metabolic clearance",
-      "Supports systemic defense",
-      "patient recovery",
-      "and general vitality"
+      "Proprietary phytonutrient complex",
+      "Spirulina-derived phycocyanin (as described)"
     ],
-    "category": "Anti-Tumor",
-    "description": "Tab BLOO is a premium, high-potency tablet formulation developed by Cancer Herbalist for advanced complementary support. Combining rare botanical extracts and active phyto-nutrients, it promotes healthy cell signaling, cellular detoxification, and robust immune defenses.",
+    "category": "Botanical Formulations",
+    "description": "Tablet formulation described as containing a proprietary phytonutrient complex and Spirulina-derived phycocyanin. Ask for the complete ingredient list and product-specific documentation before purchase or use.",
     "ingredients": "Proprietary oncology-support phyto-nutrient complex, Phycocyanin the active from sea algae Spirulina, a potent immunomodulator.",
     "originalPrice": 3740
   },
@@ -503,13 +453,15 @@
     "price": 10,
     "dosage": "1",
     "images": [],
-    "rating": 5,
+    "rating": 0,
     "inStock": true,
     "reviews": 0,
-    "tagline": "",
-    "benefits": [],
+    "tagline": "Product listing · details to be confirmed",
+    "benefits": [
+      "Product details to be confirmed"
+    ],
     "category": "Immunity",
-    "description": "Test",
+    "description": "Product listing marked “Test”. Please contact Cancer Herbalist for clarification before ordering.",
     "ingredients": "Test",
     "originalPrice": 10
   }
