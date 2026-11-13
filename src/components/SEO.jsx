@@ -63,13 +63,13 @@ const seoData = {
     }
   },
   '/testimonials': {
-    title: 'Patient Recovery Stories & Demographics | Cancer Herbalist',
+    title: 'Patient Experiences & Information | Cancer Herbalist',
     description: 'Patient experiences are being reviewed for documentation, context and permission. Individual accounts are not clinical evidence and cannot establish that a product treats cancer.',
     keywords: 'Cancer Herbalist patient experiences, individual accounts, product information, complementary wellness',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
-      'name': 'Patient Recovery Stories & Demographics'
+      'name': 'Patient Experiences & Information'
     }
   },
   '/blog': {
@@ -85,8 +85,8 @@ const seoData = {
   },
   '/patient-education': {
     title: 'Patient Education & Resources | Cancer Herbalist',
-    description: 'Access clinical education and resources to understand how adaptogens and integrative nutrition support the body during cancer treatments.',
-    keywords: 'patient education, cancer resources, how herbs support chemo, immune system modulation, cancer phytotherapy',
+    description: 'Read patient and caregiver education about cancer awareness, nutrition, botanical products, product safety and questions to discuss with your healthcare team.',
+    keywords: 'patient education, cancer awareness, nutrition during cancer care, herbal product safety, supplement interactions',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -95,8 +95,8 @@ const seoData = {
   },
   '/patient-education/tcells-vs-nk-cells': {
     title: 'T-Cells vs. NK Cells: Boosting Cellular Immunity | Cancer Herbalist',
-    description: 'Understand the key differences between T-cells and Natural Killer cells, and how herbal support modulates cell-mediated and innate immunity.',
-    keywords: 't cells vs nk cells, natural killer cells, cellular immunity, cell mediated immunity, innate immunity, herbs immune modulation',
+    description: 'An educational overview of T-cells and Natural Killer cells. Immune cell biology does not establish that a herbal product activates these cells or treats cancer.',
+    keywords: 'T cells, NK cells, immune cell biology, cancer patient education',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -105,8 +105,8 @@ const seoData = {
   },
   '/store': {
     title: 'Shop Integrative Herbal Formulations | Cancer Herbalist',
-    description: 'Browse our collection of premium, organic, heavy-metal-tested herbal formulas designed to support vitality, immunity, and overall wellbeing.',
-    keywords: 'herbal shop, buy organic herbs online, cancer support supplements, immune booster, energy adaptogens',
+    description: 'Browse botanical and nutraceutical products. Review the product label, ingredients, intended use, warnings and available quality documents before purchase.',
+    keywords: 'Cancer Herbalist store, botanical products, herbal nutraceuticals, product labels, ingredient information',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Store',
