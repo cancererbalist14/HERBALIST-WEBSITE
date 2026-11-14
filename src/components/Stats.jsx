@@ -73,7 +73,7 @@ export default function Stats() {
       sublabel: ds.sublabel || ''
     };
   });
-  const activeStats = dynamicStats;\n  if (activeStats.length === 0) return null;
+  const activeStats = dynamicStats.length > 0 ? dynamicStats : stats;
 
   return (
     <section
