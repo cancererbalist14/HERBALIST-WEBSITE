@@ -39,6 +39,7 @@
       "has": [
         {
           "type": "host",
+          "key": "host",
           "value": "cancerherbalist.com"
         }
       ],
