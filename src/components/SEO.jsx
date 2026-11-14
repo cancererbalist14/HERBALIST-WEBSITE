@@ -6,8 +6,8 @@ const BASE_URL = 'https://www.cancerherbalist.com';
 
 const seoData = {
   '/': {
-    title: 'Cancer Herbalist | Botanical Products & Herbal Nutrition Information in Bengaluru',
-    description: 'Discover Cancer Herbalist in Bengaluru, India. Learn about our botanical and nutraceutical products, ingredients, general nutrition information and how to discuss limitations and potential risks before use. Products are not cancer treatments.',
+    title: 'Cancer Herbalist | Herbal & Nutraceutical Products',
+    description: "Explore Cancer Herbalist's herbal and nutraceutical products, educational resources and supportive-care approach in Bengaluru, India.",
     keywords: 'Cancer Herbalist Bengaluru, botanical products, herbal nutrition, nutraceutical products, complementary wellness information, product ingredients, product safety',
     schema: null
   },
@@ -51,6 +51,48 @@ const seoData = {
       '@type': 'WebPage',
       'name': 'Holistic & Integrative Treatment Methods'
     }
+  },
+  '/cancer-overview': {
+    title: 'Cancer Overview | Cancer Herbalist',
+    description: 'Read an overview of cancer, common symptoms, risk factors, conventional treatments and patient education topics.',
+    keywords: 'cancer overview, cancer symptoms, cancer risk factors, cancer treatments, patient education',
+    schema: null
+  },
+  '/education-resources': {
+    title: 'Cancer Education & Nutrition Resources | Cancer Herbalist',
+    description: 'Explore educational articles on cancer awareness, nutrition, herbal medicine, mental wellness, exercise, research and healthy recipes.',
+    keywords: 'cancer education, cancer awareness, nutrition, herbal medicine, mental wellness, research updates',
+    schema: null
+  },
+  '/integrative-therapies': {
+    title: 'Integrative Therapies | Cancer Herbalist',
+    description: 'Explore Cancer Herbalist information on herbal medicine, nutrition and integrative wellness approaches.',
+    keywords: 'integrative therapies, herbal medicine, nutrition, botanical products',
+    schema: null
+  },
+  '/personalized-treatment-plans': {
+    title: 'Personalized Support Plans | Cancer Herbalist',
+    description: 'Learn about the assessment, medical-history review, laboratory information and nutrition discussions used in personalized support planning.',
+    keywords: 'personalized support plans, medical history review, nutrition assessment',
+    schema: null
+  },
+  '/patient-onboarding': {
+    title: 'Patient Onboarding & Resources | Cancer Herbalist',
+    description: 'Find patient onboarding information, preparation guidance and resources for communicating with the Cancer Herbalist team.',
+    keywords: 'patient onboarding, patient resources, Cancer Herbalist',
+    schema: null
+  },
+  '/products': {
+    title: 'Herbal & Nutraceutical Products | Cancer Herbalist',
+    description: 'Explore Cancer Herbalist product range and review product formats, ingredients and available product information.',
+    keywords: 'herbal products, nutraceutical products, botanical products, Cancer Herbalist',
+    schema: null
+  },
+  '/faqs': {
+    title: 'Frequently Asked Questions | Cancer Herbalist',
+    description: 'Find answers about orders, shipping, tracking, returns, cancellations and payments at Cancer Herbalist.',
+    keywords: 'Cancer Herbalist FAQs, order tracking, shipping, returns, payments',
+    schema: null
   },
   '/doctors': {
     title: 'Our Team | Cancer Herbalist',
@@ -186,7 +228,19 @@ export default function SEO() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const data = seoData[pathname];
+    const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
+    const data = seoData[pathname] || seoData[normalizedPathname];
+    const canonicalUrl = `${BASE_URL}${pathname === '/' ? '/' : pathname}`;
+
+    // Keep a route-specific canonical URL on every route, including dynamic pages.
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', canonicalUrl);
+
     if (!data) return;
 
     // 1. Update Title
@@ -209,15 +263,6 @@ export default function SEO() {
       document.head.appendChild(metaKeywords);
     }
     metaKeywords.setAttribute('content', data.keywords);
-
-    // Keep the canonical URL in sync with the active route.
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute('href', `${BASE_URL}${pathname === '/' ? '/' : pathname}`);
 
     // 4. Update Open Graph tags
     const updateOGTag = (property, content) => {
