@@ -161,6 +161,40 @@ const seedDatabase = async () => {
 
       // Merge structure in case we add fields later
       const merged = { ...defaultWebsiteContent, ...webContent };
+
+      // Approved evidence-led public content refresh. Override legacy database
+      // values for these sections so the refreshed copy is actually served.
+      const publicContentRefreshKeys = [
+        'stats', 'heroSlides', 'whyChooseUs', 'healingPillars', 'testimonials',
+        'aboutHero', 'aboutStory', 'aboutMission', 'aboutCaseStudies',
+        'careProgramsHero', 'careProgramsList', 'careProgramsSteps',
+        'treatmentMethodsHero', 'treatmentMethodsPhilosophy',
+        'treatmentMethodsJourney', 'patientEducationHero', 'patientEducationArticles'
+      ];
+      // Apply the reviewed product descriptions once to existing database records.
+      if (Number(merged._productCopyRevision || 0) < 1) {
+        const storedProducts = await dbRead('products') || [];
+        const safeProductCopy = new Map(initialProducts.map((product) => [product.id, product]));
+        const refreshedProducts = storedProducts.map((product) => {
+          const reviewed = safeProductCopy.get(product.id);
+          return reviewed ? {
+            ...product,
+            category: reviewed.category,
+            tagline: reviewed.tagline,
+            description: reviewed.description,
+            benefits: reviewed.benefits,
+            rating: 0,
+            reviews: 0
+          } : product;
+        });
+        await dbWrite('products', refreshedProducts);
+        merged._productCopyRevision = 1;
+      }
+      publicContentRefreshKeys.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(defaultWebsiteContent, key)) {
+          merged[key] = defaultWebsiteContent[key];
+        }
+      });
       merged.contact.whatsapp = '918884588835';
       merged.contact.phone = '+91 88845 88835';
 

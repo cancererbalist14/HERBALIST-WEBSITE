@@ -10,8 +10,6 @@ import {
 import Hero from '../components/Hero';
 import Stats from '../components/Stats';
 import TrustBadges from '../components/TrustBadges';
-import TreatmentProcess from '../components/TreatmentProcess';
-import SuccessStories from '../components/SuccessStories';
 import { useContent } from '../context/ContentContext';
 
 const ACCENT = '#38bed5';
@@ -21,30 +19,30 @@ const whyChooseUs = [
   {
     icon: <FaMicroscope />,
     title: 'Personalized Protocols',
-    desc: 'Every patient receives a unique herbal formula tailored to their specific cancer type, staging, and treatment history.',
+    desc: 'We invite patients and caregivers to ask questions about products, ingredients, intended use and available documentation.',
   },
   {
     icon: <FaShieldAlt />,
     title: 'Safety-First Approach',
-    desc: 'All herbs are screened against your medications to eliminate drug-herb interactions before we begin.',
+    desc: 'Herbal products can interact with medicines. Discuss any product with your oncologist or pharmacist before use.',
   },
   {
     icon: <FaHandHoldingHeart />,
     title: 'Continuous Support',
-    desc: 'Weekly check-ins, diet adjustments, and formula refinements so you are never alone on your healing path.',
+    desc: 'Patients and caregivers can arrange a discussion to understand the institute and available product information.',
   },
   {
     icon: <FaSeedling />,
     title: 'Certified Organic Sourcing',
-    desc: 'We source from GMP-certified organic farms with full lab-tested purity and potency reports.',
+    desc: 'Ask us which quality documents and product-specific testing information are available.',
   },
 ];
 
 /* ─── Healing Pillars – unique to Home ─── */
 const healingPillars = [
-  { icon: <FaLeaf />, title: 'Herbal Formulation', stat: '20+', statLabel: 'Custom Blends', desc: 'Precision-crafted tinctures combining ancient wisdom with modern pharmacognosy research.' },
-  { icon: <FaHeartbeat />, title: 'Lifestyle Integration', stat: '95%', statLabel: 'Patient Compliance', desc: 'Anti-cancer nutrition plans, breathing protocols, and stress-reduction frameworks.' },
-  { icon: <FaShieldAlt />, title: 'Immune Optimization', stat: '87%', statLabel: 'Improved Markers', desc: 'Targeted adaptogens and immunomodulators to strengthen your bodys natural defenses.' },
+  { icon: <FaLeaf />, title: 'Botanical Products', stat: '', statLabel: '', desc: 'Learn about ingredients, formulation details, intended use and available product documentation.' },
+  { icon: <FaHeartbeat />, title: 'Nutrition Education', stat: '', statLabel: '', desc: 'Explore general nutrition information and questions to discuss with your oncology care team.' },
+  { icon: <FaShieldAlt />, title: 'Product Safety & Interactions', stat: '', statLabel: '', desc: 'Understand possible interactions, contraindications and precautions before considering a product.' },
 ];
 
 export default function Home() {
@@ -73,8 +71,8 @@ export default function Home() {
     };
   });
   const activeHealingPillars = dynamicHealingPillars.length > 0 ? dynamicHealingPillars : healingPillars;
-  const healingPillarsTitle = content?.healingPillars?.title || 'Three Pillars of Recovery';
-  const healingPillarsSubtitle = content?.healingPillars?.subtitle || 'A clinically structured framework that addresses the physical, nutritional, and immunological dimensions of cancer care.';
+  const healingPillarsTitle = content?.healingPillars?.title || 'How We Share Information';
+  const healingPillarsSubtitle = content?.healingPillars?.subtitle || 'Our focus is product transparency, general nutrition education and informed discussions about limitations and risks.';
 
   return (
     <>
@@ -111,10 +109,10 @@ export default function Home() {
             }}
           >
             {(content?.aboutApproach?.items || [
-              { step: '01', title: 'Listen & Understand', desc: 'We begin by deeply understanding your diagnosis, medical history, current treatment, and personal goals — before prescribing anything.' },
-              { step: '02', title: 'Personalise', desc: 'No two patients are the same. Every formula, dietary plan, and follow-up schedule is crafted specifically for you.' },
-              { step: '03', title: 'Collaborate', desc: 'We work alongside your oncology team — sharing protocols, respecting boundaries, and ensuring complete safety.' },
-              { step: '04', title: 'Support Continuously', desc: 'Healing is a journey. Monthly check-ins, WhatsApp support, and protocol adjustments ensure you are never alone.' }
+              { step: '01', title: 'Listen & Understand', desc: 'We listen to the questions patients and caregivers want to discuss about the institute and products.' },
+              { step: '02', title: 'Personalise', desc: 'Ask about product ingredients, intended use, directions and available documentation.' },
+              { step: '03', title: 'Collaborate', desc: 'Our products are not cancer treatments. Discuss any product with your treating oncologist or pharmacist before use.' },
+              { step: '04', title: 'Support Continuously', desc: 'We welcome questions about the institute and available product information.' }
             ]).map((item, i) => (
               <motion.div
                 key={item.title}
@@ -180,7 +178,7 @@ export default function Home() {
               Conditions We <span>Support</span>
             </h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              We build specialized herbal protocols tailored to a wide range of diagnoses, helping optimize body resilience.
+              Explore information about our institute, botanical products and general nutrition education.
             </p>
           </div>
 
@@ -192,12 +190,12 @@ export default function Home() {
             }}
           >
             {(content?.careProgramsList || [
-              { title: 'Breast Cancer', slug: 'breast-cancer', desc: 'Targeted herbal formulas to regulate hormone levels, support cell health and minimise treatment side effects.' },
-              { title: 'Lung Cancer', slug: 'lung-cancer', desc: 'Respiratory herbs that improve lung capacity, reduce coughing and support pulmonary tissue resilience.' },
-              { title: 'Colon Cancer', slug: 'colon-cancer', desc: 'Gut-healing botanicals that optimise digestion, restore intestinal flora and soothe abdominal inflammation.' },
-              { title: 'Prostate Cancer', slug: 'prostate-cancer', desc: 'Herbs targeting endocrine health, reducing pelvic inflammation and supporting urinary tract function.' },
-              { title: 'Liver Cancer', slug: 'liver-cancer', desc: 'Hepatoprotective herbs that boost liver detoxification, aid cell regeneration and improve metabolic strength.' },
-              { title: 'Blood Cancer', slug: 'blood-cancer', desc: 'Immune tonics and blood-purifying botanicals supporting marrow health and optimising energy levels.' }
+              { title: 'Breast Cancer', slug: 'breast-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' },
+              { title: 'Lung Cancer', slug: 'lung-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' },
+              { title: 'Colon Cancer', slug: 'colon-cancer', desc: 'Learn about relevant product ingredients, intended use and available documentation.' },
+              { title: 'Prostate Cancer', slug: 'prostate-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' },
+              { title: 'Liver Cancer', slug: 'liver-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' },
+              { title: 'Blood Cancer', slug: 'blood-cancer', desc: 'Learn about relevant product information, intended use and available documentation.' }
             ]).slice(0, 6).map((svc, i) => {
               const icons = [<FaRibbon key={0} />, <FaLungs key={1} />, <FaAppleAlt key={2} />, <FaHeartbeat key={3} />, <FaRegHospital key={4} />, <FaTint key={5} />];
               return (
@@ -289,10 +287,10 @@ export default function Home() {
                   ∞
                 </div>
                 <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px', fontFamily: 'Playfair Display, serif', color: 'white' }}>
-                  Every Cancer Type Supported
+                  Information for Patients & Caregivers
                 </h3>
                 <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.85)', lineHeight: '1.7', marginBottom: '20px' }}>
-                  No diagnosis is ever turned away. We formulate custom pathways for all common, complex, and rare cancer classifications.
+                  Contact us to learn about Cancer Herbalist, our products and the information available. We do not provide cancer treatment.
                 </p>
               </div>
               <Link
@@ -325,13 +323,13 @@ export default function Home() {
         <div className="container">
           <div data-aos="fade-up" style={{ textAlign: 'center', marginBottom: '56px' }}>
             <span className="section-badge">
-              <FaFlask /> Advanced Therapeutics
+              <FaFlask /> Botanical & Nutrition Information
             </span>
             <h2 className="section-title">
-              Featured <span>Treatments</span>
+              Products & <span>Information</span>
             </h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              Explore our core botanical modalities and complementary therapies designed to support cancer warriors.
+              Explore information about botanical products, nutrition education and product safety considerations.
             </p>
           </div>
 
@@ -344,28 +342,28 @@ export default function Home() {
           >
             {[
               {
-                title: 'Herbal Chemotherapy (HCT)',
+                title: 'Botanical Product Information',
                 icon: <FaLeaf />,
                 color: '#1a6e52',
-                desc: 'Phytochemical formulations designed to target abnormal pathways, downregulate oncogenes, and inhibit abnormal cell reproduction.',
+                desc: 'Learn about product ingredients, formulation details, intended use, directions and available documentation.',
               },
               {
-                title: 'Nutrition Therapy (NT)',
+                title: 'Nutrition Education',
                 icon: <FaAppleAlt />,
                 color: '#e28743',
-                desc: 'Organ-protecting, anti-inflammatory nutritional regimens designed to optimize immunity, starve tumor cells, and prevent cachexia.',
+                desc: 'Explore general nutrition information and questions to discuss with your oncology team or registered dietitian.',
               },
               {
-                title: 'Immune Optimization',
+                title: 'Botanical Product Information',
                 icon: <FaHeartbeat />,
                 color: '#e056fd',
-                desc: 'Targeted adaptogens and standard immunomodulators that boost Natural Killer (NK) cells and T-cell defense markers.',
+                desc: 'Herbal ingredients may interact with medicines or be unsuitable for some people. Ask your oncologist or pharmacist before use.',
               },
               {
                 title: 'Medication Screening',
                 icon: <FaShieldAlt />,
                 color: '#38bed5',
-                desc: 'Strict screening protocols to check for drug-herb interactions, ensuring all formulations work safely with conventional chemotherapy.',
+                desc: 'Ask questions about possible interactions, contraindications and precautions. No product is suitable for everyone.',
               },
             ].map((treat, i) => (
               <motion.div
@@ -426,7 +424,6 @@ export default function Home() {
         </div>
       </section>
 
-      <TreatmentProcess />
 
       {/* ═══ Why Choose Us – unique to Home page ═══ */}
       <section
@@ -523,7 +520,6 @@ export default function Home() {
       </section>
 
       {/* ═══ NEW: Success Stories ═══ */}
-      <SuccessStories />
 
       {/* ═══ Healing Pillars – unique to Home page ═══ */}
       <section
@@ -535,7 +531,7 @@ export default function Home() {
         <div className="container">
           <div data-aos="fade-up" style={{ textAlign: 'center', marginBottom: '48px' }}>
             <span className="section-badge">
-              <FaLeaf /> Our Healing Framework
+              <FaLeaf /> Our Information Framework
             </span>
             <h2 className="section-title">
               {healingPillarsTitle}
@@ -648,7 +644,7 @@ export default function Home() {
                 boxShadow: `0 8px 32px ${ACCENT}44`,
               }}
             >
-              Start Your Healing Journey <FaArrowRight style={{ fontSize: '14px' }} />
+              Start an Information Discussion <FaArrowRight style={{ fontSize: '14px' }} />
             </Link>
           </div>
         </div>

@@ -1,14 +1,14 @@
 [
   {
     "id": 1,
-    "title": "A Remarkable Prostate Cancer Journey: When Symptoms Were Not Obvious",
+    "title": "Nutrition During Cancer Care: Questions to Discuss With Your Care Team",
     "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=80",
     "category": "Nutrition",
     "author": "By Prof. Ramesh",
     "readTime": "8 min read",
     "date": "February 21, 2026",
-    "excerpt": "A 74-year-old man's prostate cancer diagnosis was delayed due to atypical symptoms. Learn how elevated PSA levels led to diagnosis and explore the role of supportive nutrition in his cancer care journey.",
-    "content": "A 74-year-old man's prostate cancer diagnosis was delayed due to atypical symptoms. Supportive nutrition and herbal therapies played an essential role alongside his conventional treatment plan."
+    "excerpt": "Nutrition needs can change during cancer treatment. Explore general questions to discuss with your oncologist or registered dietitian, including appetite, weight changes, hydration and food safety.",
+    "content": "Nutrition needs vary with the cancer diagnosis, treatment plan, symptoms and other health conditions. A registered dietitian with oncology experience can help assess individual needs.\n\nQuestions to discuss with your care team include: Are there foods I should avoid during treatment? How can I manage appetite changes, nausea or swallowing difficulties? Do I need help maintaining weight or muscle? Are any supplements appropriate, and could they interact with my medicines?\n\nDo not start herbal products, high-dose vitamins or supplements without discussing them with your oncologist or pharmacist."
   },
   {
     "id": 2,
@@ -18,8 +18,8 @@
     "author": "By Prof. Ramesh",
     "readTime": "8 min read",
     "date": "March 10, 2026",
-    "excerpt": "Discover how genetic testing, artificial intelligence, targeted therapies, and immunotherapy are transforming cancer treatment through personalized care and improved patient outcomes.",
-    "content": "Discover how genetic testing, artificial intelligence, targeted therapies, and immunotherapy are transforming cancer treatment through personalized care and improved patient outcomes."
+    "excerpt": "An introduction to precision oncology, including how tumour biomarkers and molecular testing may help clinicians select evidence-based treatment options for some cancers.",
+    "content": "Precision oncology uses information about a person's cancer, including selected biomarkers and molecular features, to help clinicians consider treatment options. The usefulness of testing depends on cancer type, stage, available therapies and clinical context.\n\nPatients should ask their oncology team whether biomarker testing is appropriate, what the results mean and whether an approved treatment option is available. This educational overview is not individual medical advice."
   },
   {
     "id": 3,
@@ -29,7 +29,7 @@
     "author": "By Prof. Ramesh",
     "readTime": "8 min read",
     "date": "February 28, 2026",
-    "excerpt": "Recognizing early warning signs of cancer—such as unexplained weight loss, persistent fatigue, unusual lumps, or chronic pain—can lead to timely diagnosis and significantly better treatment outcomes.",
-    "content": "Recognizing early warning signs of cancer—such as unexplained weight loss, persistent fatigue, unusual lumps, or chronic pain—can lead to timely diagnosis and significantly better treatment outcomes."
+    "excerpt": "Learn about symptoms that should be discussed with a healthcare professional. Symptoms can have many causes, and only appropriate medical assessment can determine whether further testing is needed.",
+    "content": "Cancer symptoms vary and many symptoms can also be caused by non-cancer conditions. Persistent or unexplained changes—such as a new lump, unusual bleeding, ongoing cough, unexplained weight loss or a change in bowel habits—should be discussed with a qualified healthcare professional.\n\nDo not use a symptom list to diagnose yourself or delay medical assessment. Screening recommendations depend on age, risk factors and local clinical guidance."
   }
 ]
