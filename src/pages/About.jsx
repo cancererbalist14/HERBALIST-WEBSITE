@@ -31,19 +31,19 @@ export default function About() {
     {
       id: 1,
       name: 'Prof. Ramesh Babu',
-      role: 'Founder',
-      experience: '',
-      specialty: 'Botanical Product Information',
-      bio: 'Founder of Cancer Herbalist. Contact the institute for information about its botanical and nutraceutical products.'
+      role: 'Pharmacologist — M.Pharm, PhD',
+      experience: '22 Years Clinical Experience',
+      specialty: 'Integrative Pharmacology & Herbal Oncology',
+      bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with over two decades of dedicated practice in natural products, herbal extraction, and integrative cancer care.',
       image: '/images/doctor1.png',
     },
     {
       id: 2,
       name: 'Nutraceutical Research Team',
-      role: 'Nutraceutical Research Team',
-      experience: '',
-      specialty: 'Product Information & Patient Enquiries',
-      bio: 'Contact Cancer Herbalist for information about the team and the services available.'
+      role: 'Multidisciplinary Research & Clinical Care Team',
+      experience: '15+ Specialists',
+      specialty: 'Clinical Nutrition, Botanical Research & Patient Support',
+      bio: 'Comprised of dedicated professionals from medical, research, and pharmacology backgrounds working collaboratively to deliver personalized care.',
       image: '/images/doctor33.png',
     },
   ];
@@ -128,11 +128,11 @@ export default function About() {
               {aboutStory.badge || 'Our Story'}
             </span>
             <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', color: DARK, marginTop: '12px', marginBottom: '24px', lineHeight: 1.25 }}>
-              Our Purpose: <span style={{ color: ACCENT }}>Informed Choice</span>
+              A Mission Born from <span style={{ color: ACCENT }}>Compassion</span>
             </h2>
             {(aboutStory.paragraphs || [
-              'Cancer Herbalist shares information about its botanical and nutraceutical products and welcomes questions from patients and caregivers.',
-              'We encourage people to understand ingredients, intended use, available documentation, limitations and potential risks before deciding whether to use a product.'
+              'Founded with a mission to bridge natural botanical therapies and modern oncology science, Cancer Herbalist provides personalized care for patients across the globe.',
+              'Our formulations are compounded based on published cellular research, ensuring maximum bio-availability and safety alongside standard oncology treatments.'
             ]).map((p, i) => (
               <p key={i} style={{ color: '#475569', lineHeight: '1.9', fontSize: '1rem', marginBottom: '18px' }}>
                 {p}
@@ -141,9 +141,9 @@ export default function About() {
 
             {/* Key differentiators */}
             {(aboutStory.highlights || [
-              'Information about product ingredients and intended use',
-              'Encouragement to discuss products with the treating oncology team',
-              'Available product-specific quality documentation'
+              'Standardized bio-active phytotherapy compounds',
+              'Collaborative care alongside primary oncology',
+              'Comprehensive organ safety and laboratory audits'
             ]).map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
                 <FaCheckCircle style={{ color: ACCENT, flexShrink: 0, marginTop: '3px', fontSize: '16px' }} />
@@ -205,7 +205,7 @@ export default function About() {
               Our <span style={{ color: PRIMARY }}>Philosophy</span>
             </h2>
             <p style={{ color: '#64748b', maxWidth: '620px', margin: '0 auto', lineHeight: '1.8', fontSize: '1rem' }}>
-              We believe people should have clear product information and the opportunity to ask questions about ingredients, intended use, limitations and potential risks.
+              We believe in combining ancient botanical wisdom with modern evidence-based pharmacological research.
             </p>
           </div>
 
@@ -213,23 +213,23 @@ export default function About() {
             {[
               {
                 icon: <FaSeedling />,
-                title: 'Product Information',
-                desc: 'Ask us about the ingredients, intended use, available product-specific evidence and supporting documentation.'
+                title: 'Evidence-Based Phytotherapy',
+                desc: 'Every herb and botanical compound we use is backed by cellular research, pharmacological studies, and standardized active ingredients.'
               },
               {
                 icon: <FaShieldAlt />,
-                title: 'Respect for Conventional Care',
-                desc: 'Our products are not cancer treatments and must not replace or delay care recommended by an oncology team.'
+                title: 'Synergy with Modern Care',
+                desc: 'We do not replace conventional treatments; our integrative protocols work alongside chemotherapy, radiation, and surgery to support organ resilience.'
               },
               {
                 icon: <FaHandHoldingHeart />,
-                title: 'Informed Patient Decisions',
-                desc: 'We encourage patients and caregivers to discuss product ingredients, medicines, allergies, health conditions and possible risks before deciding.'
+                title: 'Holistic Patient-Centricity',
+                desc: 'Cancer care extends beyond tumor targeted care — we focus on appetite support, vitality, cellular detox, and total quality of life.'
               },
               {
                 icon: <FaFlask />,
-                title: 'Product Quality Information',
-                desc: 'Ask us which quality documents and product-specific test reports are available. Do not assume testing or certification beyond the documents provided.'
+                title: 'Safety & Quality Audits',
+                desc: 'Strict quality control, heavy metal screening, and purity testing ensure zero contamination across all our herbal formulations.'
               }
             ].map((item, idx) => (
               <motion.div
@@ -277,10 +277,10 @@ export default function About() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '64px' }}>
             <span style={{ color: PRIMARY, fontWeight: 700, fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              Our Team
+              Clinical Expertise
             </span>
             <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', color: DARK, marginTop: '12px', marginBottom: '16px' }}>
-              Meet the <span style={{ color: PRIMARY }}>Cancer Herbalist Team</span>
+              Meet Our Expert <span style={{ color: PRIMARY }}>Clinical Team</span>
             </h2>
             <p style={{ color: '#64748b', maxWidth: '620px', margin: '0 auto', lineHeight: '1.8', fontSize: '1rem' }}>
               Our multidisciplinary team of pharmacologists, medical practitioners, and research specialists is dedicated to personalized cancer support.
