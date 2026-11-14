@@ -32,5 +32,18 @@
         "service": "frontend"
       }
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "cancerherbalist.com"
+        }
+      ],
+      "destination": "https://www.cancerherbalist.com/:path*",
+      "permanent": true
+    }
   ]
 }
