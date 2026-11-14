@@ -76,6 +76,12 @@ const seoData = {
     keywords: 'personalized support plans, medical history review, nutrition assessment',
     schema: null
   },
+  '/patient-onboarding': {
+    title: 'Patient Onboarding & Resources | Cancer Herbalist',
+    description: 'Find patient onboarding information, preparation guidance and resources for communicating with the Cancer Herbalist team.',
+    keywords: 'patient onboarding, patient resources, Cancer Herbalist',
+    schema: null
+  },
   '/products': {
     title: 'Herbal & Nutraceutical Products | Cancer Herbalist',
     description: 'Explore Cancer Herbalist product range and review product formats, ingredients and available product information.',
@@ -222,7 +228,8 @@ export default function SEO() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const data = seoData[pathname];
+    const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
+    const data = seoData[pathname] || seoData[normalizedPathname];
     const canonicalUrl = `${BASE_URL}${pathname === '/' ? '/' : pathname}`;
 
     // Keep a route-specific canonical URL on every route, including dynamic pages.
