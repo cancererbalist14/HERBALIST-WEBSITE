@@ -6,24 +6,24 @@ const BASE_URL = 'https://www.cancerherbalist.com';
 
 const seoData = {
   '/': {
-    title: 'Cancer Herbalist | Herbal & Nutraceutical Products',
-    description: "Explore Cancer Herbalist's herbal and nutraceutical products, educational resources and supportive-care approach in Bengaluru, India.",
-    keywords: 'Cancer Herbalist Bengaluru, botanical products, herbal nutrition, nutraceutical products, complementary wellness information, product ingredients, product safety',
+    title: 'Cancer Herbalist | Herbal Nutrition & Complementary Cancer Support in Bengaluru',
+    description: 'Cancer Herbalist in Bengaluru offers herbal nutrition and complementary wellness support for people affected by cancer. Explore our approach, educational resources and contact information. Supportive care is not a substitute for oncology treatment.',
+    keywords: 'cancer herbalist, herbal cancer support, natural cancer care, holistic cancer therapy, integrative oncology, herbal medicine, cancer nutrition',
     schema: null
   },
   '/about': {
-    title: 'About Prof. Ramesh Babu & Cancer Herbalist Team | Bengaluru',
-    description: 'Learn about Cancer Herbalist in Bengaluru, its purpose, botanical and nutraceutical product information, and commitment to transparent conversations about limitations and risks.',
+    title: 'About Prof. Ramesh Babu & Our Team | Cancer Herbalist',
+    description: 'Learn about our founder, Prof. Ramesh Babu, his background in pharmacology, and our mission to provide evidence-based, integrative cancer support.',
     keywords: 'about cancer herbalist, prof ramesh babu, herbal medicine team, cancer care team, natural oncology research',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'AboutPage',
       'name': 'About Cancer Herbalist',
-      'description': 'Learn about Cancer Herbalist in Bengaluru, its purpose, botanical and nutraceutical product information, and commitment to transparent conversations about limitations and risks.',
+      'description': 'Learn about our founder, Prof. Ramesh Babu, his background in pharmacology, and our mission to provide evidence-based, integrative cancer support.',
       'mainEntity': {
         '@type': 'Person',
         'name': 'Prof. Ramesh Babu',
-        'jobTitle': 'Founder',
+        'jobTitle': 'Founder & Senior Practitioner',
         'worksFor': {
           '@type': 'Organization',
           'name': 'Cancer Herbalist'
@@ -33,102 +33,60 @@ const seoData = {
   },
   '/care-programs': {
     title: 'Specialized Cancer Care Programs | Cancer Herbalist',
-    description: 'Explore product information, general nutrition education and opportunities to discuss botanical products, intended use, limitations and potential risks. These products are not cancer treatments.',
-    keywords: 'Cancer Herbalist information, botanical product information, herbal nutrition, nutraceutical product precautions, complementary wellness education',
+    description: 'Explore our specialized herbal care programs for breast, lung, colon, prostate, liver, and blood cancers, designed to complement conventional treatments.',
+    keywords: 'cancer care programs, lung cancer herbal care, breast cancer support, colon cancer recovery, prostate cancer therapies, liver cancer hepatoprotection, blood cancer bone marrow support',
     schema: {
       '@context': 'https://schema.org',
-      '@type': 'WebPage',
+      '@type': 'MedicalWebPage',
       'name': 'Specialized Cancer Care Programs',
-      'description': 'Explore product information, general nutrition education and opportunities to discuss botanical products, intended use, limitations and potential risks. These products are not cancer treatments.'
+      'description': 'Explore our specialized herbal care programs for breast, lung, colon, prostate, liver, and blood cancers, designed to complement conventional treatments.'
     }
   },
   '/treatment-methods': {
-    title: 'Botanical Product Information & Safety | Cancer Herbalist',
-    description: 'Understand Cancer Herbalist's approach to sharing botanical product information, general nutrition education, evidence limitations and product safety considerations.',
-    keywords: 'herbal product information, botanical ingredients, nutraceutical safety, herbal supplement interactions, nutrition education',
+    title: 'Holistic & Integrative Treatment Methods | Cancer Herbalist',
+    description: 'Discover our complementary treatment methodologies including personalized herbal formulations, immune system support, and dietary optimization.',
+    keywords: 'treatment methods, herbal cancer therapy, custom phytotherapy, cancer immune modulation, gut microbiota support',
     schema: {
       '@context': 'https://schema.org',
-      '@type': 'WebPage',
+      '@type': 'MedicalWebPage',
       'name': 'Holistic & Integrative Treatment Methods'
     }
   },
-  '/cancer-overview': {
-    title: 'Cancer Overview | Cancer Herbalist',
-    description: 'Read an overview of cancer, common symptoms, risk factors, conventional treatments and patient education topics.',
-    keywords: 'cancer overview, cancer symptoms, cancer risk factors, cancer treatments, patient education',
-    schema: null
-  },
-  '/education-resources': {
-    title: 'Cancer Education & Nutrition Resources | Cancer Herbalist',
-    description: 'Explore educational articles on cancer awareness, nutrition, herbal medicine, mental wellness, exercise, research and healthy recipes.',
-    keywords: 'cancer education, cancer awareness, nutrition, herbal medicine, mental wellness, research updates',
-    schema: null
-  },
-  '/integrative-therapies': {
-    title: 'Integrative Therapies | Cancer Herbalist',
-    description: 'Explore Cancer Herbalist information on herbal medicine, nutrition and integrative wellness approaches.',
-    keywords: 'integrative therapies, herbal medicine, nutrition, botanical products',
-    schema: null
-  },
-  '/personalized-treatment-plans': {
-    title: 'Personalized Support Plans | Cancer Herbalist',
-    description: 'Learn about the assessment, medical-history review, laboratory information and nutrition discussions used in personalized support planning.',
-    keywords: 'personalized support plans, medical history review, nutrition assessment',
-    schema: null
-  },
-  '/patient-onboarding': {
-    title: 'Patient Onboarding & Resources | Cancer Herbalist',
-    description: 'Find patient onboarding information, preparation guidance and resources for communicating with the Cancer Herbalist team.',
-    keywords: 'patient onboarding, patient resources, Cancer Herbalist',
-    schema: null
-  },
-  '/products': {
-    title: 'Herbal & Nutraceutical Products | Cancer Herbalist',
-    description: 'Explore Cancer Herbalist product range and review product formats, ingredients and available product information.',
-    keywords: 'herbal products, nutraceutical products, botanical products, Cancer Herbalist',
-    schema: null
-  },
-  '/faqs': {
-    title: 'Frequently Asked Questions | Cancer Herbalist',
-    description: 'Find answers about orders, shipping, tracking, returns, cancellations and payments at Cancer Herbalist.',
-    keywords: 'Cancer Herbalist FAQs, order tracking, shipping, returns, payments',
-    schema: null
-  },
   '/doctors': {
     title: 'Our Team | Cancer Herbalist',
-    description: 'Learn about the Cancer Herbalist team and contact the institute in Bengaluru for information about botanical and nutraceutical products.',
-    keywords: 'Cancer Herbalist team, Bengaluru, botanical product information, nutraceutical enquiries',
+    description: 'Meet our team of experienced practitioners and researchers led by Prof. Ramesh Babu, dedicated to safe, integrative cancer support.',
+    keywords: 'cancer herbalist consultants, medical team, herbal specialists, prof ramesh babu team',
     schema: {
       '@context': 'https://schema.org',
-      '@type': 'WebPage',
+      '@type': 'MedicalWebPage',
       'name': 'Our Team'
     }
   },
   '/testimonials': {
-    title: 'Patient Experiences & Information | Cancer Herbalist',
-    description: 'Patient experiences are being reviewed for documentation, context and permission. Individual accounts are not clinical evidence and cannot establish that a product treats cancer.',
-    keywords: 'Cancer Herbalist patient experiences, individual accounts, product information, complementary wellness',
+    title: 'Patient Recovery Stories & Demographics | Cancer Herbalist',
+    description: 'Read inspiring testimonials and success stories from patients across India and internationally who integrated our herbal support protocols.',
+    keywords: 'cancer survivor stories, herbal cancer recovery, patient testimonials, cancer treatment success',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
-      'name': 'Patient Experiences & Information'
+      'name': 'Patient Recovery Stories & Demographics'
     }
   },
   '/blog': {
     title: 'Cancer Health & Herbal Support Blog | Cancer Herbalist',
-    description: 'Read educational information about cancer awareness, nutrition, botanical products and questions to discuss with your healthcare team.',
+    description: 'Stay informed with the latest research, wellness tips, and dietary guidance for cancer support and integrative health.',
     keywords: 'cancer blog, herbal medicine blog, cancer nutrition tips, adaptogens research, oncologist complementary support',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Blog',
       'name': 'Cancer Health & Herbal Support Blog',
-      'description': 'Read educational information about cancer awareness, nutrition, botanical products and questions to discuss with your healthcare team.'
+      'description': 'Stay informed with the latest research, wellness tips, and dietary guidance for cancer support and integrative health.'
     }
   },
   '/patient-education': {
     title: 'Patient Education & Resources | Cancer Herbalist',
-    description: 'Read patient and caregiver education about cancer awareness, nutrition, botanical products, product safety and questions to discuss with your healthcare team.',
-    keywords: 'patient education, cancer awareness, nutrition during cancer care, herbal product safety, supplement interactions',
+    description: 'Access clinical education and resources to understand how adaptogens and integrative nutrition support the body during cancer treatments.',
+    keywords: 'patient education, cancer resources, how herbs support chemo, immune system modulation, cancer phytotherapy',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -137,23 +95,23 @@ const seoData = {
   },
   '/patient-education/tcells-vs-nk-cells': {
     title: 'T-Cells vs. NK Cells: Boosting Cellular Immunity | Cancer Herbalist',
-    description: 'An educational overview of T-cells and Natural Killer cells. Immune cell biology does not establish that a herbal product activates these cells or treats cancer.',
-    keywords: 'T cells, NK cells, immune cell biology, cancer patient education',
+    description: 'Understand the key differences between T-cells and Natural Killer cells, and how herbal support modulates cell-mediated and innate immunity.',
+    keywords: 't cells vs nk cells, natural killer cells, cellular immunity, cell mediated immunity, innate immunity, herbs immune modulation',
     schema: {
       '@context': 'https://schema.org',
-      '@type': 'WebPage',
+      '@type': 'MedicalWebPage',
       'name': 'T-Cells vs. NK Cells: Boosting Cellular Immunity'
     }
   },
   '/store': {
-    title: 'Botanical & Nutraceutical Products | Cancer Herbalist',
-    description: 'Browse botanical and nutraceutical products. Review the product label, ingredients, intended use, warnings and available quality documents before purchase.',
-    keywords: 'Cancer Herbalist store, botanical products, herbal nutraceuticals, product labels, ingredient information',
+    title: 'Shop Integrative Herbal Formulations | Cancer Herbalist',
+    description: 'Browse our collection of premium, organic, heavy-metal-tested herbal formulas designed to support vitality, immunity, and overall wellbeing.',
+    keywords: 'herbal shop, buy organic herbs online, cancer support supplements, immune booster, energy adaptogens',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Store',
       'name': 'Cancer Herbalist Store',
-      'description': 'Browse botanical and nutraceutical products. Review the product label, ingredients, intended use, warnings and available quality documents before purchase.'
+      'description': 'Browse our collection of premium, organic, heavy-metal-tested herbal formulas designed to support vitality, immunity, and overall wellbeing.'
     }
   },
   '/wishlist': {
@@ -178,7 +136,7 @@ const seoData = {
   },
   '/contact': {
     title: 'Contact Us & Book a Free Consultation | Cancer Herbalist',
-    description: 'Contact Cancer Herbalist in Bengaluru to ask about our institute, botanical products and product information. Arrange an in-person or telephone discussion about intended use, limitations and potential risks.',
+    description: 'Get in touch with our team of specialists or book a free discovery consultation. We are here to support your healing journey.',
     keywords: 'contact cancer herbalist, book consultation, clinic location, teleconsultation phone number',
     schema: {
       '@context': 'https://schema.org',
@@ -228,19 +186,7 @@ export default function SEO() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
-    const data = seoData[pathname] || seoData[normalizedPathname];
-    const canonicalUrl = `${BASE_URL}${pathname === '/' ? '/' : pathname}`;
-
-    // Keep a route-specific canonical URL on every route, including dynamic pages.
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute('href', canonicalUrl);
-
+    const data = seoData[pathname];
     if (!data) return;
 
     // 1. Update Title
@@ -263,6 +209,15 @@ export default function SEO() {
       document.head.appendChild(metaKeywords);
     }
     metaKeywords.setAttribute('content', data.keywords);
+
+    // Keep the canonical URL in sync with the active route.
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', `${BASE_URL}${pathname === '/' ? '/' : pathname}`);
 
     // 4. Update Open Graph tags
     const updateOGTag = (property, content) => {
