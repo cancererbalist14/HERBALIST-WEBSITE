@@ -2,12 +2,12 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const BRAND = 'Cancer Herbalist';
-const BASE_URL = 'https://www.cancerherbalist.com';
+const BASE_URL = 'https://cancerherbalist.com';
 
 const seoData = {
   '/': {
     title: 'Cancer Herbalist | Herbal Nutrition & Complementary Cancer Support in Bengaluru',
-    description: 'Cancer Herbalist in Bengaluru offers herbal nutrition and complementary wellness support for people affected by cancer. Explore our approach, educational resources and contact information. Supportive care is not a substitute for oncology treatment.',
+    description: 'Explore herbal and nutraceutical products, educational resources and complementary supportive-care information from Cancer Herbalist in Bengaluru.',
     keywords: 'cancer herbalist, herbal cancer support, natural cancer care, holistic cancer therapy, integrative oncology, herbal medicine, cancer nutrition',
     schema: null
   },
@@ -51,6 +51,48 @@ const seoData = {
       '@type': 'MedicalWebPage',
       'name': 'Holistic & Integrative Treatment Methods'
     }
+  },
+  '/cancer-overview': {
+    title: 'Cancer Overview & Patient Education | Cancer Herbalist',
+    description: 'Understand cancer types, common symptoms, risk factors and standard treatment options through this patient education resource.',
+    keywords: 'cancer overview, cancer types, cancer symptoms, cancer risk factors, patient education',
+    schema: null
+  },
+  '/education-resources': {
+    title: 'Cancer Education & Nutrition Resources | Cancer Herbalist',
+    description: 'Explore educational resources on cancer awareness, nutrition, herbal medicine and supportive care from Cancer Herbalist in Bengaluru.',
+    keywords: 'cancer education, cancer awareness, cancer nutrition, herbal medicine, patient resources',
+    schema: null
+  },
+  '/integrative-therapies': {
+    title: 'Integrative Therapies & Supportive Care | Cancer Herbalist',
+    description: 'Learn about the complementary herbal, nutritional and wellness approaches described by Cancer Herbalist in Bengaluru.',
+    keywords: 'integrative therapies, complementary care, herbal medicine, nutrition, wellness support',
+    schema: null
+  },
+  '/personalized-treatment-plans': {
+    title: 'Personalized Support Plans | Cancer Herbalist',
+    description: 'Learn how Cancer Herbalist reviews medical history, reports and nutrition needs when discussing individual supportive-care plans.',
+    keywords: 'personalized support plans, medical history review, nutrition assessment, patient support',
+    schema: null
+  },
+  '/patient-onboarding': {
+    title: 'Patient Onboarding & Visit Preparation | Cancer Herbalist',
+    description: 'Find guidance on preparing for a Cancer Herbalist consultation, including medical reports and information to bring.',
+    keywords: 'patient onboarding, consultation preparation, medical reports, patient resources',
+    schema: null
+  },
+  '/products': {
+    title: 'Herbal & Nutraceutical Products | Cancer Herbalist',
+    description: 'Explore product information, ingredients and available herbal and nutraceutical formulations from Cancer Herbalist.',
+    keywords: 'herbal products, nutraceutical products, botanical products, product information',
+    schema: null
+  },
+  '/faqs': {
+    title: 'Frequently Asked Questions | Cancer Herbalist',
+    description: 'Find answers to common questions about Cancer Herbalist consultations, products, orders, shipping and support.',
+    keywords: 'Cancer Herbalist FAQs, consultations, products, shipping, customer support',
+    schema: null
   },
   '/doctors': {
     title: 'Our Team | Cancer Herbalist',
@@ -186,7 +228,26 @@ export default function SEO() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const data = seoData[pathname];
+    const normalizedPathname = pathname.replace(/\\/+$/, '') || '/';
+    const data = seoData[normalizedPathname];
+    const canonicalUrl = `${BASE_URL}${normalizedPathname === '/' ? '/' : normalizedPathname}`;
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', canonicalUrl);
+
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (!ogUrl) {
+      ogUrl = document.createElement('meta');
+      ogUrl.setAttribute('property', 'og:url');
+      document.head.appendChild(ogUrl);
+    }
+    ogUrl.setAttribute('content', canonicalUrl);
+
     if (!data) return;
 
     // 1. Update Title
@@ -210,15 +271,6 @@ export default function SEO() {
     }
     metaKeywords.setAttribute('content', data.keywords);
 
-    // Keep the canonical URL in sync with the active route.
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute('href', `${BASE_URL}${pathname === '/' ? '/' : pathname}`);
-
     // 4. Update Open Graph tags
     const updateOGTag = (property, content) => {
       let tag = document.querySelector(`meta[property="${property}"]`);
@@ -232,7 +284,7 @@ export default function SEO() {
 
     updateOGTag('og:title', data.title);
     updateOGTag('og:description', data.description);
-    updateOGTag('og:url', `${BASE_URL}${pathname}`);
+    updateOGTag('og:url', canonicalUrl);
     updateOGTag('og:type', 'website');
     const updateMetaName = (name, content) => {
       let tag = document.querySelector(`meta[name="${name}"]`);
