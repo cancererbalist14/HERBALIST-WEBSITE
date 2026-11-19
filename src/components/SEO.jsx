@@ -186,7 +186,7 @@ export default function SEO() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const normalizedPathname = pathname.replace(/\\/+$/, '') || '/';
+    const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
     const canonicalUrl = `${BASE_URL}${normalizedPathname === '/' ? '/' : normalizedPathname}`;
 
     // Set a self-referencing canonical on every route, including dynamic service pages.
