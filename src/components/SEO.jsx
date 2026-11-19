@@ -198,7 +198,16 @@ export default function SEO() {
     }
     canonical.setAttribute('href', canonicalUrl);
 
-    const data = seoData[pathname];
+    // Keep Open Graph URL aligned even on dynamic routes without static SEO metadata.
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (!ogUrl) {
+      ogUrl = document.createElement('meta');
+      ogUrl.setAttribute('property', 'og:url');
+      document.head.appendChild(ogUrl);
+    }
+    ogUrl.setAttribute('content', canonicalUrl);
+
+    const data = seoData[normalizedPathname];
     if (!data) return;
 
     // 1. Update Title
@@ -235,7 +244,6 @@ export default function SEO() {
 
     updateOGTag('og:title', data.title);
     updateOGTag('og:description', data.description);
-    updateOGTag('og:url', canonicalUrl);
     updateOGTag('og:type', 'website');
     const updateMetaName = (name, content) => {
       let tag = document.querySelector(`meta[name="${name}"]`);
