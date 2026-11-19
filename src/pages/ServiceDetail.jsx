@@ -21,6 +21,7 @@ const servicesData = {
     icon: <FaRibbon />,
     title: 'Breast Cancer Support Program',
     subtitle: 'Integrative Care, Estrogen Modulation & Post-Surgical Support',
+    seoDescription: 'Explore complementary nutrition and wellness information for people navigating breast cancer care alongside their oncology team.',
     heroImage: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=1600&q=80',
     overview: `Breast cancer is one of the most widely diagnosed conditions globally. At Cancer Herbalist, we provide a specialized supportive program designed to work alongside conventional options like chemotherapy, radiation, and hormone therapies. Our goal is to focus on the reduction of inflammation, promote immune system support, and help manage treatment side effects so you can sustain strength throughout the cancer journey.`,
     symptoms: [
@@ -102,6 +103,7 @@ const servicesData = {
     icon: <FaLungs />,
     title: 'Lung Cancer Support Program',
     subtitle: 'Respiratory Strength, Pulmonary Resilience & Vital Organ Protection',
+    seoDescription: 'Explore complementary nutrition and wellness information for people navigating lung cancer care alongside their oncology team.',
     heroImage: 'https://images.unsplash.com/photo-1616012480717-fd9867059ca0?auto=format&fit=crop&w=1600&q=80',
     overview: `Lung cancer presents significant challenges related to airway comfort, breathing capacity, and intensive clinical therapies. Our integrative cancer care focuses on supporting respiratory wellbeing, maintaining pulmonary tissue resilience, reducing chronic airway inflammation, and protecting vital organs during chemo and radiation treatments.`,
     symptoms: [
@@ -183,6 +185,7 @@ const servicesData = {
     icon: <FaAppleAlt />,
     title: 'Colon Cancer Support Program',
     subtitle: 'Gut Health, Microbiota Balance & Digestive Restoration',
+    seoDescription: 'Learn about digestive, nutrition and complementary wellness information for people navigating colon cancer care.',
     heroImage: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1600&q=80',
     overview: `Colon cancer and its clinical treatments—including surgery, systemic chemotherapy, and radiation—profoundly affect the gastrointestinal tract. Our integrative cancer care program focuses on gut health and microbiota support, soothing intestinal lining, promoting reduction of inflammation, and providing nutritional support throughout the cancer journey.`,
     symptoms: [
@@ -264,6 +267,7 @@ const servicesData = {
     icon: <FaHeartbeat />,
     title: 'Prostate Cancer Support Program',
     subtitle: 'Urinary Comfort, Pelvic Health & Hormonal Balance',
+    seoDescription: 'Learn about complementary nutrition and wellness information for people navigating prostate cancer care.',
     heroImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=80',
     overview: `Prostate cancer and its treatment, particularly hormone therapies, present distinct physical and emotional challenges. Our integrative cancer care focuses on promoting pelvic comfort, supporting healthy urinary flow, managing the side effects of hormone treatments, and providing adaptogenic support to maintain strength, bone density, and overall wellbeing.`,
     symptoms: [
@@ -343,6 +347,7 @@ const servicesData = {
     icon: <FaRegHospital />,
     title: 'Liver Cancer Support Program',
     subtitle: 'Hepatoprotection, Detoxification & Metabolic Support',
+    seoDescription: 'Explore complementary nutrition and wellness information for people navigating liver cancer care alongside their oncology team.',
     heroImage: 'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=1600&q=80',
     overview: `The liver is the body's central metabolic and clearing organ. Liver cancer and hepatic therapies require highly specialized, gentle care. Our hepatoprotective program is focused on supporting liver cell integrity, optimizing metabolic function, promoting reduction of inflammation, and protecting vital organs throughout the cancer journey.`,
     symptoms: [
@@ -423,6 +428,7 @@ const servicesData = {
     icon: <FaTint />,
     title: 'Blood Cancer Support Program',
     subtitle: 'Immune Modulation, Bone Marrow Support & Blood Vitality',
+    seoDescription: 'Learn about nutrition and complementary wellness information for people navigating blood cancer care.',
     heroImage: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1600&q=80',
     overview: `Blood cancers, including leukemia, lymphoma, and myeloma, directly impact the lymphatic and blood-forming systems. Our integrative care program focuses on immune modulation, providing bone marrow support, protecting vital organs, and delivering targeted nutritional support throughout the cancer journey to manage treatment side effects.`,
     symptoms: [
@@ -510,8 +516,17 @@ export default function ServiceDetail() {
     if (!service) return;
 
     // 1. Update Title
-    const pageTitle = `${service.title} | ${service.subtitle} | Cancer Herbalist`;
+    const pageTitle = `${service.title} | Cancer Herbalist`;
     document.title = pageTitle;
+    const canonicalPath = window.location.pathname.replace(/\\/+$/, '') || '/';
+    const canonicalUrl = `https://cancerherbalist.com${canonicalPath}`;
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', canonicalUrl);
 
     // 2. Update Meta Description
     let metaDesc = document.querySelector('meta[name="description"]');
@@ -520,7 +535,7 @@ export default function ServiceDetail() {
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    metaDesc.setAttribute('content', service.overview);
+    metaDesc.setAttribute('content', service.seoDescription);
 
     // 3. Update OG Tags
     const updateOGTag = (property, content) => {
@@ -535,7 +550,7 @@ export default function ServiceDetail() {
 
     updateOGTag('og:title', pageTitle);
     updateOGTag('og:description', service.overview);
-    updateOGTag('og:url', window.location.href);
+    updateOGTag('og:url', canonicalUrl);
     updateOGTag('og:image', service.heroImage);
 
     // 4. Inject MedicalWebPage and FAQPage Structured Data
@@ -558,8 +573,8 @@ export default function ServiceDetail() {
       '@graph': [
         {
           '@type': 'MedicalWebPage',
-          '@id': window.location.href,
-          'url': window.location.href,
+          '@id': canonicalUrl,
+          'url': canonicalUrl,
           'name': service.title,
           'description': service.overview,
           'about': {
