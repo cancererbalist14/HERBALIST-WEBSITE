@@ -186,6 +186,18 @@ export default function SEO() {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    const normalizedPathname = pathname.replace(/\\/+$/, '') || '/';
+    const canonicalUrl = `${BASE_URL}${normalizedPathname === '/' ? '/' : normalizedPathname}`;
+
+    // Set a self-referencing canonical on every route, including dynamic service pages.
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', canonicalUrl);
+
     const data = seoData[pathname];
     if (!data) return;
 
@@ -210,15 +222,6 @@ export default function SEO() {
     }
     metaKeywords.setAttribute('content', data.keywords);
 
-    // Keep the canonical URL in sync with the active route.
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute('href', `${BASE_URL}${pathname === '/' ? '/' : pathname}`);
-
     // 4. Update Open Graph tags
     const updateOGTag = (property, content) => {
       let tag = document.querySelector(`meta[property="${property}"]`);
@@ -232,7 +235,7 @@ export default function SEO() {
 
     updateOGTag('og:title', data.title);
     updateOGTag('og:description', data.description);
-    updateOGTag('og:url', `${BASE_URL}${pathname}`);
+    updateOGTag('og:url', canonicalUrl);
     updateOGTag('og:type', 'website');
     const updateMetaName = (name, content) => {
       let tag = document.querySelector(`meta[name="${name}"]`);
