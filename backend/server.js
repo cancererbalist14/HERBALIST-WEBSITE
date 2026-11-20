@@ -154,6 +154,51 @@ app.use(express.json({
     req.rawBody = buf.toString(); // Support raw body for webhook signature verification
   }
 }));
+/* ── Route-specific canonical URLs in the initial HTML ──────── */
+const CANONICAL_ORIGIN = 'https://www.cancerherbalist.com';
+
+app.use((req, res, next) => {
+  const acceptsHtml = typeof req.headers.accept === 'string'
+    && req.headers.accept.includes('text/html');
+
+  if (
+    (req.method !== 'GET' && req.method !== 'HEAD') ||
+    !acceptsHtml ||
+    req.path === '/admin' ||
+    req.path === '/api' ||
+    req.path.startsWith('/api/')
+  ) {
+    return next();
+  }
+
+  const requestPath = req.path === '/index.html'
+    ? '/'
+    : (req.path.replace(/\/+$/, '') || '/');
+  const canonicalUrl = `${CANONICAL_ORIGIN}${requestPath}`;
+
+  fs.readFile(path.join(DIST_DIR, 'index.html'), 'utf8', (err, html) => {
+    if (err) return next(err);
+
+    const replaceOrInsertHeadTag = (source, pattern, tag) => {
+      if (pattern.test(source)) return source.replace(pattern, tag);
+      return source.replace('</head>', `    ${tag}\n  </head>`);
+    };
+
+    let page = replaceOrInsertHeadTag(
+      html,
+      /<link\\b(?=[^>]*\\brel=["']canonical["'])[^>]*>/i,
+      `<link rel="canonical" href="${canonicalUrl}" />`
+    );
+    page = replaceOrInsertHeadTag(
+      page,
+      /<meta\\b(?=[^>]*\\bproperty=["']og:url["'])[^>]*>/i,
+      `<meta property="og:url" content="${canonicalUrl}" />`
+    );
+
+    return res.status(200).type('html').send(page);
+  });
+});
+
 /* ── Serve React static files (EARLY — before API routes) ───── */
 // Must be placed here so /assets/*.css and /assets/*.js are served
 // directly without going through any API middleware.

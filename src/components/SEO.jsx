@@ -186,7 +186,27 @@ export default function SEO() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const data = seoData[pathname];
+    const normalizedPathname = pathname.replace(/\\/+$/, '') || '/';
+    const canonicalUrl = `${BASE_URL}${normalizedPathname}`;
+
+    // Keep canonical and Open Graph URLs correct during client-side navigation.
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', canonicalUrl);
+
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (!ogUrl) {
+      ogUrl = document.createElement('meta');
+      ogUrl.setAttribute('property', 'og:url');
+      document.head.appendChild(ogUrl);
+    }
+    ogUrl.setAttribute('content', canonicalUrl);
+
+    const data = seoData[normalizedPathname];
     if (!data) return;
 
     // 1. Update Title
@@ -232,7 +252,7 @@ export default function SEO() {
 
     updateOGTag('og:title', data.title);
     updateOGTag('og:description', data.description);
-    updateOGTag('og:url', `${BASE_URL}${pathname}`);
+    updateOGTag('og:url', canonicalUrl);
     updateOGTag('og:type', 'website');
     const updateMetaName = (name, content) => {
       let tag = document.querySelector(`meta[name="${name}"]`);
