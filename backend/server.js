@@ -186,12 +186,12 @@ app.use((req, res, next) => {
 
     let page = replaceOrInsertHeadTag(
       html,
-      /<link\\b(?=[^>]*\\brel=["']canonical["'])[^>]*>/i,
+      /<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/i,
       `<link rel="canonical" href="${canonicalUrl}" />`
     );
     page = replaceOrInsertHeadTag(
       page,
-      /<meta\\b(?=[^>]*\\bproperty=["']og:url["'])[^>]*>/i,
+      /<meta\b(?=[^>]*\bproperty=["']og:url["'])[^>]*>/i,
       `<meta property="og:url" content="${canonicalUrl}" />`
     );
 

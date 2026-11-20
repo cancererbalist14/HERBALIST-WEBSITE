@@ -186,7 +186,7 @@ export default function SEO() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
+    const normalizedPathname = pathname.replace(/\\/+$/, '') || '/';
     const canonicalUrl = `${BASE_URL}${normalizedPathname}`;
 
     // Keep canonical and Open Graph URLs correct during client-side navigation.
